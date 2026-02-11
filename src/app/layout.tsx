@@ -6,7 +6,7 @@ import { Geist } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 
 export const metadata: Metadata = {
-  title: "Denoise It",
+  title: "Denoise It — Strip the noise. See what's real.",
   description: "Denoise It is a tool that helps extracting maximum signal out of noise from concepts, news, and other sources.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
