@@ -10,7 +10,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "postinstall": "prisma generate",
@@ -37,13 +37,13 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.563.0",
-    "next": "^15.2.3",
-    "next-auth": "5.0.0-beta.25",
+    "next": "16.1.6",
+    "next-auth": "5.0.0-beta.30",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
-    "react": "^19.0.0",
+    "react": "19.2.4",
     "react-day-picker": "^9.13.2",
-    "react-dom": "^19.0.0",
+    "react-dom": "19.2.4",
     "react-hook-form": "^7.71.1",
     "react-resizable-panels": "^4.6.2",
     "recharts": "2.15.4",
@@ -58,10 +58,10 @@
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.0.15",
     "@types/node": "^20.14.10",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "eslint": "^9.23.0",
-    "eslint-config-next": "^15.2.3",
+    "eslint-config-next": "16.1.6",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
@@ -75,5 +75,11 @@
   "ct3aMetadata": {
     "initVersion": "7.40.0"
   },
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    }
+  }
 }
