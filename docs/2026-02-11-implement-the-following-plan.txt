@@ -1,0 +1,896 @@
+
+ ▐▛███▜▌   Claude Code v2.1.34
+▝▜█████▛▘  Opus 4.6 · API Usage Billing
+  ▘▘ ▝▝    ~/Documents/Github/denoise-it
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Denoise It — Landing Page Implementation Plan                                │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ The current src/app/page.tsx is a T3 template page with a purple gradient,   │
+│ example tRPC hello call, and auth demo. We're replacing it with the real     │
+│ product landing page: a clean, minimal, trust-communicating hero section     │
+│ with an input field for denoising any content, and a results section         │
+│ displaying structured truth cards.                                           │
+│                                                                              │
+│ Design Philosophy                                                            │
+│                                                                              │
+│ Monochromatic OKLch neutral palette (already in the theme) — zero hue, zero  │
+│ chroma. The absence of color IS the brand. The only color on the page is     │
+│ destructive red for "misleading" elements. Everything else is                │
+│ black/white/gray. Clean, precise, analytical.                                │
+│                                                                              │
+│ Files to Create/Modify                                                       │
+│                                                                              │
+│ 1. src/server/api/routers/denoise.ts (NEW)                                   │
+│                                                                              │
+│ tRPC router with a single analyze mutation (public, no auth needed):         │
+│ - Input: { content: string } (min 1, max 10000 chars)                        │
+│ - Output: { summary, signalScore (0-100), originalType, elements[] }         │
+│ - Each element: { id, claim, confidence (0-1), category, explanation,        │
+│ source? }                                                                    │
+│ - Categories: fact | context | opinion | speculation | misleading |          │
+│ unverifiable                                                                 │
+│ - Mock data for now with a simulated 1.5-2.5s delay                          │
+│                                                                              │
+│ 2. src/server/api/root.ts (MODIFY)                                           │
+│                                                                              │
+│ Add denoise: denoiseRouter to appRouter.                                     │
+│                                                                              │
+│ 3. src/app/_components/denoise-hero.tsx (NEW)                                │
+│                                                                              │
+│ Main client component managing the full flow:                                │
+│                                                                              │
+│ Hero section (min-h-svh, flex centered):                                     │
+│ - Brand: denoise in text-5xl font-extrabold tracking-tight + it in           │
+│ font-light text-muted-foreground                                             │
+│ - Tagline: "Strip the noise. See what's real."                               │
+│ - shadcn Textarea (min-h-[120px], resize-none) with placeholder about        │
+│ links/tweets/headlines/gossip                                                │
+│ - shadcn Button size="lg" — "Denoise" / "Denoising..." with Loader2 spinner  │
+│ - Helper text: "We extract signal from noise — no account required."         │
+│ - Content constrained to max-w-2xl for optimal reading width                 │
+│                                                                              │
+│ Results section (appears below hero after submission):                       │
+│ - Signal score: uppercase label + Badge (score/100) + Progress bar (h-1.5)   │
+│ - Summary: Card with border-none bg-secondary/50 shadow-none                 │
+│ - Separator                                                                  │
+│ - Truth cards: mapped TruthCard[] with staggered animation                   │
+│ - Smooth scroll to results on mutation success                               │
+│                                                                              │
+│ State: input string, result object, tRPC useMutation                         │
+│                                                                              │
+│ 4. src/app/_components/truth-card.tsx (NEW)                                  │
+│                                                                              │
+│ Presentational component for each truth element:                             │
+│ - shadcn Card with CardHeader (claim + category Badge) and CardContent       │
+│ (explanation + source quote)                                                 │
+│ - Category-to-Badge-variant mapping: fact→default, context→secondary,        │
+│ opinion→outline, speculation→outline, misleading→destructive,                │
+│ unverifiable→outline                                                         │
+│ - Confidence in font-mono text-xs                                            │
+│ - Source quote in bg-secondary/50 rounded block                              │
+│ - Staggered animate-in fade-in-0 slide-in-from-bottom-4 via animationDelay:  │
+│ index * 100ms                                                                │
+│                                                                              │
+│ 5. src/app/_components/results-skeleton.tsx (NEW)                            │
+│                                                                              │
+│ Loading skeleton matching results layout shape:                              │
+│ - Skeleton for signal score bar, summary block, 3 card outlines              │
+│                                                                              │
+│ 6. src/app/page.tsx (REWRITE)                                                │
+│                                                                              │
+│ Minimal server component — just renders <DenoiseHero /> inside               │
+│ <HydrateClient>. No auth, no prefetch needed.                                │
+│                                                                              │
+│ 7. src/app/layout.tsx (MODIFY)                                               │
+│                                                                              │
+│ Update metadata title to "Denoise It — Strip the noise. See what's real."    │
+│                                                                              │
+│ 8. src/styles/globals.css (MODIFY)                                           │
+│                                                                              │
+│ Add scroll-behavior: smooth to html in @layer base.                          │
+│                                                                              │
+│ Implementation Order                                                         │
+│                                                                              │
+│ 1. denoise.ts router + register in root.ts                                   │
+│ 2. truth-card.tsx (pure presentational)                                      │
+│ 3. results-skeleton.tsx (pure presentational)                                │
+│ 4. denoise-hero.tsx (integrates everything)                                  │
+│ 5. Rewrite page.tsx                                                          │
+│ 6. Update layout.tsx metadata                                                │
+│ 7. Add smooth scroll to globals.css                                          │
+│                                                                              │
+│ Verification                                                                 │
+│                                                                              │
+│ - pnpm run check — lint + typecheck must pass                                │
+│ - pnpm run dev — verify hero fills viewport exactly, input works, mock       │
+│ results render with animations                                               │
+│ - Test on different viewport sizes to confirm min-h-svh + flex centering     │
+│ works                                                                        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll implement the landing page following the plan. Let me start by reading
+  the key existing files to understand the current codebase structure.
+
+⏺ Read 6 files (ctrl+o to expand)
+
+⏺ Now let me check which shadcn components are available.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Let me check the existing shadcn component APIs I'll need.
+
+⏺ Read 7 files (ctrl+o to expand)
+
+⏺ Now let me check what Lucide icons are available (the Loader2 spinner we
+  need).
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Good, lucide-react is available. Now I have everything I need. Let me create
+  all the files. I'll start with the backend router and the presentational
+  components, then build up to the main hero component.
+
+⏺ Write(src/server/api/routers/denoise.ts)
+  ⎿  Wrote 104 lines to src/server/api/routers/denoise.ts
+       1 import { z } from "zod";
+       2 
+       3 import { createTRPCRouter, publicProcedure } from "@/server/api/
+         trpc";
+       4 
+       5 const categoryEnum = z.enum([
+       6   "fact",
+       7   "context",
+       8   "opinion",
+       9   "speculation",
+      10   "misleading",
+     … +94 lines (ctrl+o to expand)
+
+⏺ Write(src/app/_components/truth-card.tsx)
+  ⎿  Wrote 66 lines to src/app/_components/truth-card.tsx
+       1 "use client";
+       2 
+       3 import { Badge } from "@/components/ui/badge";
+       4 import { Card, CardContent, CardHeader, CardTitle } from "@/comp
+         onents/ui/card";
+       5 import type { DenoiseCategory, DenoiseElement } from "@/server/a
+         pi/routers/denoise";
+       6 
+       7 const categoryVariant: Record<
+       8   DenoiseCategory,
+       9   "default" | "secondary" | "outline" | "destructive"
+      10 > = {
+     … +56 lines (ctrl+o to expand)
+
+⏺ Write(src/app/_components/results-skeleton.tsx)
+  ⎿  Wrote 42 lines to src/app/_components/results-skeleton.tsx
+       1 "use client";
+       2 
+       3 import { Skeleton } from "@/components/ui/skeleton";
+       4 
+       5 export function ResultsSkeleton() {
+       6   return (
+       7     <div className="w-full max-w-2xl space-y-8">
+       8       {/* Signal score */}
+       9       <div className="space-y-3">
+      10         <div className="flex items-center gap-3">
+     … +32 lines (ctrl+o to expand)
+  ⎿  Found 1 new diagnostic issue in 1 file (ctrl+o to expand)
+
+⏺ Let me fix the lint issue with categoryEnum, then write the main hero
+  component, and update the remaining files.
+
+⏺ Update(src/server/api/routers/denoise.ts)
+  ⎿  Added 7 lines, removed 10 lines
+       2  
+       3  import { createTRPCRouter, publicProcedure } from "@/server/api
+          /trpc";
+       4  
+       5 -const categoryEnum = z.enum([                                  
+       6 -  "fact",                                                      
+       7 -  "context",                                                   
+       8 -  "opinion",                                                   
+       9 -  "speculation",                                               
+      10 -  "misleading",                                                
+      11 -  "unverifiable",                                              
+      12 -]);                                                            
+       5 +export type DenoiseCategory =                                  
+       6 +  | "fact"                                                     
+       7 +  | "context"                                                  
+       8 +  | "opinion"                                                  
+       9 +  | "speculation"                                              
+      10 +  | "misleading"                                               
+      11 +  | "unverifiable";                                            
+      12  
+      14 -export type DenoiseCategory = z.infer<typeof categoryEnum>;    
+      15 -                                                               
+      13  export interface DenoiseElement {
+      14    id: string;
+      15    claim: string;
+
+⏺ Now write the main hero component and update the remaining files.
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ For now, don't worry about the backend, just use placeholders since after 
+   we finish this frontend initial approach we will build it with AI sdk    
+  and some zod schemas, prisma, etc. Just focus on the powerful, impactful  
+  landing page with immediately actionable section first                    
+
+⏺ Got it — frontend only, mock data inline. Let me refactor what's been created
+  and build the rest.
+
+⏺ Update(src/app/_components/truth-card.tsx)
+  ⎿  Added 24 lines, removed 1 line
+       2  
+       3  import { Badge } from "@/components/ui/badge";
+       4  import { Card, CardContent, CardHeader, CardTitle } from "@/com
+          ponents/ui/card";
+       5 -import type { DenoiseCategory, DenoiseElement } from "@/server/
+         -api/routers/denoise";                                          
+       5  
+       6 +export type DenoiseCategory =                                  
+       7 +  | "fact"                                                     
+       8 +  | "context"                                                  
+       9 +  | "opinion"                                                  
+      10 +  | "speculation"                                              
+      11 +  | "misleading"                                               
+      12 +  | "unverifiable";                                            
+      13 +                                                               
+      14 +export interface DenoiseElement {                              
+      15 +  id: string;                                                  
+      16 +  claim: string;                                               
+      17 +  confidence: number;                                          
+      18 +  category: DenoiseCategory;                                   
+      19 +  explanation: string;                                         
+      20 +  source?: string;                                             
+      21 +}                                                              
+      22 +                                                               
+      23 +export interface DenoiseResult {                               
+      24 +  summary: string;                                             
+      25 +  signalScore: number;                                         
+      26 +  originalType: string;                                        
+      27 +  elements: DenoiseElement[];                                  
+      28 +}                                                              
+      29 +                                                               
+      30  const categoryVariant: Record<
+      31    DenoiseCategory,
+      32    "default" | "secondary" | "outline" | "destructive"
+
+⏺ Now delete the backend router since we're not using it, then write the hero
+  component, page, and remaining updates.
+
+⏺ Bash(rm /Users/vicentegonzalez/Documents/Github/denoise-it/src/server/api/rout
+      ers/denoise.ts)
+  ⎿  (No content)
+
+⏺ Write(src/app/_components/denoise-hero.tsx)
+  ⎿  Wrote 199 lines to src/app/_components/denoise-hero.tsx
+       1 "use client";
+       2 
+       3 import { useRef, useState, useTransition } from "react";
+       4 import { Loader2 } from "lucide-react";
+       5 
+       6 import { Badge } from "@/components/ui/badge";
+       7 import { Button } from "@/components/ui/button";
+       8 import { Card, CardContent } from "@/components/ui/card";
+       9 import { Progress } from "@/components/ui/progress";
+      10 import { Separator } from "@/components/ui/separator";
+     … +189 lines (ctrl+o to expand)
+
+⏺ Now update the page, layout, and globals.css.
+
+⏺ Write(src/app/page.tsx)
+  ⎿  Added 5 lines, removed 41 lines
+       1 -import Link from "next/link";                                  
+       1 +import { DenoiseHero } from "@/app/_components/denoise-hero";  
+       2  
+       3 -import { LatestPost } from "@/app/_components/post";           
+       4 -import { auth } from "@/server/auth";                          
+       5 -import { api, HydrateClient } from "@/trpc/server";            
+       6 -                                                               
+       7 -export default async function Home() {                         
+       8 -  const hello = await api.post.hello({ text: "from tRPC" });   
+       9 -  const session = await auth();                                
+      10 -                                                               
+      11 -  if (session?.user) {                                         
+      12 -    void api.post.getLatest.prefetch();                        
+      13 -  }                                                            
+      14 -                                                               
+       3 +export default function Home() {                               
+       4    return (
+      16 -    <HydrateClient>                                            
+      17 -      <main className="flex min-h-screen flex-col items-center 
+         -justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] tex
+         -t-white">                                                      
+      18 -        <div className="container flex flex-col items-center ju
+         -stify-center gap-12 px-4 py-16">                               
+      19 -          <h1 className="text-5xl font-extrabold tracking-tight
+         - sm:text-[5rem]">                                              
+      20 -            Denoise <span className="text-[hsl(280,100%,70%)]">
+         -It</span>                                                      
+      21 -          </h1>                                                
+      22 -          <div className="flex flex-col items-center gap-2">   
+      23 -            <p className="text-2xl text-white">                
+      24 -              {hello ? hello.greeting : "Loading tRPC query..."
+         -}                                                              
+      25 -            </p>                                               
+      26 -                                                               
+      27 -            <div className="flex flex-col items-center justify-
+         -center gap-4">                                                 
+      28 -              <p className="text-center text-2xl text-white">  
+      29 -                {session && <span>Logged in as {session.user?.n
+         -ame}</span>}                                                   
+      30 -              </p>                                             
+      31 -              <Link                                            
+      32 -                href={session ? "/api/auth/signout" : "/api/aut
+         -h/signin"}                                                     
+      33 -                className="rounded-full bg-white/10 px-10 py-3 
+         -font-semibold no-underline transition hover:bg-white/20"       
+      34 -              >                                                
+      35 -                {session ? "Sign out" : "Sign in"}             
+      36 -              </Link>                                          
+      37 -            </div>                                             
+      38 -          </div>                                               
+      39 -                                                               
+      40 -          {session?.user && <LatestPost />}                    
+      41 -        </div>                                                 
+      42 -      </main>                                                  
+      43 -    </HydrateClient>                                           
+       5 +    <main>                                                     
+       6 +      <DenoiseHero />                                          
+       7 +    </main>                                                    
+       8    );
+       9  }
+
+⏺ Update(src/app/layout.tsx)
+  ⎿  Added 1 line, removed 1 line
+       6  import { TRPCReactProvider } from "@/trpc/react";
+       7  
+       8  export const metadata: Metadata = {
+       9 -  title: "Denoise It",                                         
+       9 +  title: "Denoise It — Strip the noise. See what's real.",     
+      10    description: "Denoise It is a tool that helps extracting maxi
+          mum signal out of noise from concepts, news, and other sources.
+          ",
+      11    icons: [{ rel: "icon", url: "/favicon.ico" }],
+      12  };
+
+⏺ Update(src/styles/globals.css)
+  ⎿  Added 3 lines
+      120  }
+      121  
+      122  @layer base {
+      123 +  html {                                                      
+      124 +    scroll-behavior: smooth;                                  
+      125 +  }                                                           
+      126    * {
+      127      @apply border-border outline-ring/50;
+      128    }
+
+⏺ Now let me run the check to catch any lint/type issues.
+
+⏺ Bash(pnpm run check 2>&1)
+  ⎿  Error: Exit code 1
+
+     > denoise-it@0.1.0 check /Users/vicentegonzalez/Documents/Github/denoise-it
+     > next lint && tsc --noEmit
+
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+      ELIFECYCLE  Command failed with exit code 1.
+
+⏺ Lint command issue — let me check the Next.js config.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Bash(npx next lint --dir src 2>&1)
+  ⎿  Error: Exit code 1
+     npm warn Unknown project config "public-hoist-pattern". This will stop 
+     working in the next major version of npm.
+     error: unknown option '--dir'
+
+⏺ Next.js 16 changed the lint command. Let me check what's configured.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ The next lint issue is a Next.js 16 problem with the lint subcommand path
+  parsing. Let me run lint and typecheck separately to validate my code.
+
+⏺ Bash(pnpm exec next lint 2>&1)
+  ⎿  Error: Exit code 1
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+
+⏺ Bash(pnpm exec tsc --noEmit 2>&1)
+  ⎿  Error: Sibling tool call errored
+
+⏺ Bash(pnpm exec tsc --noEmit 2>&1)
+  ⎿  (No content)
+  ⎿  (timeout 1m)
+
+⏺ Bash(pnpm exec eslint src/ 2>&1)
+  ⎿  Error: Exit code 2
+
+     Oops! Something went wrong! :(
+
+     ESLint: 9.39.2
+
+     TypeError: Converting circular structure to JSON
+         --> starting at object with constructor 'Object'
+         |     property 'configs' -> object with constructor 'Object'
+         |     property 'flat' -> object with constructor 'Object'
+     … +14 lines (ctrl+o to see all)
+
+⏺ TypeScript passes clean. The ESLint issue is a pre-existing Next.js 16 /
+  eslintrc compat problem, not caused by my changes. Let me verify the build
+  works.
+
+⏺ Bash(pnpm run build 2>&1)
+  ⎿ > denoise-it@0.1.0 build /Users/vicentegonzalez/Documents/Github/denois
+    e-it
+    > next build
+    … +32 lines (ctrl+o to expand)
+
+  ⎿  (timeout 2m)
+
+⏺ Build passes cleanly. Let me verify the final state of all files.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Everything builds and typechecks cleanly. Here's what was done:
+
+  Created:
+  - src/app/_components/truth-card.tsx — Presentational card for each denoised
+  element with category badges
+  (fact/context/opinion/speculation/misleading/unverifiable), confidence
+  percentage, explanation, and optional source quote. Staggered fade-in
+  animation.
+  - src/app/_components/results-skeleton.tsx — Loading skeleton matching the
+  results layout shape.
+  - src/app/_components/denoise-hero.tsx — Main client component with
+  full-viewport hero (brand, tagline, textarea, button) and results section
+  (signal score + progress bar, summary card, separator, staggered truth cards).
+   Uses useTransition with a simulated 1.5–2.5s delay and mock data. Supports
+  Cmd/Ctrl+Enter to submit.
+
+  Modified:
+  - src/app/page.tsx — Stripped T3 template, now just renders <DenoiseHero />.
+  - src/app/layout.tsx — Updated title to "Denoise It — Strip the noise. See
+  what's real."
+  - src/styles/globals.css — Added scroll-behavior: smooth to html.
+
+  Skipped (per your request):
+  - No tRPC router or backend changes — mock data lives in the hero component,
+  ready to swap for real AI SDK calls later.
+
+✻ Baked for 2m 8s
+
+❯ Awesome! now, I think that if we for example paste some links, it would   
+  be nice that as a nice UI/UX, it loads previews in small boxed containers 
+   conveniently below, very small and subtle, but makes the difference      
+  because visually helps to see quickly what sources are passed (with like  
+  their favicon, etc)                                                       
+
+⏺ Nice UX touch. I'll add URL detection with small favicon+domain chips that
+  appear between the textarea and button.
+
+⏺ Write(src/app/_components/url-previews.tsx)
+  ⎿  Wrote 68 lines to src/app/_components/url-previews.tsx
+       1 "use client";
+       2 
+       3 import { useMemo } from "react";
+       4 import { X } from "lucide-react";
+       5 
+       6 const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
+       7 
+       8 function extractUrls(text: string): string[] {
+       9   const matches = text.match(URL_REGEX);
+      10   if (!matches) return [];
+     … +58 lines (ctrl+o to expand)
+
+⏺ Now integrate it into the hero, between the textarea and button.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 1 line
+      12  
+      13  import { ResultsSkeleton } from "./results-skeleton";
+      14  import { TruthCard, type DenoiseResult } from "./truth-card";
+      15 +import { UrlPreviews } from "./url-previews";                  
+      16  
+      17  const mockResult: DenoiseResult = {
+      18    summary:
+
+⏺ Now add the UrlPreviews component between the textarea and button, and wire up
+   the remove handler.
+
+⏺ Update(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 7 lines, removed 1 line
+      111              </p>
+      112            </div>
+      113  
+      114 -          <div className="flex w-full flex-col gap-4">        
+      114 +          <div className="flex w-full flex-col gap-3">        
+      115              <Textarea
+      116                placeholder="Paste a link, tweet, headline, arti
+           cle, claim, or rumor..."
+      117                className="min-h-[120px] resize-none"
+     ...
+      123                  }
+      124                }}
+      125              />
+      126 +            <UrlPreviews                                      
+      127 +              text={input}                                    
+      128 +              onRemove={(url) =>                              
+      129 +                setInput((prev) => prev.replace(url, "").repla
+          +ce(/\s{2,}/g, " ").trim())                                    
+      130 +              }                                               
+      131 +            />                                                
+      132              <Button
+      133                size="lg"
+      134                className="w-full"
+
+⏺ Bash(pnpm exec tsc --noEmit 2>&1)
+  ⎿  (No content)
+  ⎿  (timeout 1m)
+
+⏺ Clean typecheck. Here's what was added:
+
+  src/app/_components/url-previews.tsx — Detects URLs in the textarea input with
+   a regex, dedupes them, and renders small subtle chips below the textarea.
+  Each chip shows:
+  - A 14px favicon via Google's favicon service
+  - The cleaned domain name (truncated at 180px)
+  - A tiny X button that removes the URL from the input text
+
+  Chips animate in with a quick fade-in + zoom-in (150ms). The whole row only
+  renders when URLs are present. Clicking X strips the URL from the textarea and
+   collapses extra whitespace.
+
+✻ Worked for 48s
+
+❯ Awesome!, and I think it would be awesome a small title with ellipsis     
+  based on the metatags, etc., because it helps to distinguish if we add    
+  more than one tweet, or more than a link from one source                  
+  ⎿  [Image #1]
+
+⏺ I'll add a lightweight API route to fetch page titles from meta tags, then
+  update the URL chips to show them.
+
+⏺ Write(src/app/api/og/route.ts)
+  ⎿  Wrote 88 lines to src/app/api/og/route.ts
+       1 import { type NextRequest, NextResponse } from "next/server";
+       2 
+       3 export async function GET(req: NextRequest) {
+       4   const url = req.nextUrl.searchParams.get("url");
+       5   if (!url) {
+       6     return NextResponse.json({ title: null }, { status: 400 });
+       7   }
+       8 
+       9   try {
+      10     new URL(url); // validate
+     … +78 lines (ctrl+o to expand)
+
+⏺ Now update the URL previews component to fetch and display titles.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(src/app/_components/url-previews.tsx)
+  ⎿  Added 40 lines, removed 4 lines
+      1  "use client";
+      2  
+      3 -import { useMemo } from "react";                                
+      3 +import { useEffect, useMemo, useRef, useState } from "react";   
+      4  import { X } from "lucide-react";
+      5  
+      6  const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
+     ...
+       8  function extractUrls(text: string): string[] {
+       9    const matches = text.match(URL_REGEX);
+      10    if (!matches) return [];
+      11 -  // Dedupe, preserve order                                    
+      11    return [...new Set(matches)];
+      12  }
+      13  
+     ...
+      19    }
+      20  }
+      21  
+      22 +function useUrlTitles(urls: string[]) {                        
+      23 +  const [titles, setTitles] = useState<Record<string, string | 
+         +null>>({});                                                    
+      24 +  const cacheRef = useRef<Record<string, string | null>>({});  
+      25 +                                                               
+      26 +  useEffect(() => {                                            
+      27 +    for (const url of urls) {                                  
+      28 +      if (url in cacheRef.current) continue;                   
+      29 +      // Mark as in-flight                                     
+      30 +      cacheRef.current[url] = null;                            
+      31 +                                                               
+      32 +      fetch(`/api/og?url=${encodeURIComponent(url)}`)          
+      33 +        .then((res) => res.json() as Promise<{ title: string | 
+         +null }>)                                                       
+      34 +        .then(({ title }) => {                                 
+      35 +          cacheRef.current[url] = title;                       
+      36 +          setTitles((prev) => ({ ...prev, [url]: title }));    
+      37 +        })                                                     
+      38 +        .catch(() => {                                         
+      39 +          cacheRef.current[url] = null;                        
+      40 +        });                                                    
+      41 +    }                                                          
+      42 +  }, [urls]);                                                  
+      43 +                                                               
+      44 +  return titles;                                               
+      45 +}                                                              
+      46 +                                                               
+      47  export function UrlPreviews({
+      48    text,
+      49    onRemove,
+     ...
+      52    onRemove?: (url: string) => void;
+      53  }) {
+      54    const urls = useMemo(() => extractUrls(text), [text]);
+      55 +  const titles = useUrlTitles(urls);                           
+      56  
+      57    if (urls.length === 0) return null;
+      58  
+     ...
+      60      <div className="flex flex-wrap gap-2">
+      61        {urls.map((url) => {
+      62          const domain = getDomain(url);
+      63 +        const title = titles[url];                             
+      64          return (
+      65            <span
+      66              key={url}
+      41 -            className="animate-in fade-in-0 zoom-in-95 inline-f
+         -lex items-center gap-1.5 rounded-md border bg-secondary/50 px-2
+         - py-1 text-xs text-muted-foreground transition-colors hover:bg-
+         -secondary"                                                     
+      67 +            className="animate-in fade-in-0 zoom-in-95 inline-f
+         +lex max-w-[280px] items-center gap-1.5 rounded-md border bg-sec
+         +ondary/50 px-2 py-1 text-xs text-muted-foreground transition-co
+         +lors hover:bg-secondary"                                       
+      68              style={{ animationDuration: "150ms" }}
+      69            >
+      70              {/* eslint-disable-next-line @next/next/no-img-elem
+          ent */}
+     ...
+      75                height={14}
+      76                className="shrink-0 rounded-sm"
+      77              />
+      52 -            <span className="max-w-[180px] truncate">{domain}</
+         -span>                                                          
+      78 +            <span className="truncate">                        
+      79 +              {title ? (                                       
+      80 +                <>                                             
+      81 +                  <span className="text-foreground/70">{title}<
+         +/span>                                                         
+      82 +                  <span className="mx-1 text-muted-foreground/4
+         +0">·</span>                                                    
+      83 +                  <span>{domain}</span>                        
+      84 +                </>                                            
+      85 +              ) : (                                            
+      86 +                domain                                         
+      87 +              )}                                               
+      88 +            </span>                                            
+      89              {onRemove && (
+      90                <button
+      91                  type="button"
+
+⏺ Bash(pnpm exec tsc --noEmit 2>&1)
+  ⎿  (No content)
+  ⎿  (timeout 1m)
+
+⏺ Clean. Here's what changed:
+
+  src/app/api/og/route.ts (new) — Lightweight GET endpoint that takes a ?url=
+  param, fetches only the first 16KB of HTML (enough for <head>), and extracts
+  og:title or <title>. Returns { title } with a 24h cache header. 4s timeout,
+  validates URLs, streams only what's needed.
+
+  src/app/_components/url-previews.tsx (updated) — Added a useUrlTitles hook
+  that lazily fetches titles for detected URLs via the /api/og endpoint, with an
+   in-memory ref cache so each URL is only fetched once. Each chip now shows:
+
+  - With title: favicon | Title · domain | X (e.g. 🐦 Sophie on X · x.com ✕)
+  - Without title (loading/failed): favicon | domain | X (same as before)
+
+  The title text uses slightly stronger text-foreground/70 to stand out from the
+   muted domain, separated by a subtle · divider. The whole chip truncates with
+  ellipsis at max-w-[280px].
+
+✻ Cogitated for 1m 4s
+
+❯ great, make sure they're clickable, or expandable, whatever feels more    
+  convenient in terms of UI/UX XP                                           
+
+⏺ Simplest and most intuitive: make the whole chip a clickable link (opens in
+  new tab), keep the X for removal with stopPropagation. Native title tooltip
+  shows the full URL on hover.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/url-previews.tsx)
+  ⎿  Added 1 line, removed 1 line
+      1  "use client";
+      2  
+      3  import { useEffect, useMemo, useRef, useState } from "react";
+      4 -import { X } from "lucide-react";                               
+      4 +import { ExternalLink, X } from "lucide-react";                 
+      5  
+      6  const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
+      7  
+
+⏺ Update(src/app/_components/url-previews.tsx)
+  ⎿  Added 14 lines, removed 5 lines
+      62          const domain = getDomain(url);
+      63          const title = titles[url];
+      64          return (
+      65 -          <span                                                
+      65 +          <a                                                   
+      66              key={url}
+      67 -            className="animate-in fade-in-0 zoom-in-95 inline-f
+         -lex max-w-[280px] items-center gap-1.5 rounded-md border bg-sec
+         -ondary/50 px-2 py-1 text-xs text-muted-foreground transition-co
+         -lors hover:bg-secondary"                                       
+      67 +            href={url}                                         
+      68 +            target="_blank"                                    
+      69 +            rel="noopener noreferrer"                          
+      70 +            title={url}                                        
+      71 +            className="animate-in fade-in-0 zoom-in-95 group in
+         +line-flex max-w-[300px] cursor-pointer items-center gap-1.5 rou
+         +nded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-for
+         +eground no-underline transition-colors hover:bg-secondary hover
+         +:text-foreground"                                              
+      72              style={{ animationDuration: "150ms" }}
+      73            >
+      74              {/* eslint-disable-next-line @next/next/no-img-elem
+          ent */}
+     ...
+      82              <span className="truncate">
+      83                {title ? (
+      84                  <>
+      81 -                  <span className="text-foreground/70">{title}<
+         -/span>                                                         
+      85 +                  <span className="text-foreground/70 group-hov
+         +er:text-foreground">{title}</span>                             
+      86                    <span className="mx-1 text-muted-foreground/4
+          0">·</span>
+      87                    <span>{domain}</span>
+      88                  </>
+     ...
+       90                  domain
+       91                )}
+       92              </span>
+       93 +            <ExternalLink className="size-3 shrink-0 opacity-0
+          + transition-opacity group-hover:opacity-50" />                
+       94              {onRemove && (
+       95                <button
+       96                  type="button"
+       92 -                onClick={() => onRemove(url)}                 
+       97 +                onClick={(e) => {                             
+       98 +                  e.preventDefault();                         
+       99 +                  e.stopPropagation();                        
+      100 +                  onRemove(url);                              
+      101 +                }}                                            
+      102                  className="shrink-0 rounded-sm opacity-50 tran
+           sition-opacity hover:opacity-100"
+      103                >
+      104                  <X className="size-3" />
+      105                </button>
+      106              )}
+       98 -          </span>                                             
+      107 +          </a>                                                
+      108          );
+      109        })}
+      110      </div>
+
+⏺ Bash(pnpm exec tsc --noEmit 2>&1)
+  ⎿  (No content)
+  ⎿  (timeout 1m)
+
+⏺ Clean. Here's what changed:
+
+  - Chip is now an <a> tag — clicking anywhere on it opens the URL in a new tab
+  (target="_blank")
+  - Native title tooltip — hovering shows the full raw URL, useful for
+  long/ambiguous links
+  - External link icon — a small ExternalLink arrow appears on hover (opacity-0 
+  → opacity-50) so the user knows it's clickable without cluttering the default
+  state
+  - X button preserved — preventDefault + stopPropagation on the X so clicking
+  it removes the URL without triggering navigation
+  - Group hover — the title text brightens on hover (text-foreground/70 → 
+  text-foreground) along with the chip background, giving clear interactive
+  feedback
+
+✻ Brewed for 45s
+
+❯ Awesome, so let's commit what we've done so far in the front end,         
+  remember, by group concept and conventional commits                       
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it status)
+  ⎿  On branch main
+     Your branch is up to date with 'origin/main'.
+     … +16 lines (ctrl+o to expand)
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it diff --stat)
+  ⎿  src/app/layout.tsx     |  2 +-
+     src/app/page.tsx       | 46 +++++-------------------------------------
+    ----
+    … +2 lines (ctrl+o to expand)
+
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it log --oneline
+      -10)
+  ⎿  834e2bb feat: init claude md
+     fde9115 fix: comment out unused Discord OAuth env validation
+     36d1f13 chore: regenerate Prisma client
+     … +3 lines (ctrl+o to expand)
+
+⏺ I'll group into 3 commits:
+
+  1. Landing page core — hero, truth cards, skeleton, page rewrite, layout
+  metadata, smooth scroll
+  2. URL preview chips — url-previews component + integration in hero
+  3. OG title fetching — API route for meta tag extraction
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it add
+      src/app/_components/truth-card.tsx
+      src/app/_components/results-skeleton.tsx src/app/_components/de…)
+  ⎿  (No content)
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it commit -m
+      "feat: add landing page with denoise hero, truth cards, and results view…)
+  ⎿ [main d6696af] feat: add landing page with denoise hero, truth cards, a
+    nd results view
+     6 files changed, 347 insertions(+), 46 deletions(-)
+    … +4 lines (ctrl+o to expand)
+
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it add
+      src/app/_components/url-previews.tsx)
+  ⎿  (No content)
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it commit -m
+      "feat: add URL preview chips with favicon, title, and inline removal…)
+  ⎿ [main 3a7d8c6] feat: add URL preview chips with favicon, title, and inl
+    ine removal
+     1 file changed, 112 insertions(+)
+     create mode 100644 src/app/_components/url-previews.tsx
+
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it add
+      src/app/api/og/route.ts)
+  ⎿  (No content)
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it commit -m
+      "feat: add /api/og endpoint for URL meta tag extraction…)
+  ⎿  [main 7a5d7a9] feat: add /api/og endpoint for URL meta tag extraction
+      1 file changed, 87 insertions(+)
+      create mode 100644 src/app/api/og/route.ts
+
+⏺ Bash(git -C /Users/vicentegonzalez/Documents/Github/denoise-it status && echo
+      "---" && git -C /Users/vicentegonzalez/Documents/Github/denoise-it log
+      --oneline -5)
+  ⎿  On branch main
+     Your branch is ahead of 'origin/main' by 3 commits.
+       (use "git push" to publish your local commits)
+     … +10 lines (ctrl+o to expand)
+
+⏺ All clean. Three commits, grouped by concept:
+
+  1. d6696af feat: add landing page with denoise hero, truth cards, and results 
+  view — core landing page (hero, truth cards, skeleton, page rewrite, metadata,
+   smooth scroll)
+  2. 3a7d8c6 feat: add URL preview chips with favicon, title, and inline removal
+   — URL detection + clickable chips component
+  3. 7a5d7a9 feat: add /api/og endpoint for URL meta tag extraction —
+  server-side title fetching for the chips
+
+✻ Cooked for 49s
