@@ -5,6 +5,7 @@ import { api, HydrateClient } from "@/trpc/server";
 import { SignalView } from "@/app/_components/signal-view";
 import { buildSignalMetadata } from "@/lib/metadata";
 import { getDomain } from "@/lib/utils";
+import { waitForAnalysis } from "@/server/wait-for-analysis";
 
 interface LinkPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -24,11 +25,11 @@ export async function generateMetadata({
 
   const domain = getDomain(url);
   const { id } = await api.analysis.findOrCreateByUrl({ url });
-  const signal = await api.analysis.get({ id });
+  const { data } = await waitForAnalysis(String(id));
 
   return buildSignalMetadata(
     String(id),
-    signal.data,
+    data,
     `Denoising ${domain}...`,
     `Analysis of ${domain} in progress.`,
   );

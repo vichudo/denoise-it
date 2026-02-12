@@ -3,7 +3,8 @@ import { type NextRequest } from "next/server";
 
 import { db } from "@/server/db";
 import { verdictHexColor, verdictLabel } from "@/lib/schemas/analysis";
-import { getDomain, parseSignalData } from "@/lib/utils";
+import { getDomain } from "@/lib/utils";
+import { waitForAnalysis } from "@/server/wait-for-analysis";
 
 export const runtime = "nodejs";
 
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
     return new Response("Not found", { status: 404 });
   }
 
-  const { data } = parseSignalData(signal.data);
+  const { data } = await waitForAnalysis(id);
   const domain = signal.sourceUrl ? getDomain(String(signal.sourceUrl)) : null;
 
   const [interRegular, interBold] = await Promise.all([

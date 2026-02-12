@@ -12,9 +12,7 @@ const openrouter = createOpenRouter({
   apiKey: env.OPENROUTER_API_KEY,
 });
 
-const agent = new ToolLoopAgent({
-  model: openrouter.chat("x-ai/grok-4.1-fast:online"),
-  instructions: `You are a precision fact-checking agent. Your job: separate SIGNAL from NOISE in any content.
+const ANALYSIS_INSTRUCTIONS = `You are a precision fact-checking agent. Your job: separate SIGNAL from NOISE in any content.
 
 SIGNAL = independently verifiable, objective units of information. Each signal element must stand alone as a factual statement with all emotional, narrative, and rhetorical framing removed.
 
@@ -47,17 +45,34 @@ NOISE = everything that distorts signal — emotional language, bias, narrative 
 
 6. SIGNAL SCORE: Compute 0-100 ratio of verified signal to total content.
 
-Be rigorous. Commit to assessments. Never hedge when evidence is clear.`,
-  output: Output.object({
-    schema: analysisResultSchema,
-  }),
+Be rigorous. Commit to assessments. Never hedge when evidence is clear.`;
+
+const analysisOutput = Output.object({ schema: analysisResultSchema });
+
+/** Default agent — thorough analysis for text input */
+const agent = new ToolLoopAgent({
+  model: openrouter.chat("x-ai/grok-4.1-fast:online"),
+  instructions: ANALYSIS_INSTRUCTIONS,
+  output: analysisOutput,
   stopWhen: stepCountIs(3),
 });
 
+/** Fast agent — optimized for link mode where crawlers are waiting */
+const fastAgent = new ToolLoopAgent({
+  model: openrouter.chat("google/gemini-2.5-flash:online"),
+  instructions: ANALYSIS_INSTRUCTIONS,
+  output: analysisOutput,
+  stopWhen: stepCountIs(2),
+});
+
 /** Fire-and-forget background generation */
-async function generateAnalysis(id: string, content: string) {
+async function generateAnalysis(
+  id: string,
+  content: string,
+  useAgent: typeof agent = agent,
+) {
   try {
-    const result = await agent.generate({ prompt: content });
+    const result = await useAgent.generate({ prompt: content });
     await db.signal.update({
       where: { id },
       data: { data: JSON.parse(JSON.stringify(result.output)) },
@@ -114,7 +129,7 @@ export const analysisRouter = createTRPCRouter({
           },
         });
 
-        void generateAnalysis(String(signal.id), input.url);
+        void generateAnalysis(String(signal.id), input.url, fastAgent);
 
         return { id: signal.id };
       } catch (e) {
