@@ -3,20 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLink, X } from "lucide-react";
 
+import { getDomain } from "@/lib/utils";
+
 const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
 
 function extractUrls(text: string): string[] {
   const matches = text.match(URL_REGEX);
   if (!matches) return [];
   return [...new Set(matches)];
-}
-
-function getDomain(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
 }
 
 function useUrlTitles(urls: string[]) {
