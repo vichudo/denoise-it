@@ -15,6 +15,28 @@ export const verdictSchema = z.enum([
 
 export type Verdict = z.infer<typeof verdictSchema>;
 
+export const verdictLabel: Record<Verdict, string> = {
+  true: "TRUE",
+  mostly_true: "MOSTLY TRUE",
+  mixed: "MIXED",
+  mostly_false: "MOSTLY FALSE",
+  false: "FALSE",
+  misleading: "MISLEADING",
+  satire: "SATIRE",
+  unverifiable: "UNVERIFIABLE",
+};
+
+export const verdictHexColor: Record<Verdict, string> = {
+  true: "#34d399",
+  mostly_true: "#6ee7b7",
+  mixed: "#fbbf24",
+  mostly_false: "#fb923c",
+  false: "#f87171",
+  misleading: "#fb923c",
+  satire: "#a78bfa",
+  unverifiable: "#9ca3af",
+};
+
 /* ── Signal (pure truth elements) ─────────────────────────── */
 
 export const signalCategorySchema = z.enum([

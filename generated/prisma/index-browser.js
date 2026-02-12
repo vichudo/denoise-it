@@ -126,6 +126,7 @@ exports.Prisma.SignalScalarFieldEnum = {
   title: 'title',
   prompt: 'prompt',
   data: 'data',
+  sourceUrl: 'sourceUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
