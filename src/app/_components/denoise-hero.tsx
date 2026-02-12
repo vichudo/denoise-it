@@ -40,7 +40,7 @@ export function DenoiseHero() {
 
         <div className="flex w-full flex-col gap-3">
           <Textarea
-            placeholder="Paste a link, tweet, headline, article, claim, or rumor..."
+            placeholder="Paste a link, tweet, headline, article, claim, a question, or rumor..."
             className="min-h-[120px] resize-none"
             value={input}
             onChange={(e) => setInput(e.target.value)}
