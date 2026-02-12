@@ -13,7 +13,10 @@ import {
   Signal,
   Volume2,
   ArrowLeft,
+  ExternalLink,
 } from "lucide-react";
+
+import { getDomain } from "@/lib/utils";
 
 import type { Verdict, AnalysisResult } from "@/lib/schemas/analysis";
 import { Button } from "@/components/ui/button";
@@ -218,7 +221,7 @@ function Results({ result }: { result: AnalysisResult }) {
 
 /* ── Main Component ───────────────────────────────────────── */
 
-export function SignalView({ id }: { id: string }) {
+export function SignalView({ id, sourceUrl }: { id: string; sourceUrl?: string }) {
   const { data, error } = api.analysis.get.useQuery(
     { id },
     {
@@ -232,13 +235,32 @@ export function SignalView({ id }: { id: string }) {
   return (
     <div className="flex flex-col items-center px-4 py-12">
       {/* Header */}
-      <div className="mb-10 w-full max-w-2xl">
+      <div className="mb-10 w-full max-w-2xl space-y-3">
         <Link href="/">
           <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
             <ArrowLeft className="size-3.5" />
             New analysis
           </Button>
         </Link>
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 rounded-lg border bg-secondary/30 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${getDomain(sourceUrl)}&sz=32`}
+              alt=""
+              width={16}
+              height={16}
+              className="size-4 rounded-sm"
+            />
+            <span className="truncate">{sourceUrl}</span>
+            <ExternalLink className="ml-auto size-3.5 shrink-0 opacity-40" />
+          </a>
+        )}
       </div>
 
       {/* Content */}

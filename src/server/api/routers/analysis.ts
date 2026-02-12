@@ -2,7 +2,8 @@ import { ToolLoopAgent, Output, stepCountIs } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { z } from "zod";
 
-import { type AnalysisResult, analysisResultSchema } from "@/lib/schemas/analysis";
+import { analysisResultSchema } from "@/lib/schemas/analysis";
+import { parseSignalData } from "@/lib/utils";
 import { env } from "@/env";
 import { db } from "@/server/db";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
@@ -94,6 +95,45 @@ export const analysisRouter = createTRPCRouter({
       return { id: signal.id };
     }),
 
+  /** Idempotent: find existing signal by URL or create + start generation. */
+  findOrCreateByUrl: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .query(async ({ ctx, input }) => {
+      const existing = await ctx.db.signal.findUnique({
+        where: { sourceUrl: input.url },
+      });
+
+      if (existing) return { id: existing.id };
+
+      try {
+        const signal = await ctx.db.signal.create({
+          data: {
+            title: input.url,
+            prompt: input.url,
+            sourceUrl: input.url,
+          },
+        });
+
+        void generateAnalysis(String(signal.id), input.url);
+
+        return { id: signal.id };
+      } catch (e) {
+        // Race condition: another request created it first
+        if (
+          typeof e === "object" &&
+          e !== null &&
+          "code" in e &&
+          (e as { code: string }).code === "P2002"
+        ) {
+          const signal = await ctx.db.signal.findUniqueOrThrow({
+            where: { sourceUrl: input.url },
+          });
+          return { id: signal.id };
+        }
+        throw e;
+      }
+    }),
+
   /** Get a signal by ID. Returns null data while still generating. */
   get: publicProcedure
     .input(z.object({ id: z.string() }))
@@ -102,16 +142,15 @@ export const analysisRouter = createTRPCRouter({
         where: { id: input.id },
       });
 
-      const raw = signal.data as Record<string, unknown> | null;
-      const hasError = raw !== null && typeof raw === "object" && "error" in raw;
+      const { data, error } = parseSignalData(signal.data);
 
       return {
         id: signal.id,
         title: signal.title,
         prompt: signal.prompt,
         createdAt: signal.createdAt,
-        data: hasError ? null : (raw as AnalysisResult | null),
-        error: hasError ? String(raw.error) : null,
+        data,
+        error,
       };
     }),
 });
