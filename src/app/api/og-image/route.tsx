@@ -110,8 +110,8 @@ export async function GET(req: NextRequest) {
   const verdictColor = verdictHexColor[data.verdict];
   const verdict = verdictLabel[data.verdict];
   const summary =
-    data.summary.length > 240
-      ? data.summary.slice(0, 237) + "..."
+    data.summary.length > 200
+      ? data.summary.slice(0, 197) + "..."
       : data.summary;
   const scorePercent = data.signalScore;
 
@@ -203,10 +203,10 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             display: "flex",
-            fontSize: 19,
-            color: "#71717a",
-            lineHeight: 1.55,
-            maxWidth: 920,
+            fontSize: 24,
+            color: "#a1a1aa",
+            lineHeight: 1.5,
+            maxWidth: 960,
           }}
         >
           {summary}
