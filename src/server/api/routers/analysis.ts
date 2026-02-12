@@ -59,7 +59,7 @@ const agent = new ToolLoopAgent({
 
 /** Fast agent — optimized for link mode where crawlers are waiting */
 const fastAgent = new ToolLoopAgent({
-  model: openrouter.chat("google/gemini-2.5-flash:online"),
+  model: openrouter.chat("x-ai/grok-4.1-fast:online"),
   instructions: ANALYSIS_INSTRUCTIONS,
   output: analysisOutput,
   stopWhen: stepCountIs(2),
