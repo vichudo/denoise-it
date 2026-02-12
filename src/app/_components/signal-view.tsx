@@ -8,13 +8,16 @@ import {
   AlertTriangle,
   HelpCircle,
   Laugh,
-  Loader2,
   Scale,
   Signal,
   Volume2,
   ArrowLeft,
   ExternalLink,
+  Check,
+  Copy,
+  Bookmark,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { getDomain } from "@/lib/utils";
 
@@ -27,6 +30,7 @@ import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
 import { NoiseCard } from "./noise-card";
 import { ResultsSkeleton } from "./results-skeleton";
 import { SignalCard } from "./truth-card";
+import { WaveformAnimation } from "./waveform-animation";
 
 /* ── Verdict config ───────────────────────────────────────── */
 
@@ -86,8 +90,14 @@ const verdictConfig: Record<
 
 /* ── Analyzing state ──────────────────────────────────────── */
 
-function AnalyzingState() {
+function AnalyzingState({ id }: { id: string }) {
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const signalUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/s/${id}`
+      : `/s/${id}`;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,25 +106,72 @@ function AnalyzingState() {
     return () => clearInterval(interval);
   }, []);
 
+  function handleCopy() {
+    void navigator.clipboard.writeText(signalUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center gap-6 py-32">
-      <div className="flex size-16 items-center justify-center rounded-full bg-secondary">
-        <Loader2 className="size-7 animate-spin text-muted-foreground" />
-      </div>
-      <div className="text-center">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.3 }}
+      className="flex w-full max-w-md flex-col items-center justify-center gap-8 py-24"
+    >
+      <WaveformAnimation />
+
+      <div className="flex flex-col items-center gap-2 text-center">
         <h2 className="text-lg font-semibold">Denoising...</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {ANALYZING_PHRASES[phraseIndex]}
-        </p>
+        <div className="h-5">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={phraseIndex}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+              className="text-muted-foreground text-sm"
+            >
+              {ANALYZING_PHRASES[phraseIndex]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+
+      {/* Shareable URL */}
+      <div className="bg-secondary/50 flex w-full items-center gap-2 rounded-lg border px-3 py-2">
+        <span className="text-muted-foreground min-w-0 flex-1 truncate font-mono text-xs">
+          {signalUrl}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7 shrink-0"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <Check className="size-3.5 text-emerald-600" />
+          ) : (
+            <Copy className="size-3.5" />
+          )}
+        </Button>
+      </div>
+
+      <p className="text-muted-foreground/60 flex items-center gap-1.5 text-xs">
+        <Bookmark className="size-3" />
+        Bookmark this page to check back later
+      </p>
+    </motion.div>
   );
 }
 
 /* ── Verdict Banner ───────────────────────────────────────── */
 
 function VerdictBanner({ result }: { result: AnalysisResult }) {
-  const isDefinitive = result.verdict !== "mixed" && result.verdict !== "unverifiable";
+  const isDefinitive =
+    result.verdict !== "mixed" && result.verdict !== "unverifiable";
   if (!isDefinitive) return null;
 
   const config = verdictConfig[result.verdict];
@@ -151,12 +208,12 @@ function SectionHeader({
         className={`size-3.5 ${muted ? "text-muted-foreground/40" : "text-muted-foreground/60"}`}
       />
       <span
-        className={`text-xs font-medium uppercase tracking-widest ${muted ? "text-muted-foreground/40" : "text-muted-foreground"}`}
+        className={`text-xs font-medium tracking-widest uppercase ${muted ? "text-muted-foreground/40" : "text-muted-foreground"}`}
       >
         {label}
       </span>
       {count !== undefined && (
-        <span className="font-mono text-[10px] text-muted-foreground/40">
+        <span className="text-muted-foreground/40 font-mono text-[10px]">
           {count}
         </span>
       )}
@@ -175,14 +232,14 @@ function Results({ result }: { result: AnalysisResult }) {
       {/* 2. Abstract */}
       <div className="space-y-3">
         <div className="flex items-baseline justify-between">
-          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+          <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Analysis
           </span>
-          <span className="font-mono text-[11px] tabular-nums text-muted-foreground/60">
+          <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
             {result.signalScore}/100 signal &middot; {result.contentType}
           </span>
         </div>
-        <p className="text-[13px] leading-relaxed text-foreground/80">
+        <p className="text-foreground/80 text-[13px] leading-relaxed">
           {result.summary}
         </p>
       </div>
@@ -192,7 +249,11 @@ function Results({ result }: { result: AnalysisResult }) {
       {/* 3. Signal */}
       {result.signals.length > 0 && (
         <div className="space-y-3">
-          <SectionHeader icon={Signal} label="Signal" count={result.signals.length} />
+          <SectionHeader
+            icon={Signal}
+            label="Signal"
+            count={result.signals.length}
+          />
           <div className="space-y-2">
             {result.signals.map((signal, index) => (
               <SignalCard key={index} signal={signal} index={index} />
@@ -206,7 +267,12 @@ function Results({ result }: { result: AnalysisResult }) {
         <>
           <Separator className="opacity-30" />
           <div className="space-y-3">
-            <SectionHeader icon={Volume2} label="Noise Removed" count={result.noise.length} muted />
+            <SectionHeader
+              icon={Volume2}
+              label="Noise Removed"
+              count={result.noise.length}
+              muted
+            />
             <div className="space-y-2">
               {result.noise.map((item, index) => (
                 <NoiseCard key={index} noise={item} index={index} />
@@ -221,7 +287,13 @@ function Results({ result }: { result: AnalysisResult }) {
 
 /* ── Main Component ───────────────────────────────────────── */
 
-export function SignalView({ id, sourceUrl }: { id: string; sourceUrl?: string }) {
+export function SignalView({
+  id,
+  sourceUrl,
+}: {
+  id: string;
+  sourceUrl?: string;
+}) {
   const { data, error } = api.analysis.get.useQuery(
     { id },
     {
@@ -237,7 +309,11 @@ export function SignalView({ id, sourceUrl }: { id: string; sourceUrl?: string }
       {/* Header */}
       <div className="mb-10 w-full max-w-2xl space-y-3">
         <Link href="/">
-          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground gap-1.5"
+          >
             <ArrowLeft className="size-3.5" />
             New analysis
           </Button>
@@ -247,7 +323,7 @@ export function SignalView({ id, sourceUrl }: { id: string; sourceUrl?: string }
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 rounded-lg border bg-secondary/30 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="bg-secondary/30 text-muted-foreground hover:text-foreground flex items-center gap-2.5 rounded-lg border px-3.5 py-2 text-sm transition-colors"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -264,24 +340,56 @@ export function SignalView({ id, sourceUrl }: { id: string; sourceUrl?: string }
       </div>
 
       {/* Content */}
-      {error ? (
-        <div className="py-32 text-center">
-          <p className="text-sm text-destructive">Analysis not found.</p>
-        </div>
-      ) : !data ? (
-        <ResultsSkeleton />
-      ) : data.error ? (
-        <div className="py-32 text-center">
-          <p className="text-sm text-destructive">{data.error}</p>
-          <Link href="/" className="mt-4 inline-block">
-            <Button variant="outline" size="sm">Try again</Button>
-          </Link>
-        </div>
-      ) : data.data ? (
-        <Results result={data.data} />
-      ) : (
-        <AnalyzingState />
-      )}
+      <AnimatePresence mode="wait">
+        {error ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="py-32 text-center"
+          >
+            <p className="text-destructive text-sm">Analysis not found.</p>
+          </motion.div>
+        ) : !data ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ResultsSkeleton />
+          </motion.div>
+        ) : data.error ? (
+          <motion.div
+            key="data-error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="py-32 text-center"
+          >
+            <p className="text-destructive text-sm">{data.error}</p>
+            <Link href="/" className="mt-4 inline-block">
+              <Button variant="outline" size="sm">
+                Try again
+              </Button>
+            </Link>
+          </motion.div>
+        ) : data.data ? (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex w-full flex-col items-center"
+          >
+            <Results result={data.data} />
+          </motion.div>
+        ) : (
+          <AnalyzingState key="analyzing" id={id} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
