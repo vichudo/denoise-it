@@ -38,6 +38,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  * 
  */
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
+/**
+ * Model FollowUps
+ * 
+ */
+export type FollowUps = $Result.DefaultSelection<Prisma.$FollowUpsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -206,6 +211,16 @@ export class PrismaClient<
     * ```
     */
   get verificationToken(): Prisma.VerificationTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.followUps`: Exposes CRUD operations for the **FollowUps** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FollowUps
+    * const followUps = await prisma.followUps.findMany()
+    * ```
+    */
+  get followUps(): Prisma.FollowUpsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -651,7 +666,8 @@ export namespace Prisma {
     Account: 'Account',
     Session: 'Session',
     User: 'User',
-    VerificationToken: 'VerificationToken'
+    VerificationToken: 'VerificationToken',
+    FollowUps: 'FollowUps'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -670,7 +686,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "signal" | "account" | "session" | "user" | "verificationToken"
+      modelProps: "signal" | "account" | "session" | "user" | "verificationToken" | "followUps"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1044,6 +1060,80 @@ export namespace Prisma {
           }
         }
       }
+      FollowUps: {
+        payload: Prisma.$FollowUpsPayload<ExtArgs>
+        fields: Prisma.FollowUpsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FollowUpsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FollowUpsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          findFirst: {
+            args: Prisma.FollowUpsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FollowUpsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          findMany: {
+            args: Prisma.FollowUpsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>[]
+          }
+          create: {
+            args: Prisma.FollowUpsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          createMany: {
+            args: Prisma.FollowUpsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FollowUpsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>[]
+          }
+          delete: {
+            args: Prisma.FollowUpsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          update: {
+            args: Prisma.FollowUpsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          deleteMany: {
+            args: Prisma.FollowUpsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FollowUpsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FollowUpsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>[]
+          }
+          upsert: {
+            args: Prisma.FollowUpsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FollowUpsPayload>
+          }
+          aggregate: {
+            args: Prisma.FollowUpsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFollowUps>
+          }
+          groupBy: {
+            args: Prisma.FollowUpsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FollowUpsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FollowUpsCountArgs<ExtArgs>
+            result: $Utils.Optional<FollowUpsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1145,6 +1235,7 @@ export namespace Prisma {
     session?: SessionOmit
     user?: UserOmit
     verificationToken?: VerificationTokenOmit
+    followUps?: FollowUpsOmit
   }
 
   /* Types for Logging */
@@ -1221,6 +1312,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type SignalCountOutputType
+   */
+
+  export type SignalCountOutputType = {
+    followUps: number
+  }
+
+  export type SignalCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    followUps?: boolean | SignalCountOutputTypeCountFollowUpsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SignalCountOutputType without action
+   */
+  export type SignalCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SignalCountOutputType
+     */
+    select?: SignalCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SignalCountOutputType without action
+   */
+  export type SignalCountOutputTypeCountFollowUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowUpsWhereInput
+  }
+
+
+  /**
    * Count Type UserCountOutputType
    */
 
@@ -1228,12 +1350,14 @@ export namespace Prisma {
     accounts: number
     sessions: number
     signals: number
+    followUps: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     signals?: boolean | UserCountOutputTypeCountSignalsArgs
+    followUps?: boolean | UserCountOutputTypeCountFollowUpsArgs
   }
 
   // Custom InputTypes
@@ -1266,6 +1390,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSignalsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SignalWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFollowUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowUpsWhereInput
   }
 
 
@@ -1458,6 +1589,8 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     user?: boolean | Signal$userArgs<ExtArgs>
+    followUps?: boolean | Signal$followUpsArgs<ExtArgs>
+    _count?: boolean | SignalCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["signal"]>
 
   export type SignalSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1498,6 +1631,8 @@ export namespace Prisma {
   export type SignalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "prompt" | "data" | "sourceUrl" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["signal"]>
   export type SignalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Signal$userArgs<ExtArgs>
+    followUps?: boolean | Signal$followUpsArgs<ExtArgs>
+    _count?: boolean | SignalCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SignalIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Signal$userArgs<ExtArgs>
@@ -1510,6 +1645,7 @@ export namespace Prisma {
     name: "Signal"
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
+      followUps: Prisma.$FollowUpsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1915,6 +2051,7 @@ export namespace Prisma {
   export interface Prisma__SignalClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Signal$userArgs<ExtArgs> = {}>(args?: Subset<T, Signal$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    followUps<T extends Signal$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, Signal$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2364,6 +2501,30 @@ export namespace Prisma {
      */
     include?: UserInclude<ExtArgs> | null
     where?: UserWhereInput
+  }
+
+  /**
+   * Signal.followUps
+   */
+  export type Signal$followUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    where?: FollowUpsWhereInput
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    cursor?: FollowUpsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
   }
 
   /**
@@ -4797,6 +4958,7 @@ export namespace Prisma {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     signals?: boolean | User$signalsArgs<ExtArgs>
+    followUps?: boolean | User$followUpsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4829,6 +4991,7 @@ export namespace Prisma {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     signals?: boolean | User$signalsArgs<ExtArgs>
+    followUps?: boolean | User$followUpsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4840,6 +5003,7 @@ export namespace Prisma {
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       signals: Prisma.$SignalPayload<ExtArgs>[]
+      followUps: Prisma.$FollowUpsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5244,6 +5408,7 @@ export namespace Prisma {
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     signals<T extends User$signalsArgs<ExtArgs> = {}>(args?: Subset<T, User$signalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SignalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    followUps<T extends User$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, User$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5735,6 +5900,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SignalScalarFieldEnum | SignalScalarFieldEnum[]
+  }
+
+  /**
+   * User.followUps
+   */
+  export type User$followUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    where?: FollowUpsWhereInput
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    cursor?: FollowUpsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
   }
 
   /**
@@ -6726,6 +6915,1166 @@ export namespace Prisma {
 
 
   /**
+   * Model FollowUps
+   */
+
+  export type AggregateFollowUps = {
+    _count: FollowUpsCountAggregateOutputType | null
+    _avg: FollowUpsAvgAggregateOutputType | null
+    _sum: FollowUpsSumAggregateOutputType | null
+    _min: FollowUpsMinAggregateOutputType | null
+    _max: FollowUpsMaxAggregateOutputType | null
+  }
+
+  export type FollowUpsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type FollowUpsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type FollowUpsMinAggregateOutputType = {
+    id: number | null
+    title: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    signalId: string | null
+    userId: string | null
+  }
+
+  export type FollowUpsMaxAggregateOutputType = {
+    id: number | null
+    title: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    signalId: string | null
+    userId: string | null
+  }
+
+  export type FollowUpsCountAggregateOutputType = {
+    id: number
+    title: number
+    messages: number
+    createdAt: number
+    updatedAt: number
+    signalId: number
+    userId: number
+    _all: number
+  }
+
+
+  export type FollowUpsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type FollowUpsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type FollowUpsMinAggregateInputType = {
+    id?: true
+    title?: true
+    createdAt?: true
+    updatedAt?: true
+    signalId?: true
+    userId?: true
+  }
+
+  export type FollowUpsMaxAggregateInputType = {
+    id?: true
+    title?: true
+    createdAt?: true
+    updatedAt?: true
+    signalId?: true
+    userId?: true
+  }
+
+  export type FollowUpsCountAggregateInputType = {
+    id?: true
+    title?: true
+    messages?: true
+    createdAt?: true
+    updatedAt?: true
+    signalId?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type FollowUpsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FollowUps to aggregate.
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FollowUps to fetch.
+     */
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FollowUpsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FollowUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FollowUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FollowUps
+    **/
+    _count?: true | FollowUpsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FollowUpsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FollowUpsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FollowUpsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FollowUpsMaxAggregateInputType
+  }
+
+  export type GetFollowUpsAggregateType<T extends FollowUpsAggregateArgs> = {
+        [P in keyof T & keyof AggregateFollowUps]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFollowUps[P]>
+      : GetScalarType<T[P], AggregateFollowUps[P]>
+  }
+
+
+
+
+  export type FollowUpsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FollowUpsWhereInput
+    orderBy?: FollowUpsOrderByWithAggregationInput | FollowUpsOrderByWithAggregationInput[]
+    by: FollowUpsScalarFieldEnum[] | FollowUpsScalarFieldEnum
+    having?: FollowUpsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FollowUpsCountAggregateInputType | true
+    _avg?: FollowUpsAvgAggregateInputType
+    _sum?: FollowUpsSumAggregateInputType
+    _min?: FollowUpsMinAggregateInputType
+    _max?: FollowUpsMaxAggregateInputType
+  }
+
+  export type FollowUpsGroupByOutputType = {
+    id: number
+    title: string | null
+    messages: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    signalId: string | null
+    userId: string | null
+    _count: FollowUpsCountAggregateOutputType | null
+    _avg: FollowUpsAvgAggregateOutputType | null
+    _sum: FollowUpsSumAggregateOutputType | null
+    _min: FollowUpsMinAggregateOutputType | null
+    _max: FollowUpsMaxAggregateOutputType | null
+  }
+
+  type GetFollowUpsGroupByPayload<T extends FollowUpsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FollowUpsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FollowUpsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FollowUpsGroupByOutputType[P]>
+            : GetScalarType<T[P], FollowUpsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FollowUpsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    messages?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    signalId?: boolean
+    userId?: boolean
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }, ExtArgs["result"]["followUps"]>
+
+  export type FollowUpsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    messages?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    signalId?: boolean
+    userId?: boolean
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }, ExtArgs["result"]["followUps"]>
+
+  export type FollowUpsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    messages?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    signalId?: boolean
+    userId?: boolean
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }, ExtArgs["result"]["followUps"]>
+
+  export type FollowUpsSelectScalar = {
+    id?: boolean
+    title?: boolean
+    messages?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    signalId?: boolean
+    userId?: boolean
+  }
+
+  export type FollowUpsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "messages" | "createdAt" | "updatedAt" | "signalId" | "userId", ExtArgs["result"]["followUps"]>
+  export type FollowUpsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }
+  export type FollowUpsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }
+  export type FollowUpsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    signal?: boolean | FollowUps$signalArgs<ExtArgs>
+    user?: boolean | FollowUps$userArgs<ExtArgs>
+  }
+
+  export type $FollowUpsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FollowUps"
+    objects: {
+      signal: Prisma.$SignalPayload<ExtArgs> | null
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      title: string | null
+      messages: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+      signalId: string | null
+      userId: string | null
+    }, ExtArgs["result"]["followUps"]>
+    composites: {}
+  }
+
+  type FollowUpsGetPayload<S extends boolean | null | undefined | FollowUpsDefaultArgs> = $Result.GetResult<Prisma.$FollowUpsPayload, S>
+
+  type FollowUpsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FollowUpsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FollowUpsCountAggregateInputType | true
+    }
+
+  export interface FollowUpsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FollowUps'], meta: { name: 'FollowUps' } }
+    /**
+     * Find zero or one FollowUps that matches the filter.
+     * @param {FollowUpsFindUniqueArgs} args - Arguments to find a FollowUps
+     * @example
+     * // Get one FollowUps
+     * const followUps = await prisma.followUps.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FollowUpsFindUniqueArgs>(args: SelectSubset<T, FollowUpsFindUniqueArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FollowUps that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FollowUpsFindUniqueOrThrowArgs} args - Arguments to find a FollowUps
+     * @example
+     * // Get one FollowUps
+     * const followUps = await prisma.followUps.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FollowUpsFindUniqueOrThrowArgs>(args: SelectSubset<T, FollowUpsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FollowUps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsFindFirstArgs} args - Arguments to find a FollowUps
+     * @example
+     * // Get one FollowUps
+     * const followUps = await prisma.followUps.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FollowUpsFindFirstArgs>(args?: SelectSubset<T, FollowUpsFindFirstArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FollowUps that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsFindFirstOrThrowArgs} args - Arguments to find a FollowUps
+     * @example
+     * // Get one FollowUps
+     * const followUps = await prisma.followUps.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FollowUpsFindFirstOrThrowArgs>(args?: SelectSubset<T, FollowUpsFindFirstOrThrowArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FollowUps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FollowUps
+     * const followUps = await prisma.followUps.findMany()
+     * 
+     * // Get first 10 FollowUps
+     * const followUps = await prisma.followUps.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const followUpsWithIdOnly = await prisma.followUps.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FollowUpsFindManyArgs>(args?: SelectSubset<T, FollowUpsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FollowUps.
+     * @param {FollowUpsCreateArgs} args - Arguments to create a FollowUps.
+     * @example
+     * // Create one FollowUps
+     * const FollowUps = await prisma.followUps.create({
+     *   data: {
+     *     // ... data to create a FollowUps
+     *   }
+     * })
+     * 
+     */
+    create<T extends FollowUpsCreateArgs>(args: SelectSubset<T, FollowUpsCreateArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FollowUps.
+     * @param {FollowUpsCreateManyArgs} args - Arguments to create many FollowUps.
+     * @example
+     * // Create many FollowUps
+     * const followUps = await prisma.followUps.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FollowUpsCreateManyArgs>(args?: SelectSubset<T, FollowUpsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FollowUps and returns the data saved in the database.
+     * @param {FollowUpsCreateManyAndReturnArgs} args - Arguments to create many FollowUps.
+     * @example
+     * // Create many FollowUps
+     * const followUps = await prisma.followUps.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FollowUps and only return the `id`
+     * const followUpsWithIdOnly = await prisma.followUps.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FollowUpsCreateManyAndReturnArgs>(args?: SelectSubset<T, FollowUpsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FollowUps.
+     * @param {FollowUpsDeleteArgs} args - Arguments to delete one FollowUps.
+     * @example
+     * // Delete one FollowUps
+     * const FollowUps = await prisma.followUps.delete({
+     *   where: {
+     *     // ... filter to delete one FollowUps
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FollowUpsDeleteArgs>(args: SelectSubset<T, FollowUpsDeleteArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FollowUps.
+     * @param {FollowUpsUpdateArgs} args - Arguments to update one FollowUps.
+     * @example
+     * // Update one FollowUps
+     * const followUps = await prisma.followUps.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FollowUpsUpdateArgs>(args: SelectSubset<T, FollowUpsUpdateArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FollowUps.
+     * @param {FollowUpsDeleteManyArgs} args - Arguments to filter FollowUps to delete.
+     * @example
+     * // Delete a few FollowUps
+     * const { count } = await prisma.followUps.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FollowUpsDeleteManyArgs>(args?: SelectSubset<T, FollowUpsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FollowUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FollowUps
+     * const followUps = await prisma.followUps.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FollowUpsUpdateManyArgs>(args: SelectSubset<T, FollowUpsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FollowUps and returns the data updated in the database.
+     * @param {FollowUpsUpdateManyAndReturnArgs} args - Arguments to update many FollowUps.
+     * @example
+     * // Update many FollowUps
+     * const followUps = await prisma.followUps.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FollowUps and only return the `id`
+     * const followUpsWithIdOnly = await prisma.followUps.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FollowUpsUpdateManyAndReturnArgs>(args: SelectSubset<T, FollowUpsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FollowUps.
+     * @param {FollowUpsUpsertArgs} args - Arguments to update or create a FollowUps.
+     * @example
+     * // Update or create a FollowUps
+     * const followUps = await prisma.followUps.upsert({
+     *   create: {
+     *     // ... data to create a FollowUps
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FollowUps we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FollowUpsUpsertArgs>(args: SelectSubset<T, FollowUpsUpsertArgs<ExtArgs>>): Prisma__FollowUpsClient<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FollowUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsCountArgs} args - Arguments to filter FollowUps to count.
+     * @example
+     * // Count the number of FollowUps
+     * const count = await prisma.followUps.count({
+     *   where: {
+     *     // ... the filter for the FollowUps we want to count
+     *   }
+     * })
+    **/
+    count<T extends FollowUpsCountArgs>(
+      args?: Subset<T, FollowUpsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FollowUpsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FollowUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FollowUpsAggregateArgs>(args: Subset<T, FollowUpsAggregateArgs>): Prisma.PrismaPromise<GetFollowUpsAggregateType<T>>
+
+    /**
+     * Group by FollowUps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FollowUpsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FollowUpsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FollowUpsGroupByArgs['orderBy'] }
+        : { orderBy?: FollowUpsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FollowUpsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFollowUpsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FollowUps model
+   */
+  readonly fields: FollowUpsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FollowUps.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FollowUpsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    signal<T extends FollowUps$signalArgs<ExtArgs> = {}>(args?: Subset<T, FollowUps$signalArgs<ExtArgs>>): Prisma__SignalClient<$Result.GetResult<Prisma.$SignalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends FollowUps$userArgs<ExtArgs> = {}>(args?: Subset<T, FollowUps$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FollowUps model
+   */
+  interface FollowUpsFieldRefs {
+    readonly id: FieldRef<"FollowUps", 'Int'>
+    readonly title: FieldRef<"FollowUps", 'String'>
+    readonly messages: FieldRef<"FollowUps", 'Json'>
+    readonly createdAt: FieldRef<"FollowUps", 'DateTime'>
+    readonly updatedAt: FieldRef<"FollowUps", 'DateTime'>
+    readonly signalId: FieldRef<"FollowUps", 'String'>
+    readonly userId: FieldRef<"FollowUps", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FollowUps findUnique
+   */
+  export type FollowUpsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter, which FollowUps to fetch.
+     */
+    where: FollowUpsWhereUniqueInput
+  }
+
+  /**
+   * FollowUps findUniqueOrThrow
+   */
+  export type FollowUpsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter, which FollowUps to fetch.
+     */
+    where: FollowUpsWhereUniqueInput
+  }
+
+  /**
+   * FollowUps findFirst
+   */
+  export type FollowUpsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter, which FollowUps to fetch.
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FollowUps to fetch.
+     */
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FollowUps.
+     */
+    cursor?: FollowUpsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FollowUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FollowUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FollowUps.
+     */
+    distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
+  }
+
+  /**
+   * FollowUps findFirstOrThrow
+   */
+  export type FollowUpsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter, which FollowUps to fetch.
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FollowUps to fetch.
+     */
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FollowUps.
+     */
+    cursor?: FollowUpsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FollowUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FollowUps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FollowUps.
+     */
+    distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
+  }
+
+  /**
+   * FollowUps findMany
+   */
+  export type FollowUpsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter, which FollowUps to fetch.
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FollowUps to fetch.
+     */
+    orderBy?: FollowUpsOrderByWithRelationInput | FollowUpsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FollowUps.
+     */
+    cursor?: FollowUpsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FollowUps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FollowUps.
+     */
+    skip?: number
+    distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
+  }
+
+  /**
+   * FollowUps create
+   */
+  export type FollowUpsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FollowUps.
+     */
+    data: XOR<FollowUpsCreateInput, FollowUpsUncheckedCreateInput>
+  }
+
+  /**
+   * FollowUps createMany
+   */
+  export type FollowUpsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FollowUps.
+     */
+    data: FollowUpsCreateManyInput | FollowUpsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FollowUps createManyAndReturn
+   */
+  export type FollowUpsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * The data used to create many FollowUps.
+     */
+    data: FollowUpsCreateManyInput | FollowUpsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FollowUps update
+   */
+  export type FollowUpsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FollowUps.
+     */
+    data: XOR<FollowUpsUpdateInput, FollowUpsUncheckedUpdateInput>
+    /**
+     * Choose, which FollowUps to update.
+     */
+    where: FollowUpsWhereUniqueInput
+  }
+
+  /**
+   * FollowUps updateMany
+   */
+  export type FollowUpsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FollowUps.
+     */
+    data: XOR<FollowUpsUpdateManyMutationInput, FollowUpsUncheckedUpdateManyInput>
+    /**
+     * Filter which FollowUps to update
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * Limit how many FollowUps to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FollowUps updateManyAndReturn
+   */
+  export type FollowUpsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * The data used to update FollowUps.
+     */
+    data: XOR<FollowUpsUpdateManyMutationInput, FollowUpsUncheckedUpdateManyInput>
+    /**
+     * Filter which FollowUps to update
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * Limit how many FollowUps to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FollowUps upsert
+   */
+  export type FollowUpsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FollowUps to update in case it exists.
+     */
+    where: FollowUpsWhereUniqueInput
+    /**
+     * In case the FollowUps found by the `where` argument doesn't exist, create a new FollowUps with this data.
+     */
+    create: XOR<FollowUpsCreateInput, FollowUpsUncheckedCreateInput>
+    /**
+     * In case the FollowUps was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FollowUpsUpdateInput, FollowUpsUncheckedUpdateInput>
+  }
+
+  /**
+   * FollowUps delete
+   */
+  export type FollowUpsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+    /**
+     * Filter which FollowUps to delete.
+     */
+    where: FollowUpsWhereUniqueInput
+  }
+
+  /**
+   * FollowUps deleteMany
+   */
+  export type FollowUpsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FollowUps to delete
+     */
+    where?: FollowUpsWhereInput
+    /**
+     * Limit how many FollowUps to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FollowUps.signal
+   */
+  export type FollowUps$signalArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Signal
+     */
+    select?: SignalSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Signal
+     */
+    omit?: SignalOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SignalInclude<ExtArgs> | null
+    where?: SignalWhereInput
+  }
+
+  /**
+   * FollowUps.user
+   */
+  export type FollowUps$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * FollowUps without action
+   */
+  export type FollowUpsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FollowUps
+     */
+    select?: FollowUpsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FollowUps
+     */
+    omit?: FollowUpsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FollowUpsInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -6802,6 +8151,19 @@ export namespace Prisma {
   export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+  export const FollowUpsScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    messages: 'messages',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    signalId: 'signalId',
+    userId: 'userId'
+  };
+
+  export type FollowUpsScalarFieldEnum = (typeof FollowUpsScalarFieldEnum)[keyof typeof FollowUpsScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -6816,6 +8178,13 @@ export namespace Prisma {
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -6934,6 +8303,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Signal"> | Date | string
     userId?: StringNullableFilter<"Signal"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    followUps?: FollowUpsListRelationFilter
   }
 
   export type SignalOrderByWithRelationInput = {
@@ -6946,6 +8316,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
+    followUps?: FollowUpsOrderByRelationAggregateInput
   }
 
   export type SignalWhereUniqueInput = Prisma.AtLeast<{
@@ -6961,6 +8332,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Signal"> | Date | string
     userId?: StringNullableFilter<"Signal"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    followUps?: FollowUpsListRelationFilter
   }, "id" | "sourceUrl">
 
   export type SignalOrderByWithAggregationInput = {
@@ -7151,6 +8523,7 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     signals?: SignalListRelationFilter
+    followUps?: FollowUpsListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7162,6 +8535,7 @@ export namespace Prisma {
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     signals?: SignalOrderByRelationAggregateInput
+    followUps?: FollowUpsOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7176,6 +8550,7 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     signals?: SignalListRelationFilter
+    followUps?: FollowUpsListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -7243,6 +8618,76 @@ export namespace Prisma {
     expires?: DateTimeWithAggregatesFilter<"VerificationToken"> | Date | string
   }
 
+  export type FollowUpsWhereInput = {
+    AND?: FollowUpsWhereInput | FollowUpsWhereInput[]
+    OR?: FollowUpsWhereInput[]
+    NOT?: FollowUpsWhereInput | FollowUpsWhereInput[]
+    id?: IntFilter<"FollowUps"> | number
+    title?: StringNullableFilter<"FollowUps"> | string | null
+    messages?: JsonFilter<"FollowUps">
+    createdAt?: DateTimeFilter<"FollowUps"> | Date | string
+    updatedAt?: DateTimeFilter<"FollowUps"> | Date | string
+    signalId?: StringNullableFilter<"FollowUps"> | string | null
+    userId?: StringNullableFilter<"FollowUps"> | string | null
+    signal?: XOR<SignalNullableScalarRelationFilter, SignalWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type FollowUpsOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrderInput | SortOrder
+    messages?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    signalId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    signal?: SignalOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type FollowUpsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: FollowUpsWhereInput | FollowUpsWhereInput[]
+    OR?: FollowUpsWhereInput[]
+    NOT?: FollowUpsWhereInput | FollowUpsWhereInput[]
+    title?: StringNullableFilter<"FollowUps"> | string | null
+    messages?: JsonFilter<"FollowUps">
+    createdAt?: DateTimeFilter<"FollowUps"> | Date | string
+    updatedAt?: DateTimeFilter<"FollowUps"> | Date | string
+    signalId?: StringNullableFilter<"FollowUps"> | string | null
+    userId?: StringNullableFilter<"FollowUps"> | string | null
+    signal?: XOR<SignalNullableScalarRelationFilter, SignalWhereInput> | null
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type FollowUpsOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrderInput | SortOrder
+    messages?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    signalId?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    _count?: FollowUpsCountOrderByAggregateInput
+    _avg?: FollowUpsAvgOrderByAggregateInput
+    _max?: FollowUpsMaxOrderByAggregateInput
+    _min?: FollowUpsMinOrderByAggregateInput
+    _sum?: FollowUpsSumOrderByAggregateInput
+  }
+
+  export type FollowUpsScalarWhereWithAggregatesInput = {
+    AND?: FollowUpsScalarWhereWithAggregatesInput | FollowUpsScalarWhereWithAggregatesInput[]
+    OR?: FollowUpsScalarWhereWithAggregatesInput[]
+    NOT?: FollowUpsScalarWhereWithAggregatesInput | FollowUpsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"FollowUps"> | number
+    title?: StringNullableWithAggregatesFilter<"FollowUps"> | string | null
+    messages?: JsonWithAggregatesFilter<"FollowUps">
+    createdAt?: DateTimeWithAggregatesFilter<"FollowUps"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FollowUps"> | Date | string
+    signalId?: StringNullableWithAggregatesFilter<"FollowUps"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"FollowUps"> | string | null
+  }
+
   export type SignalCreateInput = {
     id?: string
     title: string
@@ -7252,6 +8697,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutSignalsInput
+    followUps?: FollowUpsCreateNestedManyWithoutSignalInput
   }
 
   export type SignalUncheckedCreateInput = {
@@ -7263,6 +8709,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutSignalInput
   }
 
   export type SignalUpdateInput = {
@@ -7274,6 +8721,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutSignalsNestedInput
+    followUps?: FollowUpsUpdateManyWithoutSignalNestedInput
   }
 
   export type SignalUncheckedUpdateInput = {
@@ -7285,6 +8733,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    followUps?: FollowUpsUncheckedUpdateManyWithoutSignalNestedInput
   }
 
   export type SignalCreateManyInput = {
@@ -7487,6 +8936,7 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7498,6 +8948,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -7509,6 +8960,7 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7520,6 +8972,7 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7586,6 +9039,71 @@ export namespace Prisma {
     identifier?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FollowUpsCreateInput = {
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signal?: SignalCreateNestedOneWithoutFollowUpsInput
+    user?: UserCreateNestedOneWithoutFollowUpsInput
+  }
+
+  export type FollowUpsUncheckedCreateInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signalId?: string | null
+    userId?: string | null
+  }
+
+  export type FollowUpsUpdateInput = {
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signal?: SignalUpdateOneWithoutFollowUpsNestedInput
+    user?: UserUpdateOneWithoutFollowUpsNestedInput
+  }
+
+  export type FollowUpsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signalId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FollowUpsCreateManyInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signalId?: string | null
+    userId?: string | null
+  }
+
+  export type FollowUpsUpdateManyMutationInput = {
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FollowUpsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signalId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -7657,9 +9175,19 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
+  export type FollowUpsListRelationFilter = {
+    every?: FollowUpsWhereInput
+    some?: FollowUpsWhereInput
+    none?: FollowUpsWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type FollowUpsOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type SignalCountOrderByAggregateInput = {
@@ -7987,10 +9515,141 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type SignalNullableScalarRelationFilter = {
+    is?: SignalWhereInput | null
+    isNot?: SignalWhereInput | null
+  }
+
+  export type FollowUpsCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    messages?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    signalId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FollowUpsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type FollowUpsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    signalId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FollowUpsMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    signalId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FollowUpsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedOneWithoutSignalsInput = {
     create?: XOR<UserCreateWithoutSignalsInput, UserUncheckedCreateWithoutSignalsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSignalsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type FollowUpsCreateNestedManyWithoutSignalInput = {
+    create?: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput> | FollowUpsCreateWithoutSignalInput[] | FollowUpsUncheckedCreateWithoutSignalInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutSignalInput | FollowUpsCreateOrConnectWithoutSignalInput[]
+    createMany?: FollowUpsCreateManySignalInputEnvelope
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+  }
+
+  export type FollowUpsUncheckedCreateNestedManyWithoutSignalInput = {
+    create?: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput> | FollowUpsCreateWithoutSignalInput[] | FollowUpsUncheckedCreateWithoutSignalInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutSignalInput | FollowUpsCreateOrConnectWithoutSignalInput[]
+    createMany?: FollowUpsCreateManySignalInputEnvelope
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -8013,6 +9672,34 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSignalsInput, UserUpdateWithoutSignalsInput>, UserUncheckedUpdateWithoutSignalsInput>
+  }
+
+  export type FollowUpsUpdateManyWithoutSignalNestedInput = {
+    create?: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput> | FollowUpsCreateWithoutSignalInput[] | FollowUpsUncheckedCreateWithoutSignalInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutSignalInput | FollowUpsCreateOrConnectWithoutSignalInput[]
+    upsert?: FollowUpsUpsertWithWhereUniqueWithoutSignalInput | FollowUpsUpsertWithWhereUniqueWithoutSignalInput[]
+    createMany?: FollowUpsCreateManySignalInputEnvelope
+    set?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    disconnect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    delete?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    update?: FollowUpsUpdateWithWhereUniqueWithoutSignalInput | FollowUpsUpdateWithWhereUniqueWithoutSignalInput[]
+    updateMany?: FollowUpsUpdateManyWithWhereWithoutSignalInput | FollowUpsUpdateManyWithWhereWithoutSignalInput[]
+    deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
+  }
+
+  export type FollowUpsUncheckedUpdateManyWithoutSignalNestedInput = {
+    create?: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput> | FollowUpsCreateWithoutSignalInput[] | FollowUpsUncheckedCreateWithoutSignalInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutSignalInput | FollowUpsCreateOrConnectWithoutSignalInput[]
+    upsert?: FollowUpsUpsertWithWhereUniqueWithoutSignalInput | FollowUpsUpsertWithWhereUniqueWithoutSignalInput[]
+    createMany?: FollowUpsCreateManySignalInputEnvelope
+    set?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    disconnect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    delete?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    update?: FollowUpsUpdateWithWhereUniqueWithoutSignalInput | FollowUpsUpdateWithWhereUniqueWithoutSignalInput[]
+    updateMany?: FollowUpsUpdateManyWithWhereWithoutSignalInput | FollowUpsUpdateManyWithWhereWithoutSignalInput[]
+    deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -8072,6 +9759,13 @@ export namespace Prisma {
     connect?: SignalWhereUniqueInput | SignalWhereUniqueInput[]
   }
 
+  export type FollowUpsCreateNestedManyWithoutUserInput = {
+    create?: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput> | FollowUpsCreateWithoutUserInput[] | FollowUpsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutUserInput | FollowUpsCreateOrConnectWithoutUserInput[]
+    createMany?: FollowUpsCreateManyUserInputEnvelope
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -8091,6 +9785,13 @@ export namespace Prisma {
     connectOrCreate?: SignalCreateOrConnectWithoutUserInput | SignalCreateOrConnectWithoutUserInput[]
     createMany?: SignalCreateManyUserInputEnvelope
     connect?: SignalWhereUniqueInput | SignalWhereUniqueInput[]
+  }
+
+  export type FollowUpsUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput> | FollowUpsCreateWithoutUserInput[] | FollowUpsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutUserInput | FollowUpsCreateOrConnectWithoutUserInput[]
+    createMany?: FollowUpsCreateManyUserInputEnvelope
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -8139,6 +9840,20 @@ export namespace Prisma {
     deleteMany?: SignalScalarWhereInput | SignalScalarWhereInput[]
   }
 
+  export type FollowUpsUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput> | FollowUpsCreateWithoutUserInput[] | FollowUpsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutUserInput | FollowUpsCreateOrConnectWithoutUserInput[]
+    upsert?: FollowUpsUpsertWithWhereUniqueWithoutUserInput | FollowUpsUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FollowUpsCreateManyUserInputEnvelope
+    set?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    disconnect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    delete?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    update?: FollowUpsUpdateWithWhereUniqueWithoutUserInput | FollowUpsUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FollowUpsUpdateManyWithWhereWithoutUserInput | FollowUpsUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -8179,6 +9894,60 @@ export namespace Prisma {
     update?: SignalUpdateWithWhereUniqueWithoutUserInput | SignalUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SignalUpdateManyWithWhereWithoutUserInput | SignalUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SignalScalarWhereInput | SignalScalarWhereInput[]
+  }
+
+  export type FollowUpsUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput> | FollowUpsCreateWithoutUserInput[] | FollowUpsUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FollowUpsCreateOrConnectWithoutUserInput | FollowUpsCreateOrConnectWithoutUserInput[]
+    upsert?: FollowUpsUpsertWithWhereUniqueWithoutUserInput | FollowUpsUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FollowUpsCreateManyUserInputEnvelope
+    set?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    disconnect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    delete?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+    update?: FollowUpsUpdateWithWhereUniqueWithoutUserInput | FollowUpsUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FollowUpsUpdateManyWithWhereWithoutUserInput | FollowUpsUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
+  }
+
+  export type SignalCreateNestedOneWithoutFollowUpsInput = {
+    create?: XOR<SignalCreateWithoutFollowUpsInput, SignalUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: SignalCreateOrConnectWithoutFollowUpsInput
+    connect?: SignalWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutFollowUpsInput = {
+    create?: XOR<UserCreateWithoutFollowUpsInput, UserUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFollowUpsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type SignalUpdateOneWithoutFollowUpsNestedInput = {
+    create?: XOR<SignalCreateWithoutFollowUpsInput, SignalUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: SignalCreateOrConnectWithoutFollowUpsInput
+    upsert?: SignalUpsertWithoutFollowUpsInput
+    disconnect?: SignalWhereInput | boolean
+    delete?: SignalWhereInput | boolean
+    connect?: SignalWhereUniqueInput
+    update?: XOR<XOR<SignalUpdateToOneWithWhereWithoutFollowUpsInput, SignalUpdateWithoutFollowUpsInput>, SignalUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type UserUpdateOneWithoutFollowUpsNestedInput = {
+    create?: XOR<UserCreateWithoutFollowUpsInput, UserUncheckedCreateWithoutFollowUpsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFollowUpsInput
+    upsert?: UserUpsertWithoutFollowUpsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFollowUpsInput, UserUpdateWithoutFollowUpsInput>, UserUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -8365,6 +10134,56 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type UserCreateWithoutSignalsInput = {
     id?: string
     name?: string | null
@@ -8373,6 +10192,7 @@ export namespace Prisma {
     image?: string | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSignalsInput = {
@@ -8383,11 +10203,39 @@ export namespace Prisma {
     image?: string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSignalsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutSignalsInput, UserUncheckedCreateWithoutSignalsInput>
+  }
+
+  export type FollowUpsCreateWithoutSignalInput = {
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutFollowUpsInput
+  }
+
+  export type FollowUpsUncheckedCreateWithoutSignalInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId?: string | null
+  }
+
+  export type FollowUpsCreateOrConnectWithoutSignalInput = {
+    where: FollowUpsWhereUniqueInput
+    create: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput>
+  }
+
+  export type FollowUpsCreateManySignalInputEnvelope = {
+    data: FollowUpsCreateManySignalInput | FollowUpsCreateManySignalInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutSignalsInput = {
@@ -8409,6 +10257,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSignalsInput = {
@@ -8419,6 +10268,36 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type FollowUpsUpsertWithWhereUniqueWithoutSignalInput = {
+    where: FollowUpsWhereUniqueInput
+    update: XOR<FollowUpsUpdateWithoutSignalInput, FollowUpsUncheckedUpdateWithoutSignalInput>
+    create: XOR<FollowUpsCreateWithoutSignalInput, FollowUpsUncheckedCreateWithoutSignalInput>
+  }
+
+  export type FollowUpsUpdateWithWhereUniqueWithoutSignalInput = {
+    where: FollowUpsWhereUniqueInput
+    data: XOR<FollowUpsUpdateWithoutSignalInput, FollowUpsUncheckedUpdateWithoutSignalInput>
+  }
+
+  export type FollowUpsUpdateManyWithWhereWithoutSignalInput = {
+    where: FollowUpsScalarWhereInput
+    data: XOR<FollowUpsUpdateManyMutationInput, FollowUpsUncheckedUpdateManyWithoutSignalInput>
+  }
+
+  export type FollowUpsScalarWhereInput = {
+    AND?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
+    OR?: FollowUpsScalarWhereInput[]
+    NOT?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
+    id?: IntFilter<"FollowUps"> | number
+    title?: StringNullableFilter<"FollowUps"> | string | null
+    messages?: JsonFilter<"FollowUps">
+    createdAt?: DateTimeFilter<"FollowUps"> | Date | string
+    updatedAt?: DateTimeFilter<"FollowUps"> | Date | string
+    signalId?: StringNullableFilter<"FollowUps"> | string | null
+    userId?: StringNullableFilter<"FollowUps"> | string | null
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -8429,6 +10308,7 @@ export namespace Prisma {
     image?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -8439,6 +10319,7 @@ export namespace Prisma {
     image?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -8465,6 +10346,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -8475,6 +10357,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -8485,6 +10368,7 @@ export namespace Prisma {
     image?: string | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -8495,6 +10379,7 @@ export namespace Prisma {
     image?: string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -8521,6 +10406,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -8531,6 +10417,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -8603,6 +10490,7 @@ export namespace Prisma {
     sourceUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    followUps?: FollowUpsCreateNestedManyWithoutSignalInput
   }
 
   export type SignalUncheckedCreateWithoutUserInput = {
@@ -8613,6 +10501,7 @@ export namespace Prisma {
     sourceUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutSignalInput
   }
 
   export type SignalCreateOrConnectWithoutUserInput = {
@@ -8622,6 +10511,33 @@ export namespace Prisma {
 
   export type SignalCreateManyUserInputEnvelope = {
     data: SignalCreateManyUserInput | SignalCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FollowUpsCreateWithoutUserInput = {
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signal?: SignalCreateNestedOneWithoutFollowUpsInput
+  }
+
+  export type FollowUpsUncheckedCreateWithoutUserInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signalId?: string | null
+  }
+
+  export type FollowUpsCreateOrConnectWithoutUserInput = {
+    where: FollowUpsWhereUniqueInput
+    create: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput>
+  }
+
+  export type FollowUpsCreateManyUserInputEnvelope = {
+    data: FollowUpsCreateManyUserInput | FollowUpsCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -8716,6 +10632,177 @@ export namespace Prisma {
     userId?: StringNullableFilter<"Signal"> | string | null
   }
 
+  export type FollowUpsUpsertWithWhereUniqueWithoutUserInput = {
+    where: FollowUpsWhereUniqueInput
+    update: XOR<FollowUpsUpdateWithoutUserInput, FollowUpsUncheckedUpdateWithoutUserInput>
+    create: XOR<FollowUpsCreateWithoutUserInput, FollowUpsUncheckedCreateWithoutUserInput>
+  }
+
+  export type FollowUpsUpdateWithWhereUniqueWithoutUserInput = {
+    where: FollowUpsWhereUniqueInput
+    data: XOR<FollowUpsUpdateWithoutUserInput, FollowUpsUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FollowUpsUpdateManyWithWhereWithoutUserInput = {
+    where: FollowUpsScalarWhereInput
+    data: XOR<FollowUpsUpdateManyMutationInput, FollowUpsUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type SignalCreateWithoutFollowUpsInput = {
+    id?: string
+    title: string
+    prompt: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutSignalsInput
+  }
+
+  export type SignalUncheckedCreateWithoutFollowUpsInput = {
+    id?: string
+    title: string
+    prompt: string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId?: string | null
+  }
+
+  export type SignalCreateOrConnectWithoutFollowUpsInput = {
+    where: SignalWhereUniqueInput
+    create: XOR<SignalCreateWithoutFollowUpsInput, SignalUncheckedCreateWithoutFollowUpsInput>
+  }
+
+  export type UserCreateWithoutFollowUpsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    signals?: SignalCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFollowUpsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFollowUpsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFollowUpsInput, UserUncheckedCreateWithoutFollowUpsInput>
+  }
+
+  export type SignalUpsertWithoutFollowUpsInput = {
+    update: XOR<SignalUpdateWithoutFollowUpsInput, SignalUncheckedUpdateWithoutFollowUpsInput>
+    create: XOR<SignalCreateWithoutFollowUpsInput, SignalUncheckedCreateWithoutFollowUpsInput>
+    where?: SignalWhereInput
+  }
+
+  export type SignalUpdateToOneWithWhereWithoutFollowUpsInput = {
+    where?: SignalWhereInput
+    data: XOR<SignalUpdateWithoutFollowUpsInput, SignalUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type SignalUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutSignalsNestedInput
+  }
+
+  export type SignalUncheckedUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    data?: NullableJsonNullValueInput | InputJsonValue
+    sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserUpsertWithoutFollowUpsInput = {
+    update: XOR<UserUpdateWithoutFollowUpsInput, UserUncheckedUpdateWithoutFollowUpsInput>
+    create: XOR<UserCreateWithoutFollowUpsInput, UserUncheckedCreateWithoutFollowUpsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFollowUpsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFollowUpsInput, UserUncheckedUpdateWithoutFollowUpsInput>
+  }
+
+  export type UserUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    signals?: SignalUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFollowUpsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type FollowUpsCreateManySignalInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId?: string | null
+  }
+
+  export type FollowUpsUpdateWithoutSignalInput = {
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutFollowUpsNestedInput
+  }
+
+  export type FollowUpsUncheckedUpdateWithoutSignalInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FollowUpsUncheckedUpdateManyWithoutSignalInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type AccountCreateManyUserInput = {
     id?: string
     type: string
@@ -8745,6 +10832,15 @@ export namespace Prisma {
     sourceUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type FollowUpsCreateManyUserInput = {
+    id?: number
+    title?: string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    signalId?: string | null
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -8818,6 +10914,7 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: FollowUpsUpdateManyWithoutSignalNestedInput
   }
 
   export type SignalUncheckedUpdateWithoutUserInput = {
@@ -8828,6 +10925,7 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: FollowUpsUncheckedUpdateManyWithoutSignalNestedInput
   }
 
   export type SignalUncheckedUpdateManyWithoutUserInput = {
@@ -8838,6 +10936,32 @@ export namespace Prisma {
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FollowUpsUpdateWithoutUserInput = {
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signal?: SignalUpdateOneWithoutFollowUpsNestedInput
+  }
+
+  export type FollowUpsUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signalId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FollowUpsUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    signalId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 
