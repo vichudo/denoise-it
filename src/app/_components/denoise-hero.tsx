@@ -2,17 +2,38 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Clock, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
 import { UrlPreviews } from "./url-previews";
 
+/** Slider stops — index-based so each step feels equal on the track */
+const TIME_STOPS = [
+  { days: 1, label: "24 hours" },
+  { days: 3, label: "3 days" },
+  { days: 7, label: "1 week" },
+  { days: 14, label: "2 weeks" },
+  { days: 30, label: "1 month" },
+  { days: 90, label: "3 months" },
+  { days: 180, label: "6 months" },
+  { days: 365, label: "1 year" },
+  { days: 730, label: "2 years" },
+] as const;
+
+const DEFAULT_STOP = 2; // index → "1 week"
+
 export function DenoiseHero() {
   const router = useRouter();
   const [input, setInput] = useState("");
+  const [timeSensitive, setTimeSensitive] = useState(false);
+  const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
+  const currentStop = TIME_STOPS[stopIndex]!;
 
   const create = api.analysis.create.useMutation({
     onSuccess: (data) => {
@@ -22,7 +43,10 @@ export function DenoiseHero() {
 
   function handleSubmit() {
     if (!input.trim() || create.isPending) return;
-    create.mutate({ content: input });
+    create.mutate({
+      content: input,
+      ...(timeSensitive && { sinceDays: currentStop.days }),
+    });
   }
 
   return (
@@ -61,6 +85,41 @@ export function DenoiseHero() {
               )
             }
           />
+
+          {/* Time-sensitive toggle */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="time-sensitive"
+                size="sm"
+                checked={timeSensitive}
+                onCheckedChange={setTimeSensitive}
+              />
+              <Label
+                htmlFor="time-sensitive"
+                className="text-muted-foreground flex cursor-pointer items-center gap-1.5 text-sm"
+              >
+                <Clock className="size-3.5" />
+                Time-sensitive
+              </Label>
+              {timeSensitive && (
+                <span className="text-foreground ml-auto text-sm font-medium">
+                  Last {currentStop.label}
+                </span>
+              )}
+            </div>
+            {timeSensitive && (
+              <Slider
+                min={0}
+                max={TIME_STOPS.length - 1}
+                step={1}
+                value={[stopIndex]}
+                onValueChange={([v]) => v !== undefined && setStopIndex(v)}
+                className="py-1"
+              />
+            )}
+          </div>
+
           <Button
             size="lg"
             className="w-full"
