@@ -56,6 +56,7 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
 - Answer the user's follow-up questions using the analysis context above.
 - You can provide deeper analysis, explain specific findings, or help the user understand the nuances.
 - Be concise and factual. If you don't know something, say so.
+- Do NOT rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services).
 - Use markdown formatting for clarity.`;
 
   const result = streamText({

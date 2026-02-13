@@ -36,6 +36,7 @@ NOISE = everything that distorts signal — emotional language, bias, narrative 
      * News articles aggregating other news → medium confidence
      * Viral/social media without primary backing → low confidence
      * Wikipedia as sole source → low confidence (potential bias, recent edits)
+   - NEVER rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services). If only Wikipedia is available, flag the claim as unverified and note the limitation.
    - Provide actual clickable source URLs from your web search
 
 5. EXTRACT NOISE: For each piece of affective distortion:
