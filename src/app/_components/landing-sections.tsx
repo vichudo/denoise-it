@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import {
   Activity,
   ArrowDown,
@@ -60,9 +61,8 @@ export function HowItWorks() {
 
         <div className="grid gap-10 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-start md:gap-0">
           {STEPS.map((step, i) => (
-            <>
+            <Fragment key={step.title}>
               <div
-                key={step.title}
                 className="flex flex-col items-center text-center"
               >
                 {/* Step number pill */}
@@ -92,7 +92,7 @@ export function HowItWorks() {
                   <div className="bg-border h-px w-8" />
                 </div>
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>
