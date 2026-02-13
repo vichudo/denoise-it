@@ -169,6 +169,16 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.FollowUpsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  messages: 'messages',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  signalId: 'signalId',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -176,6 +186,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -201,7 +215,8 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Session: 'Session',
   User: 'User',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  FollowUps: 'FollowUps'
 };
 
 /**
