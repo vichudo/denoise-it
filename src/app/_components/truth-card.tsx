@@ -7,6 +7,8 @@ import { signalCategoryLabel } from "@/lib/schemas/analysis";
 import { getDomain } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
+import { ShareButton } from "./share-button";
+
 function confidenceColor(c: number): string {
   if (c >= 80) return "text-emerald-600 dark:text-emerald-400";
   if (c >= 50) return "text-amber-600 dark:text-amber-400";
@@ -22,9 +24,11 @@ function confidenceBg(c: number): string {
 export function SignalCard({
   signal,
   index,
+  signalId,
 }: {
   signal: SignalElement;
   index: number;
+  signalId: string;
 }) {
   return (
     <div
@@ -43,6 +47,7 @@ export function SignalCard({
             {signal.content}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
+            <ShareButton type="signal" id={signalId} index={index} />
             <span
               className={`font-mono text-[11px] font-bold tabular-nums ${confidenceColor(signal.confidence)}`}
             >

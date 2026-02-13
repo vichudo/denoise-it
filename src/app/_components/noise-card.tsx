@@ -7,12 +7,16 @@ import { noiseTypeLabel } from "@/lib/schemas/analysis";
 import { getDomain } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
+import { ShareButton } from "./share-button";
+
 export function NoiseCard({
   noise,
   index,
+  signalId,
 }: {
   noise: NoiseElement;
   index: number;
+  signalId: string;
 }) {
   return (
     <div
@@ -28,11 +32,12 @@ export function NoiseCard({
           >
             {noiseTypeLabel[noise.type]}
           </Badge>
-          <p className="text-xs leading-relaxed text-muted-foreground">
+          <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
             <span className="italic text-foreground/70">
               &ldquo;{noise.original}&rdquo;
             </span>
           </p>
+          <ShareButton type="noise" id={signalId} index={index} />
         </div>
 
         {/* Reason */}
