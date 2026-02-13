@@ -1,5 +1,6 @@
 import { ToolLoopAgent, Output, stepCountIs } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import dayjs from "dayjs";
 import { z } from "zod";
 
 import { analysisResultSchema } from "@/lib/schemas/analysis";
@@ -94,18 +95,26 @@ export const analysisRouter = createTRPCRouter({
     .input(
       z.object({
         content: z.string().min(1).max(10000),
+        sinceDays: z.number().int().min(1).max(730).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      let prompt = input.content;
+
+      if (input.sinceDays) {
+        const since = dayjs().subtract(input.sinceDays, "day").format("YYYY-MM-DD");
+        prompt += `\n\n[TIME CONSTRAINT: Focus ONLY on information from ${since} onward (last ${input.sinceDays} day${input.sinceDays > 1 ? "s" : ""}). Discard outdated sources. Prioritize the most recent developments.]`;
+      }
+
       const signal = await ctx.db.signal.create({
         data: {
           title: input.content.slice(0, 120).trim(),
-          prompt: input.content,
+          prompt,
         },
       });
 
       // Fire and forget — generation runs in background
-      void generateAnalysis(String(signal.id), input.content);
+      void generateAnalysis(String(signal.id), prompt);
 
       return { id: signal.id };
     }),
