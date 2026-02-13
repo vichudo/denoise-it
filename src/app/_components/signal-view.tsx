@@ -16,6 +16,7 @@ import {
   Check,
   Copy,
   Bookmark,
+  MessageCircle,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -27,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
 import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
 
+import { FollowUpPanel } from "./follow-up-panel";
 import { NoiseCard } from "./noise-card";
 import { ResultsSkeleton } from "./results-skeleton";
 import { SignalCard } from "./truth-card";
@@ -223,7 +225,13 @@ function SectionHeader({
 
 /* ── Results ──────────────────────────────────────────────── */
 
-function Results({ result }: { result: AnalysisResult }) {
+function Results({
+  result,
+  onFollowUp,
+}: {
+  result: AnalysisResult;
+  onFollowUp: () => void;
+}) {
   return (
     <div className="w-full max-w-2xl space-y-10">
       {/* 1. Verdict */}
@@ -281,6 +289,19 @@ function Results({ result }: { result: AnalysisResult }) {
           </div>
         </>
       )}
+
+      {/* 5. Follow Up */}
+      <Separator className="opacity-30" />
+      <div className="flex justify-center">
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={onFollowUp}
+        >
+          <MessageCircle className="size-4" />
+          Follow Up
+        </Button>
+      </div>
     </div>
   );
 }
@@ -294,6 +315,8 @@ export function SignalView({
   id: string;
   sourceUrl?: string;
 }) {
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+
   const { data, error } = api.analysis.get.useQuery(
     { id },
     {
@@ -384,12 +407,21 @@ export function SignalView({
             transition={{ duration: 0.4 }}
             className="flex w-full flex-col items-center"
           >
-            <Results result={data.data} />
+            <Results
+              result={data.data}
+              onFollowUp={() => setFollowUpOpen(true)}
+            />
           </motion.div>
         ) : (
           <AnalyzingState key="analyzing" id={id} />
         )}
       </AnimatePresence>
+
+      <FollowUpPanel
+        signalId={id}
+        open={followUpOpen}
+        onOpenChange={setFollowUpOpen}
+      />
     </div>
   );
 }
