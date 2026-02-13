@@ -22,10 +22,11 @@ model Signal {
   data      Json?
   sourceUrl String? @unique @map("source_url")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User?       @relation(fields: [userId], references: [id])
   userId    String?
+  followUps FollowUps[]
 
   @@map("signals")
 }
@@ -59,14 +60,15 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   signals       Signal[]
+  followUps     FollowUps[]
 }
 
 model VerificationToken {
@@ -75,4 +77,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model FollowUps {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  signal    Signal?  @relation(fields: [signalId], references: [id], onDelete: Cascade)
+  signalId  String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
 }
