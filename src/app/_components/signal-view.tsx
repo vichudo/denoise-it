@@ -17,6 +17,7 @@ import {
   Copy,
   Bookmark,
   MessageCircle,
+  Link2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -28,9 +29,12 @@ import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
 import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
 
+import { copySignalUrl } from "@/lib/share";
+
 import { FollowUpPanel } from "./follow-up-panel";
 import { NoiseCard } from "./noise-card";
 import { ResultsSkeleton } from "./results-skeleton";
+import { ShareButton } from "./share-button";
 import { SignalCard } from "./truth-card";
 import { WaveformAnimation } from "./waveform-animation";
 
@@ -243,11 +247,39 @@ function SectionHeader({
 
 /* ── Results ──────────────────────────────────────────────── */
 
+function CopyLinkButton({ id }: { id: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    void copySignalUrl(id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="gap-1.5 text-xs"
+      onClick={handleCopy}
+    >
+      {copied ? (
+        <Check className="size-3" />
+      ) : (
+        <Link2 className="size-3" />
+      )}
+      {copied ? "Copied" : "Copy link"}
+    </Button>
+  );
+}
+
 function Results({
   result,
+  id,
   onFollowUp,
 }: {
   result: AnalysisResult;
+  id: string;
   onFollowUp: () => void;
 }) {
   return (
@@ -256,14 +288,17 @@ function Results({
       <VerdictBanner result={result} />
 
       {/* 2. Abstract */}
-      <div className="bg-secondary/30 space-y-3 rounded-xl border px-6 py-5">
-        <div className="flex items-baseline justify-between">
+      <div className="bg-secondary/30 group space-y-3 rounded-xl border px-6 py-5">
+        <div className="flex items-center justify-between">
           <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Analysis
           </span>
-          <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
-            {result.signalScore}/100 signal &middot; {result.contentType}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
+              {result.signalScore}/100 signal &middot; {result.contentType}
+            </span>
+            <ShareButton type="analysis" id={id} />
+          </div>
         </div>
         <p className="text-foreground/80 text-justify text-[13px] leading-relaxed">
           {result.summary}
@@ -282,7 +317,7 @@ function Results({
           />
           <div className="space-y-2">
             {result.signals.map((signal, index) => (
-              <SignalCard key={index} signal={signal} index={index} />
+              <SignalCard key={index} signal={signal} index={index} signalId={id} />
             ))}
           </div>
         </div>
@@ -301,7 +336,7 @@ function Results({
             />
             <div className="space-y-2">
               {result.noise.map((item, index) => (
-                <NoiseCard key={index} noise={item} index={index} />
+                <NoiseCard key={index} noise={item} index={index} signalId={id} />
               ))}
             </div>
           </div>
@@ -349,16 +384,24 @@ export function SignalView({
     <div className="flex flex-col items-center px-4 py-12">
       {/* Header */}
       <div className="mb-10 w-full max-w-2xl space-y-3">
-        <Link href="/">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground gap-1.5"
-          >
-            <ArrowLeft className="size-3.5" />
-            New analysis
-          </Button>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground gap-1.5"
+            >
+              <ArrowLeft className="size-3.5" />
+              New analysis
+            </Button>
+          </Link>
+          {data?.data && (
+            <div className="flex items-center gap-2">
+              <CopyLinkButton id={id} />
+              <ShareButton type="verdict" id={id} alwaysVisible />
+            </div>
+          )}
+        </div>
         {sourceUrl && (
           <a
             href={sourceUrl}
@@ -427,6 +470,7 @@ export function SignalView({
           >
             <Results
               result={data.data}
+              id={id}
               onFollowUp={() => setFollowUpOpen(true)}
             />
           </motion.div>
