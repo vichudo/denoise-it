@@ -9,7 +9,7 @@ export function ResultsSkeleton() {
       <Skeleton className="h-[62px] w-full rounded-2xl" />
 
       {/* Abstract */}
-      <div className="space-y-3">
+      <div className="bg-secondary/30 space-y-3 rounded-xl border px-6 py-5">
         <div className="flex items-baseline justify-between">
           <Skeleton className="h-3 w-16" />
           <Skeleton className="h-3 w-36" />

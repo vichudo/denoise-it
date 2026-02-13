@@ -16,7 +16,7 @@ export function NoiseCard({
 }) {
   return (
     <div
-      className="animate-in fade-in-0 slide-in-from-bottom-2 group relative rounded-lg border border-destructive/10 bg-destructive/3 px-4 py-3 fill-mode-both dark:bg-destructive/6"
+      className="animate-in fade-in-0 slide-in-from-bottom-2 group relative rounded-lg border border-destructive/15 bg-destructive/5 px-4 py-3 fill-mode-both dark:bg-destructive/10"
       style={{ animationDelay: `${index * 60}ms`, animationDuration: "300ms" }}
     >
       <div className="space-y-2">
@@ -24,19 +24,19 @@ export function NoiseCard({
         <div className="flex items-start gap-2.5">
           <Badge
             variant="outline"
-            className="mt-0.5 h-5 shrink-0 border-destructive/20 px-1.5 text-[10px] font-medium text-destructive/70"
+            className="mt-0.5 h-5 shrink-0 border-destructive/25 px-1.5 text-[10px] font-medium text-destructive dark:text-red-400"
           >
             {noiseTypeLabel[noise.type]}
           </Badge>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            <span className="italic text-muted-foreground/70">
+            <span className="italic text-foreground/70">
               &ldquo;{noise.original}&rdquo;
             </span>
           </p>
         </div>
 
         {/* Reason */}
-        <p className="text-[11px] leading-relaxed text-muted-foreground/60">
+        <p className="text-[11px] leading-relaxed text-foreground/60">
           {noise.reason}
         </p>
 
@@ -49,7 +49,7 @@ export function NoiseCard({
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/40 transition-colors hover:text-foreground"
+                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 transition-colors hover:text-foreground"
               >
                 <ExternalLink className="size-2.5" />
                 {getDomain(url)}

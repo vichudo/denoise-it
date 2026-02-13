@@ -61,20 +61,20 @@ const verdictConfig: Record<
   mostly_false: {
     icon: AlertTriangle,
     color: "text-orange-600 dark:text-orange-400",
-    bg: "bg-orange-50 dark:bg-orange-950/30",
-    border: "border-orange-200/60 dark:border-orange-800/40",
+    bg: "bg-secondary/40",
+    border: "border-border/60",
   },
   false: {
     icon: XCircle,
-    color: "text-red-600 dark:text-red-400",
-    bg: "bg-red-50 dark:bg-red-950/30",
-    border: "border-red-200/60 dark:border-red-800/40",
+    color: "text-rose-600 dark:text-rose-400",
+    bg: "bg-secondary/40",
+    border: "border-border/60",
   },
   misleading: {
     icon: AlertTriangle,
-    color: "text-orange-600 dark:text-orange-400",
-    bg: "bg-orange-50 dark:bg-orange-950/30",
-    border: "border-orange-200/60 dark:border-orange-800/40",
+    color: "text-amber-600 dark:text-amber-400",
+    bg: "bg-secondary/40",
+    border: "border-border/60",
   },
   satire: {
     icon: Laugh,
@@ -171,6 +171,17 @@ function AnalyzingState({ id }: { id: string }) {
 
 /* ── Verdict Banner ───────────────────────────────────────── */
 
+const verdictLabels: Record<Verdict, string> = {
+  true: "Verified",
+  mostly_true: "Mostly True",
+  mixed: "Mixed",
+  mostly_false: "Mostly False",
+  false: "False",
+  misleading: "Misleading",
+  satire: "Satire",
+  unverifiable: "Unverifiable",
+};
+
 function VerdictBanner({ result }: { result: AnalysisResult }) {
   const isDefinitive =
     result.verdict !== "mixed" && result.verdict !== "unverifiable";
@@ -181,12 +192,19 @@ function VerdictBanner({ result }: { result: AnalysisResult }) {
 
   return (
     <div
-      className={`animate-in fade-in-0 slide-in-from-bottom-2 flex items-center gap-4 rounded-2xl border px-6 py-5 ${config.bg} ${config.border}`}
+      className={`animate-in fade-in-0 slide-in-from-bottom-2 flex items-start gap-4 rounded-2xl border px-6 py-5 ${config.bg} ${config.border}`}
     >
-      <Icon className={`size-7 shrink-0 ${config.color}`} strokeWidth={2.5} />
-      <p className={`text-base font-semibold tracking-tight ${config.color}`}>
-        {result.verdictHeadline}
-      </p>
+      <Icon className={`mt-0.5 size-6 shrink-0 ${config.color}`} strokeWidth={2.5} />
+      <div className="min-w-0 space-y-1">
+        <span
+          className={`text-[10px] font-semibold tracking-widest uppercase ${config.color}`}
+        >
+          {verdictLabels[result.verdict]}
+        </span>
+        <p className="text-foreground text-base font-semibold leading-snug tracking-tight">
+          {result.verdictHeadline}
+        </p>
+      </div>
     </div>
   );
 }
@@ -207,10 +225,10 @@ function SectionHeader({
   return (
     <div className="flex items-center gap-2">
       <Icon
-        className={`size-3.5 ${muted ? "text-muted-foreground/40" : "text-muted-foreground/60"}`}
+        className={`size-3.5 ${muted ? "text-muted-foreground/60" : "text-muted-foreground/60"}`}
       />
       <span
-        className={`text-xs font-medium tracking-widest uppercase ${muted ? "text-muted-foreground/40" : "text-muted-foreground"}`}
+        className={`text-xs font-medium tracking-widest uppercase ${muted ? "text-muted-foreground/60" : "text-muted-foreground"}`}
       >
         {label}
       </span>
@@ -238,7 +256,7 @@ function Results({
       <VerdictBanner result={result} />
 
       {/* 2. Abstract */}
-      <div className="space-y-3">
+      <div className="bg-secondary/30 space-y-3 rounded-xl border px-6 py-5">
         <div className="flex items-baseline justify-between">
           <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Analysis
@@ -247,7 +265,7 @@ function Results({
             {result.signalScore}/100 signal &middot; {result.contentType}
           </span>
         </div>
-        <p className="text-foreground/80 text-[13px] leading-relaxed">
+        <p className="text-foreground/80 text-justify text-[13px] leading-relaxed">
           {result.summary}
         </p>
       </div>
