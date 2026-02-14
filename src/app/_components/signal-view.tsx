@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CheckCircle,
@@ -245,6 +245,109 @@ function SectionHeader({
   );
 }
 
+/* ── Prompt display ───────────────────────────────────────── */
+
+const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
+const PROMPT_CLAMP_PX = 80; // ~3 lines of text
+
+function PromptDisplay({ prompt }: { prompt: string }) {
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [clamped, setClamped] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const { text, urls } = useMemo(() => {
+    const matches = [...new Set(prompt.match(URL_REGEX) ?? [])];
+    const cleaned = matches
+      .reduce((t, url) => t.replace(url, ""), prompt)
+      .replace(/\s{2,}/g, " ")
+      .trim();
+    return { text: cleaned, urls: matches };
+  }, [prompt]);
+
+  useEffect(() => {
+    const el = textRef.current;
+    if (el) setClamped(el.scrollHeight > PROMPT_CLAMP_PX);
+  }, [text]);
+
+  function handleCopy() {
+    void navigator.clipboard.writeText(prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="space-y-3 text-center">
+      {text && (
+        <div>
+          <p
+            ref={textRef}
+            className={`text-foreground/80 text-base leading-relaxed font-medium ${
+              !expanded && clamped ? "line-clamp-3" : ""
+            }`}
+          >
+            &ldquo;{text}&rdquo;
+          </p>
+          {clamped && (
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="text-muted-foreground/50 hover:text-muted-foreground mt-1.5 text-xs transition-colors"
+            >
+              {expanded ? "show less" : "see all"}
+            </button>
+          )}
+        </div>
+      )}
+
+      {urls.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2">
+          {urls.map((url) => {
+            const domain = getDomain(url);
+            return (
+              <a
+                key={url}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={url}
+                className="group inline-flex max-w-[280px] items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="shrink-0 rounded-sm"
+                />
+                <span className="truncate">{domain}</span>
+                <ExternalLink className="size-3 shrink-0 opacity-40" />
+              </a>
+            );
+          })}
+        </div>
+      )}
+
+      <button
+        onClick={handleCopy}
+        className="text-muted-foreground/40 hover:text-muted-foreground inline-flex items-center gap-1 text-xs transition-colors"
+      >
+        {copied ? (
+          <>
+            <Check className="size-3" />
+            Copied
+          </>
+        ) : (
+          <>
+            <Copy className="size-3" />
+            Copy prompt
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
+
 /* ── Results ──────────────────────────────────────────────── */
 
 function CopyLinkButton({ id }: { id: string }) {
@@ -276,14 +379,19 @@ function CopyLinkButton({ id }: { id: string }) {
 function Results({
   result,
   id,
+  prompt,
   onFollowUp,
 }: {
   result: AnalysisResult;
   id: string;
+  prompt?: string;
   onFollowUp: () => void;
 }) {
   return (
     <div className="w-full max-w-2xl space-y-10">
+      {/* 0. Original prompt */}
+      {prompt && <PromptDisplay prompt={prompt} />}
+
       {/* 1. Verdict */}
       <VerdictBanner result={result} />
 
@@ -297,7 +405,7 @@ function Results({
             <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
               {result.signalScore}/100 signal &middot; {result.contentType}
             </span>
-            <ShareButton type="analysis" id={id} />
+            <ShareButton type="analysis" id={id} prompt={prompt} />
           </div>
         </div>
         <p className="text-foreground/80 text-justify text-[13px] leading-relaxed">
@@ -317,7 +425,7 @@ function Results({
           />
           <div className="space-y-2">
             {result.signals.map((signal, index) => (
-              <SignalCard key={index} signal={signal} index={index} signalId={id} />
+              <SignalCard key={index} signal={signal} index={index} signalId={id} prompt={prompt} />
             ))}
           </div>
         </div>
@@ -336,7 +444,7 @@ function Results({
             />
             <div className="space-y-2">
               {result.noise.map((item, index) => (
-                <NoiseCard key={index} noise={item} index={index} signalId={id} />
+                <NoiseCard key={index} noise={item} index={index} signalId={id} prompt={prompt} />
               ))}
             </div>
           </div>
@@ -398,7 +506,7 @@ export function SignalView({
           {data?.data && (
             <div className="flex items-center gap-2">
               <CopyLinkButton id={id} />
-              <ShareButton type="verdict" id={id} alwaysVisible />
+              <ShareButton type="verdict" id={id} alwaysVisible prompt={data.prompt} />
             </div>
           )}
         </div>
@@ -471,6 +579,7 @@ export function SignalView({
             <Results
               result={data.data}
               id={id}
+              prompt={data.prompt}
               onFollowUp={() => setFollowUpOpen(true)}
             />
           </motion.div>
