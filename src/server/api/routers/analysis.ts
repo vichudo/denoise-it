@@ -1,112 +1,9 @@
-import { ToolLoopAgent, Output, stepCountIs } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import dayjs from "dayjs";
 import { z } from "zod";
 
-import { analysisResultSchema } from "@/lib/schemas/analysis";
-import { getLanguageName } from "@/lib/constants";
 import { parseSignalData } from "@/lib/utils";
-import { env } from "@/env";
-import { db } from "@/server/db";
+import { generateAnalysis } from "@/server/analysis/generate";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-
-const openrouter = createOpenRouter({
-  apiKey: env.OPENROUTER_API_KEY,
-});
-
-const ANALYSIS_INSTRUCTIONS = `You are a precision fact-checking agent. Your job: separate SIGNAL from NOISE in any content.
-
-SIGNAL = independently verifiable, objective units of information. Each signal element must stand alone as a factual statement with all emotional, narrative, and rhetorical framing removed.
-
-NOISE = everything that distorts signal — emotional language, bias, narrative framing, sensationalism, opinions presented as facts, speculation, and critical missing context.
-
-## Coverage Asymmetry Awareness
-
-Before scoring, Consider scanning for lopsided coverage — situations where one narrative dominates media volume while an equally relevant counter-narrative has narrow or minimal amplification. This can happen when:
-- A widely repeated claim has credible counter-evidence that received little distribution.
-- Sources overwhelmingly represent one stakeholder while other affected parties are absent or underquoted.
-- Sheer repetition across outlets creates an impression of consensus that doesn't match the underlying evidence.
-- Official or institutional positions are echoed broadly while independent or on-the-ground accounts remain niche.
-
-When you notice this pattern, gently compensate: actively search for the underrepresented side, weigh evidence by its quality rather than its volume, and reflect this in confidence scores and the signal score. Surface the imbalance explicitly as missing_context or media_amplification noise so the user sees the full picture.
-
-## Process
-
-1. VERDICT: Determine the overall truth status of the content. Use 'mixed' only when claims genuinely split with no dominant direction.
-
-2. VERDICT HEADLINE: One punchy definitive sentence, max 12 words. First thing users see. E.g. "This claim is demonstrably false." or "Confirmed by multiple primary sources."
-
-3. SUMMARY: Dense, scientific-abstract paragraph (3-5 sentences). ONLY facts, numbers, dates, entity names. Zero hedging, zero filler. If the user asks a question, ANSWER IT FIRST with precise data, then provide supporting context.
-
-4. EXTRACT SIGNALS: For each distinct verifiable claim in the content:
-   - Strip ALL affective language. Write it as pure objective information.
-   - Categorize: fact (verified claim), statistic (quantitative data), attribution (from named source), context (verified background), event (confirmed occurrence)
-   - Score confidence 0-100 based on SOURCE CREDIBILITY:
-     * .gov, .edu, peer-reviewed journals, official records → high confidence
-     * Major wire services (AP, Reuters) with primary sourcing → high confidence
-     * News articles aggregating other news → medium confidence
-     * Viral/social media without primary backing → low confidence
-     * Wikipedia as sole source → low confidence (potential bias, recent edits)
-   - NEVER rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services). If only Wikipedia is available, flag the claim as unverified and note the limitation.
-   - Provide actual clickable source URLs from your web search
-
-5. EXTRACT NOISE: For each piece of affective distortion:
-   - Quote the original text fragment
-   - Classify: emotional_language, bias, narrative, sensationalism, opinion_as_fact, speculation, missing_context, media_amplification
-   - Explain precisely why it's noise and how it distorts the signal
-   - Provide source URLs: for missing_context link to what was omitted, for media_amplification link to outlets amplifying without primary backing, for bias/narrative link to counter-evidence
-   - If you detected coverage asymmetry earlier, surface it here: flag which narrative is over-represented vs. under-represented, and link to the less-amplified sources so the user can judge for themselves
-
-6. SIGNAL SCORE: Compute 0-100 ratio of verified signal to total content.
-
-Be rigorous. Commit to assessments. Never hedge when evidence is clear.`;
-
-const analysisOutput = Output.object({ schema: analysisResultSchema });
-
-/** Default agent — thorough analysis for text input */
-const agent = new ToolLoopAgent({
-  model: openrouter.chat("x-ai/grok-4.1-fast:online", { reasoning: { enabled: false, effort: 'none' } }),
-  instructions: ANALYSIS_INSTRUCTIONS,
-  output: analysisOutput,
-  stopWhen: stepCountIs(3),
-});
-
-/** Fast agent — optimized for link mode where crawlers are waiting */
-const fastAgent = new ToolLoopAgent({
-  model: openrouter.chat("x-ai/grok-4.1-fast:online", { reasoning: { enabled: false, effort: 'none' } }),
-  instructions: ANALYSIS_INSTRUCTIONS,
-  output: analysisOutput,
-  stopWhen: stepCountIs(2),
-});
-
-/** Fire-and-forget background generation */
-async function generateAnalysis(
-  id: string,
-  content: string,
-  useAgent: typeof agent = agent,
-  language?: string,
-) {
-  try {
-    let prompt = content;
-    if (language && language !== "en") {
-      const langName = getLanguageName(language);
-      prompt += `\n\n[LANGUAGE INSTRUCTION: Respond entirely in ${langName} (${language}). All output — verdict, headline, summary, signal descriptions, noise explanations — must be in ${langName}. Keep quoted noise fragments in their original language.]`;
-    }
-    const result = await useAgent.generate({ prompt });
-    await db.signal.update({
-      where: { id },
-      data: { data: JSON.parse(JSON.stringify(result.output)) },
-    });
-  } catch (error) {
-    console.error(`[analysis] generation failed for ${id}:`, error);
-    await db.signal.update({
-      where: { id },
-      data: {
-        data: JSON.parse(JSON.stringify({ error: "Generation failed. Please try again." })),
-      },
-    });
-  }
-}
 
 export const analysisRouter = createTRPCRouter({
   /** Create a signal record and start background generation. Returns the ID immediately. */
@@ -133,8 +30,9 @@ export const analysisRouter = createTRPCRouter({
         },
       });
 
-      // Fire and forget — generation runs in background
-      void generateAnalysis(String(signal.id), prompt, agent, input.language);
+      void generateAnalysis(String(signal.id), prompt, {
+        language: input.language,
+      });
 
       return { id: signal.id };
     }),
@@ -158,7 +56,7 @@ export const analysisRouter = createTRPCRouter({
           },
         });
 
-        void generateAnalysis(String(signal.id), input.url, fastAgent);
+        void generateAnalysis(String(signal.id), input.url, { fast: true });
 
         return { id: signal.id };
       } catch (e) {
