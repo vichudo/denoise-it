@@ -371,7 +371,7 @@ function CopyLinkButton({ id }: { id: string }) {
       ) : (
         <Link2 className="size-3" />
       )}
-      {copied ? "Copied" : "Copy link"}
+      <span className="hidden sm:inline">{copied ? "Copied" : "Copy link"}</span>
     </Button>
   );
 }
@@ -492,7 +492,7 @@ export function SignalView({
     <div className="flex flex-col items-center px-4 py-12">
       {/* Header */}
       <div className="mb-10 w-full max-w-2xl space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pr-24 sm:pr-0">
           <Link href="/">
             <Button
               variant="ghost"
