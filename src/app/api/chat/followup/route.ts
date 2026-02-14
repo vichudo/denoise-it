@@ -67,7 +67,7 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
   }
 
   const result = streamText({
-    model: openrouter.chat("x-ai/grok-4.1-fast:online"),
+    model: openrouter.chat("x-ai/grok-4.1-fast:online", { reasoning: { enabled: false, effort: 'none' } }),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     onFinish: async ({ text }) => {
@@ -75,11 +75,11 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
       const firstUserMsg = messages.find((m) => m.role === "user");
       const title = firstUserMsg
         ? firstUserMsg.parts
-            .filter((p) => p.type === "text")
-            .map((p) => p.text)
-            .join("")
-            .slice(0, 80)
-            .trim()
+          .filter((p) => p.type === "text")
+          .map((p) => p.text)
+          .join("")
+          .slice(0, 80)
+          .trim()
         : undefined;
 
       // Persist messages + assistant response to DB
