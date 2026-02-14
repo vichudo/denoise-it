@@ -106,9 +106,95 @@ function SourcesList({ sources }: { sources: string[] }) {
   );
 }
 
+const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
+
+function PromptBlock({ prompt }: { prompt: string }) {
+  const urls = [...new Set(prompt.match(URL_REGEX) ?? [])];
+  const text = urls
+    .reduce((t, url) => t.replace(url, ""), prompt)
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  const displayText =
+    text.length > 120 ? text.slice(0, 117) + "..." : text;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 20,
+        marginBottom: 20,
+      }}
+    >
+      {displayText && (
+        <div
+          style={{
+            display: "flex",
+            fontSize: 30,
+            color: "#a1a1aa",
+            lineHeight: 1.5,
+            textAlign: "center",
+            justifyContent: "center",
+            fontStyle: "italic",
+          }}
+        >
+          &ldquo;{displayText}&rdquo;
+        </div>
+      )}
+      {urls.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 12,
+            justifyContent: "center",
+          }}
+        >
+          {urls.map((url) => (
+            <span
+              key={url}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 20,
+                color: "#71717a",
+                backgroundColor: "#18181b",
+                padding: "6px 16px",
+                borderRadius: 8,
+                border: "1px solid #27272a",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://www.google.com/s2/favicons?domain=${getDomain(url)}&sz=32`}
+                alt=""
+                width={16}
+                height={16}
+              />
+              {getDomain(url)}
+            </span>
+          ))}
+        </div>
+      )}
+      <div
+        style={{
+          display: "flex",
+          width: 40,
+          height: 1,
+          backgroundColor: "#27272a",
+          borderRadius: 9999,
+          marginTop: 8,
+        }}
+      />
+    </div>
+  );
+}
+
 /* ── Story templates ──────────────────────────────────────── */
 
-function VerdictStory({ data }: { data: AnalysisResult }) {
+function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string }) {
   const color = verdictHexColor[data.verdict];
   const summary =
     data.summary.length > 180
@@ -118,6 +204,9 @@ function VerdictStory({ data }: { data: AnalysisResult }) {
     <StoryWrapper>
       {/* Top spacer */}
       <div style={{ display: "flex", flex: 1 }} />
+
+      {/* Prompt */}
+      {prompt && <PromptBlock prompt={prompt} />}
 
       {/* Centered content */}
       <div
@@ -225,7 +314,7 @@ function VerdictStory({ data }: { data: AnalysisResult }) {
             }}
           />
         </div>
-        <span style={{ fontSize: 20, color: "#3f3f46" }}>signal</span>
+        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoise score</span>
       </div>
 
       <BrandFooter />
@@ -233,12 +322,15 @@ function VerdictStory({ data }: { data: AnalysisResult }) {
   );
 }
 
-function AnalysisStory({ data }: { data: AnalysisResult }) {
+function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string }) {
   const color = verdictHexColor[data.verdict];
   return (
     <StoryWrapper>
       {/* Top spacer */}
       <div style={{ display: "flex", flex: 1 }} />
+
+      {/* Prompt */}
+      {prompt && <PromptBlock prompt={prompt} />}
 
       {/* Centered content */}
       <div
@@ -337,7 +429,7 @@ function AnalysisStory({ data }: { data: AnalysisResult }) {
             }}
           />
         </div>
-        <span style={{ fontSize: 20, color: "#3f3f46" }}>signal</span>
+        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoise score</span>
       </div>
 
       <BrandFooter />
@@ -354,15 +446,20 @@ function confidenceHex(c: number): string {
 function SignalStory({
   signal,
   index,
+  prompt,
 }: {
   signal: SignalElement;
   index: number;
+  prompt?: string;
 }) {
   const color = confidenceHex(signal.confidence);
   return (
     <StoryWrapper>
       {/* Top spacer */}
       <div style={{ display: "flex", flex: 1 }} />
+
+      {/* Prompt */}
+      {prompt && <PromptBlock prompt={prompt} />}
 
       {/* Centered content */}
       <div
@@ -409,16 +506,35 @@ function SignalStory({
         <div
           style={{
             display: "flex",
-            alignItems: "baseline",
-            justifyContent: "center",
-            gap: 10,
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 6,
           }}
         >
-          <span style={{ fontSize: 80, fontWeight: 700, color }}>
-            {signal.confidence}
-          </span>
-          <span style={{ fontSize: 28, color: "#52525b", fontWeight: 400 }}>
-            / 100
+          <div
+            style={{
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "center",
+              gap: 10,
+            }}
+          >
+            <span style={{ fontSize: 80, fontWeight: 700, color }}>
+              {signal.confidence}
+            </span>
+            <span style={{ fontSize: 28, color: "#52525b", fontWeight: 400 }}>
+              / 100
+            </span>
+          </div>
+          <span
+            style={{
+              fontSize: 18,
+              color: "#52525b",
+              letterSpacing: "0.08em",
+              fontWeight: 400,
+            }}
+          >
+            denoise score
           </span>
         </div>
 
@@ -437,14 +553,19 @@ function SignalStory({
 function NoiseStory({
   noise,
   index,
+  prompt,
 }: {
   noise: NoiseElement;
   index: number;
+  prompt?: string;
 }) {
   return (
     <StoryWrapper>
       {/* Top spacer */}
       <div style={{ display: "flex", flex: 1 }} />
+
+      {/* Prompt */}
+      {prompt && <PromptBlock prompt={prompt} />}
 
       {/* Centered content */}
       <div
@@ -532,6 +653,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type");
   const id = searchParams.get("id");
   const indexStr = searchParams.get("index");
+  const includePrompt = searchParams.get("prompt") === "1";
 
   if (!id || !type) {
     return new Response("Missing id or type", { status: 400 });
@@ -552,23 +674,25 @@ export async function GET(req: NextRequest) {
 
   let element: React.ReactElement;
 
+  const prompt = includePrompt ? signal.prompt : undefined;
+
   switch (type) {
     case "verdict":
-      element = <VerdictStory data={data} />;
+      element = <VerdictStory data={data} prompt={prompt} />;
       break;
     case "analysis":
-      element = <AnalysisStory data={data} />;
+      element = <AnalysisStory data={data} prompt={prompt} />;
       break;
     case "signal": {
       const s = data.signals[index];
       if (!s) return new Response("Signal index out of range", { status: 400 });
-      element = <SignalStory signal={s} index={index} />;
+      element = <SignalStory signal={s} index={index} prompt={prompt} />;
       break;
     }
     case "noise": {
       const n = data.noise[index];
       if (!n) return new Response("Noise index out of range", { status: 400 });
-      element = <NoiseStory noise={n} index={index} />;
+      element = <NoiseStory noise={n} index={index} prompt={prompt} />;
       break;
     }
     default:

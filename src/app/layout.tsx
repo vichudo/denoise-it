@@ -3,6 +3,8 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { LanguageProvider } from "@/components/language-provider";
+import { LanguageToggle } from "@/components/language-toggle";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -31,10 +33,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="fixed top-4 right-4 z-50">
-            <ModeToggle />
-          </div>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <LanguageProvider>
+            <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+              <LanguageToggle />
+              <ModeToggle />
+            </div>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </LanguageProvider>
           <Toaster />
         </ThemeProvider>
       </body>
