@@ -1,6 +1,7 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
+import { getLanguageName } from "@/lib/constants";
 import { env } from "@/env";
 import { db } from "@/server/db";
 import { parseSignalData } from "@/lib/utils";
@@ -14,9 +15,10 @@ export async function POST(req: Request) {
     messages: UIMessage[];
     signalId: string;
     followUpId: number;
+    language?: string;
   };
 
-  const { messages, signalId, followUpId } = body;
+  const { messages, signalId, followUpId, language } = body;
 
   // Load signal from DB for context
   const signal = await db.signal.findUniqueOrThrow({
@@ -58,6 +60,11 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
 - Be concise and factual. If you don't know something, say so.
 - Do NOT rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services).
 - Use markdown formatting for clarity.`;
+
+  if (language && language !== "en") {
+    const langName = getLanguageName(language);
+    systemPrompt += `\n- Respond entirely in ${langName} (${language}).`;
+  }
 
   const result = streamText({
     model: openrouter.chat("x-ai/grok-4.1-fast:online"),

@@ -14,6 +14,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 
 import { getDomain } from "@/lib/utils";
+import { useOutputLanguage } from "@/components/language-provider";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
 import {
@@ -156,13 +157,19 @@ export function FollowUpChat({
   followUpId: number;
   initialMessages?: UIMessage[];
 }) {
+  const { language } = useOutputLanguage();
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat/followup",
-        body: { signalId, followUpId },
+        body: {
+          signalId,
+          followUpId,
+          ...(language !== "en" && { language }),
+        },
       }),
-    [signalId, followUpId],
+    [signalId, followUpId, language],
   );
 
   const { messages, sendMessage, status, stop } = useChat({

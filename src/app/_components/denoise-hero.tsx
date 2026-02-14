@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 
+import { useOutputLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -30,6 +31,7 @@ const DEFAULT_STOP = 2; // index → "1 week"
 
 export function DenoiseHero() {
   const router = useRouter();
+  const { language } = useOutputLanguage();
   const [input, setInput] = useState("");
   const [timeSensitive, setTimeSensitive] = useState(false);
   const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
@@ -46,6 +48,7 @@ export function DenoiseHero() {
     create.mutate({
       content: input,
       ...(timeSensitive && { sinceDays: currentStop.days }),
+      ...(language !== "en" && { language }),
     });
   }
 

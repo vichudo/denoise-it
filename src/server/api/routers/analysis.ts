@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 
 import { analysisResultSchema } from "@/lib/schemas/analysis";
+import { getLanguageName } from "@/lib/constants";
 import { parseSignalData } from "@/lib/utils";
 import { env } from "@/env";
 import { db } from "@/server/db";
@@ -72,9 +73,15 @@ async function generateAnalysis(
   id: string,
   content: string,
   useAgent: typeof agent = agent,
+  language?: string,
 ) {
   try {
-    const result = await useAgent.generate({ prompt: content });
+    let prompt = content;
+    if (language && language !== "en") {
+      const langName = getLanguageName(language);
+      prompt += `\n\n[LANGUAGE INSTRUCTION: Respond entirely in ${langName} (${language}). All output — verdict, headline, summary, signal descriptions, noise explanations — must be in ${langName}. Keep quoted noise fragments in their original language.]`;
+    }
+    const result = await useAgent.generate({ prompt });
     await db.signal.update({
       where: { id },
       data: { data: JSON.parse(JSON.stringify(result.output)) },
@@ -97,6 +104,7 @@ export const analysisRouter = createTRPCRouter({
       z.object({
         content: z.string().min(1).max(10000),
         sinceDays: z.number().int().min(1).max(730).optional(),
+        language: z.string().max(5).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -115,7 +123,7 @@ export const analysisRouter = createTRPCRouter({
       });
 
       // Fire and forget — generation runs in background
-      void generateAnalysis(String(signal.id), prompt);
+      void generateAnalysis(String(signal.id), prompt, agent, input.language);
 
       return { id: signal.id };
     }),
