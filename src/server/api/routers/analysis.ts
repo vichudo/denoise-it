@@ -65,7 +65,7 @@ const analysisOutput = Output.object({ schema: analysisResultSchema });
 
 /** Default agent — thorough analysis for text input */
 const agent = new ToolLoopAgent({
-  model: openrouter.chat("x-ai/grok-4.1-fast:online"),
+  model: openrouter.chat("x-ai/grok-4.1-fast:online", { reasoning: { enabled: false, effort: 'none' } }),
   instructions: ANALYSIS_INSTRUCTIONS,
   output: analysisOutput,
   stopWhen: stepCountIs(3),
@@ -73,7 +73,7 @@ const agent = new ToolLoopAgent({
 
 /** Fast agent — optimized for link mode where crawlers are waiting */
 const fastAgent = new ToolLoopAgent({
-  model: openrouter.chat("x-ai/grok-4.1-fast:online"),
+  model: openrouter.chat("x-ai/grok-4.1-fast:online", { reasoning: { enabled: false, effort: 'none' } }),
   instructions: ANALYSIS_INSTRUCTIONS,
   output: analysisOutput,
   stopWhen: stepCountIs(2),
