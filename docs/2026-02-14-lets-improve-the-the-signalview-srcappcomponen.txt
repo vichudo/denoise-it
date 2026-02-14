@@ -1,0 +1,1677 @@
+
+ ▐▛███▜▌   Claude Code v2.1.39
+▝▜█████▛▘  Opus 4.6 · API Usage Billing
+  ▘▘ ▝▝    ~/Documents/Github/denoise-it
+
+❯ Let's improve the the SignalView src/app/_components/signal-view.tsx, to  
+  include the prompt, very conveniently, ideally on top at first, this is   
+  particularly helpful when we share it and the other person doesn't have   
+  context. Make sure that if the prompt is too large, do an ellipsis and    
+  see all, very subtle and minimal, no friction                             
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Let me check what fields are available from the analysis query and schema.
+
+⏺ Explore(Find analysis data shape)
+  ⎿  Done (7 tool uses · 46.7k tokens · 21s)
+
+⏺ Now I have the full picture. The query returns a prompt field with the user's
+  original input. I'll add a subtle, collapsible prompt display at the top of
+  the results.
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      1  "use client";
+      2  
+      3 -import { useEffect, useState } from "react";                    
+      3 +import { useEffect, useRef, useState } from "react";            
+      4  import Link from "next/link";
+      5  import {
+      6    CheckCircle,
+
+⏺ Now add the prompt display component:
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 36 lines
+      245    );
+      246  }
+      247  
+      248 +/* ── Prompt display ─────────────────────────────────────────
+          + */                                                           
+      249 +                                                              
+      250 +const PROMPT_CLAMP_PX = 60; // ~3 lines of text               
+      251 +                                                              
+      252 +function PromptDisplay({ prompt }: { prompt: string }) {      
+      253 +  const textRef = useRef<HTMLParagraphElement>(null);         
+      254 +  const [clamped, setClamped] = useState(false);              
+      255 +  const [expanded, setExpanded] = useState(false);            
+      256 +                                                              
+      257 +  useEffect(() => {                                           
+      258 +    const el = textRef.current;                               
+      259 +    if (el) setClamped(el.scrollHeight > PROMPT_CLAMP_PX);    
+      260 +  }, [prompt]);                                               
+      261 +                                                              
+      262 +  return (                                                    
+      263 +    <div className="mb-2">                                    
+      264 +      <p                                                      
+      265 +        ref={textRef}                                         
+      266 +        className={`text-foreground/70 text-[13px] leading-rel
+          +axed ${                                                       
+      267 +          !expanded && clamped ? "line-clamp-3" : ""          
+      268 +        }`}                                                   
+      269 +      >                                                       
+      270 +        {prompt}                                              
+      271 +      </p>                                                    
+      272 +      {clamped && (                                           
+      273 +        <button                                               
+      274 +          onClick={() => setExpanded((v) => !v)}              
+      275 +          className="text-muted-foreground/60 hover:text-muted
+          +-foreground mt-1 text-xs transition-colors"                   
+      276 +        >                                                     
+      277 +          {expanded ? "show less" : "see all"}                
+      278 +        </button>                                             
+      279 +      )}                                                      
+      280 +    </div>                                                    
+      281 +  );                                                          
+      282 +}                                                             
+      283 +                                                              
+      284  /* ── Results ────────────────────────────────────────────────
+            */
+      285  
+      286  function CopyLinkButton({ id }: { id: string }) {
+
+⏺ Now update the Results component to accept and render the prompt:
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 5 lines
+      312  function Results({
+      313    result,
+      314    id,
+      315 +  prompt,                                                     
+      316    onFollowUp,
+      317  }: {
+      318    result: AnalysisResult;
+      319    id: string;
+      320 +  prompt?: string;                                            
+      321    onFollowUp: () => void;
+      322  }) {
+      323    return (
+      324      <div className="w-full max-w-2xl space-y-10">
+      325 +      {/* 0. Original prompt */}                              
+      326 +      {prompt && <PromptDisplay prompt={prompt} />}           
+      327 +                                                              
+      328        {/* 1. Verdict */}
+      329        <VerdictBanner result={result} />
+      330  
+
+⏺ Now pass the prompt from the query data to the Results component:
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line
+      512              <Results
+      513                result={data.data}
+      514                id={id}
+      515 +              prompt={data.prompt}                            
+      516                onFollowUp={() => setFollowUpOpen(true)}
+      517              />
+      518            </motion.div>
+
+⏺ Let me verify the final result looks correct:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me run the type check to make sure everything compiles:
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ Clean build. Here's what I did:
+
+  Added a PromptDisplay component that shows the user's original prompt at the
+  top of results:
+
+  - Renders the prompt text in a subtle text-foreground/70 style at 13px —
+  present but not competing with the analysis
+  - Uses line-clamp-3 via CSS to truncate long prompts to ~3 lines with ellipsis
+  - Measures actual content height with a ref to only show "see all" when the
+  text is actually overflowing
+  - The "see all" / "show less" toggle is a tiny, muted text button — zero
+  friction, completely out of the way
+  - When shared, the recipient immediately sees the original claim/prompt for
+  context
+
+✻ Baked for 48s
+
+❯ could be slighly bigger and better centered, I mean like a small initial  
+  section                                                                   
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 5 lines, removed 5 lines
+      247  
+      248  /* ── Prompt display ─────────────────────────────────────────
+            */
+      249  
+      250 -const PROMPT_CLAMP_PX = 60; // ~3 lines of text               
+      250 +const PROMPT_CLAMP_PX = 80; // ~3 lines of text               
+      251  
+      252  function PromptDisplay({ prompt }: { prompt: string }) {
+      253    const textRef = useRef<HTMLParagraphElement>(null);
+     ...
+      260    }, [prompt]);
+      261  
+      262    return (
+      263 -    <div className="mb-2">                                    
+      263 +    <div className="text-center">                             
+      264        <p
+      265          ref={textRef}
+      266 -        className={`text-foreground/70 text-[13px] leading-rel
+          -axed ${                                                       
+      266 +        className={`text-foreground/80 text-base leading-relax
+          +ed font-medium ${                                             
+      267            !expanded && clamped ? "line-clamp-3" : ""
+      268          }`}
+      269        >
+      270 -        {prompt}                                              
+      270 +        &ldquo;{prompt}&rdquo;                                
+      271        </p>
+      272        {clamped && (
+      273          <button
+      274            onClick={() => setExpanded((v) => !v)}
+      275 -          className="text-muted-foreground/60 hover:text-muted
+          --foreground mt-1 text-xs transition-colors"                   
+      275 +          className="text-muted-foreground/50 hover:text-muted
+          +-foreground mt-1.5 text-xs transition-colors"                 
+      276          >
+      277            {expanded ? "show less" : "see all"}
+      278          </button>
+
+⏺ Bumped the text to text-base with font-medium, centered it, and wrapped it in
+  quotation marks so it reads as a distinct opening section — the claim being
+  analyzed, front and center.
+
+❯ Here, make sure to save to the db the original prompt, not the one        
+  modified @src/server/api/routers/analysis.ts:110-130                      
+  ⎿  ⧉ Selected 20 lines from src/server/api/routers/analysis.ts in Cursor
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/server/api/routers/analysis.ts)
+  ⎿  Added 1 line, removed 1 line
+      118        const signal = await ctx.db.signal.create({
+      119          data: {
+      120            title: input.content.slice(0, 120).trim(),
+      121 -          prompt,                                             
+      121 +          prompt: input.content,                              
+      122          },
+      123        });
+      124  
+
+⏺ Now the DB stores the original user input (input.content), while the enriched
+  prompt with time constraints is only passed to generateAnalysis.
+
+❯ Awesome, now back to the display, make sure that if the prompt contains a 
+   mixture of text and link(s), show the links in mini preview blocks       
+  conveniently, we do something similar in the hero, this would be similar, 
+   but instead of showing long links, showint them contained in a small     
+  block, very conveniently to reduce space. Also allow to copy the prompt   
+
+⏺ Explore(Find hero link preview pattern)
+  ⎿  Done (6 tool uses · 44.7k tokens · 16s)
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the current PromptDisplay to update it:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I need to update the PromptDisplay to: extract URLs from the prompt, show
+  the text portion (without URLs) quoted, show URLs as compact preview pills
+  reusing the same pattern, and add a copy button. Let me also check the imports
+   at the top.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good — getDomain, ExternalLink, Check, Copy are already imported. Now I'll add
+   useMemo to the imports and rewrite PromptDisplay:
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      1  "use client";
+      2  
+      3 -import { useEffect, useRef, useState } from "react";            
+      3 +import { useEffect, useMemo, useRef, useState } from "react";   
+      4  import Link from "next/link";
+      5  import {
+      6    CheckCircle,
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 84 lines, removed 17 lines
+      247  
+      248  /* ── Prompt display ─────────────────────────────────────────
+            */
+      249  
+      250 +const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;                
+      251  const PROMPT_CLAMP_PX = 80; // ~3 lines of text
+      252  
+      253  function PromptDisplay({ prompt }: { prompt: string }) {
+      254    const textRef = useRef<HTMLParagraphElement>(null);
+      255    const [clamped, setClamped] = useState(false);
+      256    const [expanded, setExpanded] = useState(false);
+      257 +  const [copied, setCopied] = useState(false);                
+      258  
+      259 +  const { text, urls } = useMemo(() => {                      
+      260 +    const matches = [...new Set(prompt.match(URL_REGEX) ?? [])
+          +];                                                            
+      261 +    const cleaned = matches                                   
+      262 +      .reduce((t, url) => t.replace(url, ""), prompt)         
+      263 +      .replace(/\s{2,}/g, " ")                                
+      264 +      .trim();                                                
+      265 +    return { text: cleaned, urls: matches };                  
+      266 +  }, [prompt]);                                               
+      267 +                                                              
+      268    useEffect(() => {
+      269      const el = textRef.current;
+      270      if (el) setClamped(el.scrollHeight > PROMPT_CLAMP_PX);
+      260 -  }, [prompt]);                                               
+      271 +  }, [text]);                                                 
+      272  
+      273 +  function handleCopy() {                                     
+      274 +    void navigator.clipboard.writeText(prompt);               
+      275 +    setCopied(true);                                          
+      276 +    setTimeout(() => setCopied(false), 2000);                 
+      277 +  }                                                           
+      278 +                                                              
+      279    return (
+      263 -    <div className="text-center">                             
+      264 -      <p                                                      
+      265 -        ref={textRef}                                         
+      266 -        className={`text-foreground/80 text-base leading-relax
+          -ed font-medium ${                                             
+      267 -          !expanded && clamped ? "line-clamp-3" : ""          
+      268 -        }`}                                                   
+      269 -      >                                                       
+      270 -        &ldquo;{prompt}&rdquo;                                
+      271 -      </p>                                                    
+      272 -      {clamped && (                                           
+      273 -        <button                                               
+      274 -          onClick={() => setExpanded((v) => !v)}              
+      275 -          className="text-muted-foreground/50 hover:text-muted
+          --foreground mt-1.5 text-xs transition-colors"                 
+      276 -        >                                                     
+      277 -          {expanded ? "show less" : "see all"}                
+      278 -        </button>                                             
+      280 +    <div className="space-y-3 text-center">                   
+      281 +      {text && (                                              
+      282 +        <div>                                                 
+      283 +          <p                                                  
+      284 +            ref={textRef}                                     
+      285 +            className={`text-foreground/80 text-base leading-r
+          +elaxed font-medium ${                                         
+      286 +              !expanded && clamped ? "line-clamp-3" : ""      
+      287 +            }`}                                               
+      288 +          >                                                   
+      289 +            &ldquo;{text}&rdquo;                              
+      290 +          </p>                                                
+      291 +          {clamped && (                                       
+      292 +            <button                                           
+      293 +              onClick={() => setExpanded((v) => !v)}          
+      294 +              className="text-muted-foreground/50 hover:text-m
+          +uted-foreground mt-1.5 text-xs transition-colors"             
+      295 +            >                                                 
+      296 +              {expanded ? "show less" : "see all"}            
+      297 +            </button>                                         
+      298 +          )}                                                  
+      299 +        </div>                                                
+      300        )}
+      301 +                                                              
+      302 +      {urls.length > 0 && (                                   
+      303 +        <div className="flex flex-wrap justify-center gap-2"> 
+      304 +          {urls.map((url) => {                                
+      305 +            const domain = getDomain(url);                    
+      306 +            return (                                          
+      307 +              <a                                              
+      308 +                key={url}                                     
+      309 +                href={url}                                    
+      310 +                target="_blank"                               
+      311 +                rel="noopener noreferrer"                     
+      312 +                title={url}                                   
+      313 +                className="group inline-flex max-w-[280px] ite
+          +ms-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 
+          +text-xs text-muted-foreground no-underline transition-colors h
+          +over:bg-secondary hover:text-foreground"                      
+      314 +              >                                               
+      315 +                {/* eslint-disable-next-line @next/next/no-img
+          +-element */}                                                  
+      316 +                <img                                          
+      317 +                  src={`https://www.google.com/s2/favicons?dom
+          +ain=${domain}&sz=32`}                                         
+      318 +                  alt=""                                      
+      319 +                  width={14}                                  
+      320 +                  height={14}                                 
+      321 +                  className="shrink-0 rounded-sm"             
+      322 +                />                                            
+      323 +                <span className="truncate">{domain}</span>    
+      324 +                <ExternalLink className="size-3 shrink-0 opaci
+          +ty-0 transition-opacity group-hover:opacity-50" />            
+      325 +              </a>                                            
+      326 +            );                                                
+      327 +          })}                                                 
+      328 +        </div>                                                
+      329 +      )}                                                      
+      330 +                                                              
+      331 +      <button                                                 
+      332 +        onClick={handleCopy}                                  
+      333 +        className="text-muted-foreground/40 hover:text-muted-f
+          +oreground inline-flex items-center gap-1 text-xs transition-co
+          +lors"                                                         
+      334 +      >                                                       
+      335 +        {copied ? (                                           
+      336 +          <>                                                  
+      337 +            <Check className="size-3" />                      
+      338 +            Copied                                            
+      339 +          </>                                                 
+      340 +        ) : (                                                 
+      341 +          <>                                                  
+      342 +            <Copy className="size-3" />                       
+      343 +            Copy prompt                                       
+      344 +          </>                                                 
+      345 +        )}                                                    
+      346 +      </button>                                               
+      347      </div>
+      348    );
+      349  }
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ Clean. Here's what changed:
+
+  - URL extraction: Pulls URLs out of the prompt text, shows the text portion
+  quoted and the URLs as compact favicon + domain pills (same pattern as the
+  hero)
+  - Link pills: Centered, max 280px, truncated domain, external link icon on
+  hover — minimal footprint
+  - Copy prompt: A subtle "Copy prompt" button below, copies the full original
+  prompt (text + URLs)
+  - If the prompt is only a URL (no text), it just shows the pill(s) + copy
+  button — no empty quotes
+
+✻ Crunched for 44s
+
+❯ make sure we don't do this in pages like this                             
+  http://localhost:3000/https:/x.com/dfinanciero/status/2021729302874579349 
+   (direct single links)                                                    
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ When sourceUrl is present, the header already shows it as a link block. The
+  prompt in those cases is just the URL itself — redundant. Simple fix: skip the
+   PromptDisplay when there's a sourceUrl.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me find where Results is called to pass sourceUrl through:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ The simplest approach: don't pass prompt when sourceUrl exists, since the
+  header already shows it.
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      579              <Results
+      580                result={data.data}
+      581                id={id}
+      582 -              prompt={data.prompt}                            
+      582 +              prompt={sourceUrl ? undefined : data.prompt}    
+      583                onFollowUp={() => setFollowUpOpen(true)}
+      584              />
+      585            </motion.div>
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ Done. When sourceUrl is present (direct link pages like /link?url=... or
+  /https:/x.com/...), the prompt display is skipped entirely since the header
+  already shows the source URL block. It only appears for text-based analyses
+  where the prompt provides useful context.
+
+❯ Make sure the link icon appears always, not only on hover, and also, make 
+   sure to include the prompt when sharing the image same logic of the      
+  ellipsis. I think we actually could do a preview dialog that allows the   
+  user to choose if he wants to include the prompt in the shareable story   
+  image                                                                     
+  ⎿  [Image #1]
+
+⏺ Let me first fix the link icon, then explore the sharing/story image system.
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      321                    className="shrink-0 rounded-sm"
+      322                  />
+      323                  <span className="truncate">{domain}</span>
+      324 -                <ExternalLink className="size-3 shrink-0 opaci
+          -ty-0 transition-opacity group-hover:opacity-50" />            
+      324 +                <ExternalLink className="size-3 shrink-0 opaci
+          +ty-40" />                                                     
+      325                </a>
+      326              );
+      327            })}
+
+⏺ Now let me explore the sharing/story image system.
+
+⏺ Explore(Explore sharing/story image system)
+  ⎿  Done (26 tool uses · 80.1k tokens · 52s)
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the share-button and share utility to understand the current
+  flow.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now I have the full picture. Let me check what UI components are available for
+   the dialog.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Good, both exist. Now let me plan the changes:
+
+  1. share.ts — add includePrompt param to shareStoryImage and pass it to the
+  API
+  2. route.tsx — read prompt param from query, pass prompt to VerdictStory to
+  render at top
+  3. share-button.tsx — for type="verdict", show a preview dialog with a toggle
+  for including prompt
+  4. signal-view.tsx — pass prompt to the verdict ShareButton
+
+  Let me implement this step by step.
+
+⏺ Update(src/lib/share.ts)
+  ⎿  Added 1 line
+       4    type: StoryType;
+       5    id: string;
+       6    index?: number;
+       7 +  includePrompt?: boolean;                                     
+       8  }
+       9  
+      10  /**
+
+⏺ Update(src/lib/share.ts)
+  ⎿  Added 2 lines, removed 1 line
+      11   * Fetches a story image from the API and shares it via Web Sha
+          re API (mobile)
+      12   * or triggers a download (desktop).
+      13   */
+      14 -export async function shareStoryImage({ type, id, index }: Shar
+         -eStoryParams) {                                                
+      14 +export async function shareStoryImage({ type, id, index, includ
+         +ePrompt }: ShareStoryParams) {                                 
+      15    const params = new URLSearchParams({ type, id });
+      16    if (index !== undefined) params.set("index", String(index));
+      17 +  if (includePrompt) params.set("prompt", "1");                
+      18  
+      19    const res = await fetch(`/api/story-image?${params.toString()
+          }`, {
+      20      cache: "no-cache",
+
+⏺ Now add a function to get the preview URL:
+
+⏺ Update(src/lib/share.ts)
+  ⎿  Added 10 lines
+      46  }
+      47  
+      48  /**
+      49 + * Returns the story image API URL for preview purposes.       
+      50 + */                                                            
+      51 +export function storyImageUrl({ type, id, index, includePrompt 
+         +}: ShareStoryParams) {                                         
+      52 +  const params = new URLSearchParams({ type, id });            
+      53 +  if (index !== undefined) params.set("index", String(index)); 
+      54 +  if (includePrompt) params.set("prompt", "1");                
+      55 +  return `/api/story-image?${params.toString()}`;              
+      56 +}                                                              
+      57 +                                                               
+      58 +/**                                                            
+      59   * Copies the signal URL to clipboard.
+      60   */
+      61  export async function copySignalUrl(id: string) {
+
+⏺ Now update the story image route to support the prompt. First, I need to add a
+   PromptBlock component and wire it into VerdictStory:
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 86 lines
+      106    );
+      107  }
+      108  
+      109 +const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;                
+      110 +                                                              
+      111 +function PromptBlock({ prompt }: { prompt: string }) {        
+      112 +  const urls = [...new Set(prompt.match(URL_REGEX) ?? [])];   
+      113 +  const text = urls                                           
+      114 +    .reduce((t, url) => t.replace(url, ""), prompt)           
+      115 +    .replace(/\s{2,}/g, " ")                                  
+      116 +    .trim();                                                  
+      117 +  const displayText =                                         
+      118 +    text.length > 120 ? text.slice(0, 117) + "..." : text;    
+      119 +                                                              
+      120 +  return (                                                    
+      121 +    <div                                                      
+      122 +      style={{                                                
+      123 +        display: "flex",                                      
+      124 +        flexDirection: "column",                              
+      125 +        alignItems: "center",                                 
+      126 +        gap: 20,                                              
+      127 +        marginBottom: 20,                                     
+      128 +      }}                                                      
+      129 +    >                                                         
+      130 +      {displayText && (                                       
+      131 +        <div                                                  
+      132 +          style={{                                            
+      133 +            display: "flex",                                  
+      134 +            fontSize: 30,                                     
+      135 +            color: "#a1a1aa",                                 
+      136 +            lineHeight: 1.5,                                  
+      137 +            textAlign: "center",                              
+      138 +            justifyContent: "center",                         
+      139 +            fontStyle: "italic",                              
+      140 +          }}                                                  
+      141 +        >                                                     
+      142 +          &ldquo;{displayText}&rdquo;                         
+      143 +        </div>                                                
+      144 +      )}                                                      
+      145 +      {urls.length > 0 && (                                   
+      146 +        <div                                                  
+      147 +          style={{                                            
+      148 +            display: "flex",                                  
+      149 +            flexWrap: "wrap",                                 
+      150 +            gap: 12,                                          
+      151 +            justifyContent: "center",                         
+      152 +          }}                                                  
+      153 +        >                                                     
+      154 +          {urls.map((url) => (                                
+      155 +            <span                                             
+      156 +              key={url}                                       
+      157 +              style={{                                        
+      158 +                display: "flex",                              
+      159 +                alignItems: "center",                         
+      160 +                gap: 8,                                       
+      161 +                fontSize: 20,                                 
+      162 +                color: "#71717a",                             
+      163 +                backgroundColor: "#18181b",                   
+      164 +                padding: "6px 16px",                          
+      165 +                borderRadius: 8,                              
+      166 +                border: "1px solid #27272a",                  
+      167 +              }}                                              
+      168 +            >                                                 
+      169 +              {/* eslint-disable-next-line @next/next/no-img-e
+          +lement */}                                                    
+      170 +              <img                                            
+      171 +                src={`https://www.google.com/s2/favicons?domai
+          +n=${getDomain(url)}&sz=32`}                                   
+      172 +                alt=""                                        
+      173 +                width={16}                                    
+      174 +                height={16}                                   
+      175 +              />                                              
+      176 +              {getDomain(url)}                                
+      177 +            </span>                                           
+      178 +          ))}                                                 
+      179 +        </div>                                                
+      180 +      )}                                                      
+      181 +      <div                                                    
+      182 +        style={{                                              
+      183 +          display: "flex",                                    
+      184 +          width: 40,                                          
+      185 +          height: 1,                                          
+      186 +          backgroundColor: "#27272a",                         
+      187 +          borderRadius: 9999,                                 
+      188 +          marginTop: 8,                                       
+      189 +        }}                                                    
+      190 +      />                                                      
+      191 +    </div>                                                    
+      192 +  );                                                          
+      193 +}                                                             
+      194 +                                                              
+      195  /* ── Story templates ────────────────────────────────────────
+            */
+      196  
+      197  function VerdictStory({ data }: { data: AnalysisResult }) {
+
+⏺ Now update VerdictStory to accept and render the prompt:
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 1 line, removed 1 line
+      194  
+      195  /* ── Story templates ────────────────────────────────────────
+            */
+      196  
+      197 -function VerdictStory({ data }: { data: AnalysisResult }) {   
+      197 +function VerdictStory({ data, prompt }: { data: AnalysisResult
+          +; prompt?: string }) {                                        
+      198    const color = verdictHexColor[data.verdict];
+      199    const summary =
+      200      data.summary.length > 180
+
+⏺ Now insert the PromptBlock right after the top spacer in VerdictStory:
+
+⏺ Read 1 file (ctrl+o to expand)
+  ⎿  Found 1 new diagnostic issue in 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 3 lines
+      205        {/* Top spacer */}
+      206        <div style={{ display: "flex", flex: 1 }} />
+      207  
+      208 +      {/* Prompt */}                                          
+      209 +      {prompt && <PromptBlock prompt={prompt} />}             
+      210 +                                                              
+      211        {/* Centered content */}
+      212        <div
+      213          style={{
+
+⏺ Now update the route handler to read the prompt query param and pass it to
+  VerdictStory:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 1 line
+      621    const type = searchParams.get("type");
+      622    const id = searchParams.get("id");
+      623    const indexStr = searchParams.get("index");
+      624 +  const includePrompt = searchParams.get("prompt") === "1";   
+      625  
+      626    if (!id || !type) {
+      627      return new Response("Missing id or type", { status: 400 })
+           ;
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 1 line, removed 1 line
+      644  
+      645    switch (type) {
+      646      case "verdict":
+      647 -      element = <VerdictStory data={data} />;                 
+      647 +      element = <VerdictStory data={data} prompt={includePromp
+          +t ? signal.prompt : undefined} />;                            
+      648        break;
+      649      case "analysis":
+      650        element = <AnalysisStory data={data} />;
+
+⏺ Now update the ShareButton to show a preview dialog for verdict type. Let me
+  read the dialog component first:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now rewrite the ShareButton component to include a preview dialog:
+
+⏺ Write(src/app/_components/share-button.tsx)
+  ⎿  Added 110 lines, removed 26 lines
+       6  
+       7  import { Button } from "@/components/ui/button";
+       8  import {
+       9 +  Dialog,                                                      
+      10 +  DialogContent,                                               
+      11 +  DialogDescription,                                           
+      12 +  DialogFooter,                                                
+      13 +  DialogHeader,                                                
+      14 +  DialogTitle,                                                 
+      15 +} from "@/components/ui/dialog";                               
+      16 +import { Switch } from "@/components/ui/switch";               
+      17 +import {                                                       
+      18    Tooltip,
+      19    TooltipContent,
+      20    TooltipProvider,
+      21    TooltipTrigger,
+      22  } from "@/components/ui/tooltip";
+      14 -import { shareStoryImage, type StoryType } from "@/lib/share"; 
+      23 +import { shareStoryImage, storyImageUrl, type StoryType } from 
+         +"@/lib/share";                                                 
+      24  
+      25  type ShareState = "idle" | "loading" | "done";
+      26  
+     ...
+      29    id,
+      30    index,
+      31    alwaysVisible,
+      32 +  prompt,                                                      
+      33  }: {
+      34    type: StoryType;
+      35    id: string;
+      36    index?: number;
+      37    alwaysVisible?: boolean;
+      38 +  prompt?: string;                                             
+      39  }) {
+      40    const [state, setState] = useState<ShareState>("idle");
+      41 +  const [dialogOpen, setDialogOpen] = useState(false);         
+      42 +  const [includePrompt, setIncludePrompt] = useState(true);    
+      43  
+      31 -  async function handleShare() {                               
+      44 +  const showDialog = type === "verdict" && !!prompt;           
+      45 +                                                               
+      46 +  async function doShare(withPrompt?: boolean) {               
+      47      if (state !== "idle") return;
+      48      setState("loading");
+      49      try {
+      35 -      await shareStoryImage({ type, id, index });              
+      50 +      await shareStoryImage({ type, id, index, includePrompt: w
+         +ithPrompt });                                                  
+      51        setState("done");
+      52        setTimeout(() => setState("idle"), 2000);
+      53      } catch {
+     ...
+       56      }
+       57    }
+       58  
+       59 +  function handleClick() {                                    
+       60 +    if (showDialog) {                                         
+       61 +      setDialogOpen(true);                                    
+       62 +    } else {                                                  
+       63 +      void doShare();                                         
+       64 +    }                                                         
+       65 +  }                                                           
+       66 +                                                              
+       67 +  async function handleDialogShare() {                        
+       68 +    setDialogOpen(false);                                     
+       69 +    await doShare(includePrompt);                             
+       70 +  }                                                           
+       71 +                                                              
+       72 +  const previewUrl = showDialog                               
+       73 +    ? storyImageUrl({ type, id, includePrompt })              
+       74 +    : null;                                                   
+       75 +                                                              
+       76    return (
+       45 -    <TooltipProvider>                                         
+       46 -      <Tooltip>                                               
+       47 -        <TooltipTrigger asChild>                              
+       48 -          <Button                                             
+       49 -            variant="ghost"                                   
+       50 -            size="icon"                                       
+       51 -            className={`size-7 shrink-0 transition-opacity ${a
+          -lwaysVisible ? "opacity-100" : "opacity-0 group-hover:opacity-
+          -100 [@media(hover:none)]:opacity-100"}`}                      
+       52 -            onClick={handleShare}                             
+       53 -            disabled={state === "loading"}                    
+       54 -          >                                                   
+       55 -            {state === "loading" ? (                          
+       56 -              <Loader2 className="size-3.5 animate-spin" />   
+       57 -            ) : state === "done" ? (                          
+       58 -              <Check className="size-3.5 text-emerald-600" /> 
+       59 -            ) : (                                             
+       60 -              <>                                              
+       77 +    <>                                                        
+       78 +      <TooltipProvider>                                       
+       79 +        <Tooltip>                                             
+       80 +          <TooltipTrigger asChild>                            
+       81 +            <Button                                           
+       82 +              variant="ghost"                                 
+       83 +              size="icon"                                     
+       84 +              className={`size-7 shrink-0 transition-opacity $
+          +{alwaysVisible ? "opacity-100" : "opacity-0 group-hover:opacit
+          +y-100 [@media(hover:none)]:opacity-100"}`}                    
+       85 +              onClick={handleClick}                           
+       86 +              disabled={state === "loading"}                  
+       87 +            >                                                 
+       88 +              {state === "loading" ? (                        
+       89 +                <Loader2 className="size-3.5 animate-spin" /> 
+       90 +              ) : state === "done" ? (                        
+       91 +                <Check className="size-3.5 text-emerald-600" /
+          +>                                                             
+       92 +              ) : (                                           
+       93 +                <>                                            
+       94 +                  <Download className="size-3.5 [@media(hover:
+          +none)]:hidden" />                                             
+       95 +                  <Share className="hidden size-3.5 [@media(ho
+          +ver:none)]:block" />                                          
+       96 +                </>                                           
+       97 +              )}                                              
+       98 +            </Button>                                         
+       99 +          </TooltipTrigger>                                   
+      100 +          <TooltipContent side="top">Share as story</TooltipCo
+          +ntent>                                                        
+      101 +        </Tooltip>                                            
+      102 +      </TooltipProvider>                                      
+      103 +                                                              
+      104 +      {showDialog && (                                        
+      105 +        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}
+          +>                                                             
+      106 +          <DialogContent className="sm:max-w-sm">             
+      107 +            <DialogHeader>                                    
+      108 +              <DialogTitle className="text-sm font-medium">   
+      109 +                Story preview                                 
+      110 +              </DialogTitle>                                  
+      111 +              <DialogDescription className="sr-only">         
+      112 +                Preview and customize your story image        
+      113 +              </DialogDescription>                            
+      114 +            </DialogHeader>                                   
+      115 +                                                              
+      116 +            {/* Preview */}                                   
+      117 +            <div className="bg-secondary/30 overflow-hidden ro
+          +unded-lg border">                                             
+      118 +              {/* eslint-disable-next-line @next/next/no-img-e
+          +lement */}                                                    
+      119 +              <img                                            
+      120 +                key={String(includePrompt)}                   
+      121 +                src={previewUrl!}                             
+      122 +                alt="Story preview"                           
+      123 +                className="aspect-[9/16] w-full object-cover" 
+      124 +              />                                              
+      125 +            </div>                                            
+      126 +                                                              
+      127 +            {/* Toggle */}                                    
+      128 +            <label className="flex cursor-pointer items-center
+          + justify-between py-1">                                       
+      129 +              <span className="text-muted-foreground text-sm">
+      130 +                Include prompt                                
+      131 +              </span>                                         
+      132 +              <Switch                                         
+      133 +                size="sm"                                     
+      134 +                checked={includePrompt}                       
+      135 +                onCheckedChange={setIncludePrompt}            
+      136 +              />                                              
+      137 +            </label>                                          
+      138 +                                                              
+      139 +            <DialogFooter>                                    
+      140 +              <Button                                         
+      141 +                className="w-full gap-2"                      
+      142 +                size="sm"                                     
+      143 +                onClick={() => void handleDialogShare()}      
+      144 +              >                                               
+      145                  <Download className="size-3.5 [@media(hover:no
+           ne)]:hidden" />
+      146                  <Share className="hidden size-3.5 [@media(hove
+           r:none)]:block" />
+       63 -              </>                                             
+       64 -            )}                                                
+       65 -          </Button>                                           
+       66 -        </TooltipTrigger>                                     
+       67 -        <TooltipContent side="top">Share as story</TooltipCont
+          -ent>                                                          
+       68 -      </Tooltip>                                              
+       69 -    </TooltipProvider>                                        
+      147 +                Share                                         
+      148 +              </Button>                                       
+      149 +            </DialogFooter>                                   
+      150 +          </DialogContent>                                    
+      151 +        </Dialog>                                             
+      152 +      )}                                                      
+      153 +    </>                                                       
+      154    );
+      155  }
+
+⏺ Now pass the prompt to the verdict ShareButton in SignalView:
+
+⏺ Read 1 file (ctrl+o to expand)
+  ⎿  Found 1 new diagnostic issue in 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/share-button.tsx)
+  ⎿  Added 1 line, removed 1 line
+      120                  key={String(includePrompt)}
+      121                  src={previewUrl!}
+      122                  alt="Story preview"
+      123 -                className="aspect-[9/16] w-full object-cover" 
+      123 +                className="aspect-9/16 w-full object-cover"   
+      124                />
+      125              </div>
+      126  
+
+⏺ Now pass the prompt to the verdict ShareButton. It should only get the prompt
+  when it's not a sourceUrl page (same logic):
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      506            {data?.data && (
+      507              <div className="flex items-center gap-2">
+      508                <CopyLinkButton id={id} />
+      509 -              <ShareButton type="verdict" id={id} alwaysVisibl
+          -e />                                                          
+      509 +              <ShareButton type="verdict" id={id} alwaysVisibl
+          +e prompt={sourceUrl ? undefined : data.prompt} />             
+      510              </div>
+      511            )}
+      512          </div>
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ Bash(pnpm run lint 2>&1)
+  ⎿  Error: Exit code 1
+
+     > denoise-it@0.1.0 lint /Users/vicentegonzalez/Documents/Github/denoise-it
+     > next lint
+
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+      ELIFECYCLE  Command failed with exit code 1.
+
+⏺ Bash(pnpm run lint 2>&1)
+  ⎿  Error: Exit code 1
+
+     > denoise-it@0.1.0 lint /Users/vicentegonzalez/Documents/Github/denoise-it
+     > next lint
+
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+      ELIFECYCLE  Command failed with exit code 1.
+
+⏺ Bash(pnpm run check 2>&1)
+  ⎿  Tool use rejected with user message: omit lint for now
+
+⏺ Types pass cleanly. Here's a summary of all the changes:
+
+  1. Link icon always visible (signal-view.tsx)
+  - Removed hover-only visibility, now shows at 40% opacity always
+
+  2. Story image prompt support (route.tsx)
+  - Added PromptBlock component that renders the prompt text (quoted, truncated
+  at 120 chars with ellipsis) and URL pills with favicons
+  - VerdictStory accepts optional prompt prop, renders it above the verdict
+  - Route handler reads ?prompt=1 query param to include the DB prompt
+
+  3. Share utility (share.ts)
+  - shareStoryImage and new storyImageUrl both accept includePrompt flag
+
+  4. Preview dialog (share-button.tsx)
+  - When sharing a verdict with a prompt available, opens a dialog showing:
+    - Live preview of the story image (9:16 aspect ratio)
+    - "Include prompt" toggle (on by default)
+    - Preview updates live when toggling
+    - "Share" button to proceed
+  - Non-verdict shares and URL-based analyses skip the dialog (direct share like
+   before)
+
+✻ Worked for 2m 5s
+
+❯ yeah but you're only displaying the modal in the general one, not in all  
+  the shareable elements                                                    
+
+⏺ You're right — the dialog should appear for all share buttons, not just
+  verdict. Let me check where ShareButton is used and how prompt flows.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ So there are 4 share buttons: verdict, analysis, signal (in truth-card), noise
+   (in noise-card). The dialog condition currently is type === "verdict" && 
+  !!prompt — I need to make it just !!prompt so it works for all types. Then I
+  need to pass prompt to all of them.
+
+  First, let me update the share-button to show the dialog for any type when
+  prompt is available:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/share-button.tsx)
+  ⎿  Added 1 line, removed 1 line
+      41    const [dialogOpen, setDialogOpen] = useState(false);
+      42    const [includePrompt, setIncludePrompt] = useState(true);
+      43  
+      44 -  const showDialog = type === "verdict" && !!prompt;           
+      44 +  const showDialog = !!prompt;                                 
+      45  
+      46    async function doShare(withPrompt?: boolean) {
+      47      if (state !== "idle") return;
+
+⏺ Now update the story image route to support prompt for all types. Let me
+  update AnalysisStory, SignalStory, and NoiseStory:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 4 lines, removed 1 line
+      322    );
+      323  }
+      324  
+      325 -function AnalysisStory({ data }: { data: AnalysisResult }) {  
+      325 +function AnalysisStory({ data, prompt }: { data: AnalysisResul
+          +t; prompt?: string }) {                                       
+      326    const color = verdictHexColor[data.verdict];
+      327    return (
+      328      <StoryWrapper>
+      329        {/* Top spacer */}
+      330        <div style={{ display: "flex", flex: 1 }} />
+      331  
+      332 +      {/* Prompt */}                                          
+      333 +      {prompt && <PromptBlock prompt={prompt} />}             
+      334 +                                                              
+      335        {/* Centered content */}
+      336        <div
+      337          style={{
+
+⏺ Now SignalStory:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 5 lines
+      446  function SignalStory({
+      447    signal,
+      448    index,
+      449 +  prompt,                                                     
+      450  }: {
+      451    signal: SignalElement;
+      452    index: number;
+      453 +  prompt?: string;                                            
+      454  }) {
+      455    const color = confidenceHex(signal.confidence);
+      456    return (
+     ...
+      458        {/* Top spacer */}
+      459        <div style={{ display: "flex", flex: 1 }} />
+      460  
+      461 +      {/* Prompt */}                                          
+      462 +      {prompt && <PromptBlock prompt={prompt} />}             
+      463 +                                                              
+      464        {/* Centered content */}
+      465        <div
+      466          style={{
+
+⏺ Now NoiseStory:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 5 lines
+      534  function NoiseStory({
+      535    noise,
+      536    index,
+      537 +  prompt,                                                     
+      538  }: {
+      539    noise: NoiseElement;
+      540    index: number;
+      541 +  prompt?: string;                                            
+      542  }) {
+      543    return (
+      544      <StoryWrapper>
+      545        {/* Top spacer */}
+      546        <div style={{ display: "flex", flex: 1 }} />
+      547  
+      548 +      {/* Prompt */}                                          
+      549 +      {prompt && <PromptBlock prompt={prompt} />}             
+      550 +                                                              
+      551        {/* Centered content */}
+      552        <div
+      553          style={{
+
+⏺ Now update the route handler switch to pass prompt to all story types:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 6 lines, removed 4 lines
+      655  
+      656    let element: React.ReactElement;
+      657  
+      658 +  const prompt = includePrompt ? signal.prompt : undefined;   
+      659 +                                                              
+      660    switch (type) {
+      661      case "verdict":
+      660 -      element = <VerdictStory data={data} prompt={includePromp
+          -t ? signal.prompt : undefined} />;                            
+      662 +      element = <VerdictStory data={data} prompt={prompt} />; 
+      663        break;
+      664      case "analysis":
+      663 -      element = <AnalysisStory data={data} />;                
+      665 +      element = <AnalysisStory data={data} prompt={prompt} />;
+      666        break;
+      667      case "signal": {
+      668        const s = data.signals[index];
+      669        if (!s) return new Response("Signal index out of range",
+            { status: 400 });
+      668 -      element = <SignalStory signal={s} index={index} />;     
+      670 +      element = <SignalStory signal={s} index={index} prompt={
+          +prompt} />;                                                   
+      671        break;
+      672      }
+      673      case "noise": {
+      674        const n = data.noise[index];
+      675        if (!n) return new Response("Noise index out of range", 
+           { status: 400 });
+      674 -      element = <NoiseStory noise={n} index={index} />;       
+      676 +      element = <NoiseStory noise={n} index={index} prompt={pr
+          +ompt} />;                                                     
+      677        break;
+      678      }
+      679      default:
+
+⏺ Now pass prompt to all the ShareButton instances. Let me check the signal and
+  noise cards:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ I need to thread prompt through Results → SignalCard / NoiseCard →
+  ShareButton. Let me also pass it to the analysis ShareButton. Let me read the
+  relevant part of Results:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I'll pass prompt to the analysis ShareButton, SignalCard, and NoiseCard:
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      405              <span className="text-muted-foreground/60 font-mon
+           o text-[11px] tabular-nums">
+      406                {result.signalScore}/100 signal &middot; {result
+           .contentType}
+      407              </span>
+      408 -            <ShareButton type="analysis" id={id} />           
+      408 +            <ShareButton type="analysis" id={id} prompt={promp
+          +t} />                                                         
+      409            </div>
+      410          </div>
+      411          <p className="text-foreground/80 text-justify text-[13
+           px] leading-relaxed">
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      425            />
+      426            <div className="space-y-2">
+      427              {result.signals.map((signal, index) => (
+      428 -              <SignalCard key={index} signal={signal} index={i
+          -ndex} signalId={id} />                                        
+      428 +              <SignalCard key={index} signal={signal} index={i
+          +ndex} signalId={id} prompt={prompt} />                        
+      429              ))}
+      430            </div>
+      431          </div>
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 1 line, removed 1 line
+      444              />
+      445              <div className="space-y-2">
+      446                {result.noise.map((item, index) => (
+      447 -                <NoiseCard key={index} noise={item} index={ind
+          -ex} signalId={id} />                                          
+      447 +                <NoiseCard key={index} noise={item} index={ind
+          +ex} signalId={id} prompt={prompt} />                          
+      448                ))}
+      449              </div>
+      450            </div>
+
+⏺ Now update SignalCard to accept and pass prompt:
+
+⏺ Update(src/app/_components/truth-card.tsx)
+  ⎿  Added 2 lines
+      25    signal,
+      26    index,
+      27    signalId,
+      28 +  prompt,                                                      
+      29  }: {
+      30    signal: SignalElement;
+      31    index: number;
+      32    signalId: string;
+      33 +  prompt?: string;                                             
+      34  }) {
+      35    return (
+      36      <div
+  ⎿  Found 1 new diagnostic issue in 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/truth-card.tsx)
+  ⎿  Added 1 line, removed 1 line
+      49              {signal.content}
+      50            </p>
+      51            <div className="flex shrink-0 items-center gap-1.5">
+      52 -            <ShareButton type="signal" id={signalId} index={ind
+         -ex} />                                                         
+      52 +            <ShareButton type="signal" id={signalId} index={ind
+         +ex} prompt={prompt} />                                         
+      53              <span
+      54                className={`font-mono text-[11px] font-bold tabul
+          ar-nums ${confidenceColor(signal.confidence)}`}
+      55              >
+
+⏺ Now update NoiseCard:
+
+⏺ Update(src/app/_components/noise-card.tsx)
+  ⎿  Added 2 lines
+      13    noise,
+      14    index,
+      15    signalId,
+      16 +  prompt,                                                      
+      17  }: {
+      18    noise: NoiseElement;
+      19    index: number;
+      20    signalId: string;
+      21 +  prompt?: string;                                             
+      22  }) {
+      23    return (
+      24      <div
+
+⏺ Update(src/app/_components/noise-card.tsx)
+  ⎿  Added 1 line, removed 1 line
+      39                &ldquo;{noise.original}&rdquo;
+      40              </span>
+      41            </p>
+      42 -          <ShareButton type="noise" id={signalId} index={index}
+         - />                                                            
+      42 +          <ShareButton type="noise" id={signalId} index={index}
+         + prompt={prompt} />                                            
+      43          </div>
+      44  
+      45          {/* Reason */}
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ All clean. Now every ShareButton across all shareable elements (verdict,
+  analysis, signal cards, noise cards) receives the prompt and shows the preview
+   dialog with the "Include prompt" toggle. The story image API renders the
+  PromptBlock for all story types when ?prompt=1 is passed.
+
+✻ Crunched for 57s
+
+❯ default the include prompt in false 
+
+⏺ Update(src/app/_components/share-button.tsx)
+  ⎿  Added 1 line, removed 1 line
+      39  }) {
+      40    const [state, setState] = useState<ShareState>("idle");
+      41    const [dialogOpen, setDialogOpen] = useState(false);
+      42 -  const [includePrompt, setIncludePrompt] = useState(true);    
+      42 +  const [includePrompt, setIncludePrompt] = useState(false);   
+      43  
+      44    const showDialog = !!prompt;
+      45  
+
+⏺ Done — "Include prompt" toggle now defaults to off.
+
+❯ fix that, when you click NOT the first element of an element or a noise,  
+  the preview dialog renders with the one of the first element. Then it     
+  downloads correct, but the fact previews wrong in the dialog              
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The bug is on line 73 — storyImageUrl is missing the index param, so the
+  preview always renders index 0.
+
+⏺ Update(src/app/_components/share-button.tsx)
+  ⎿  Added 1 line, removed 1 line
+      70    }
+      71  
+      72    const previewUrl = showDialog
+      73 -    ? storyImageUrl({ type, id, includePrompt })               
+      73 +    ? storyImageUrl({ type, id, index, includePrompt })        
+      74      : null;
+      75  
+      76    return (
+
+⏺ The index wasn't being passed to storyImageUrl, so the preview always
+  defaulted to index 0. The download worked because doShare already passed index
+   correctly.
+
+❯ awesome, now in the numbers, ensure we state "denoise score" in the x/100 
+   part, for example here should say 85/100 with small "denoise score" just 
+   below, beautifully                                                       
+  ⎿  [Image #2]
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 27 lines, removed 8 lines
+      506          <div
+      507            style={{
+      508              display: "flex",
+      509 -            alignItems: "baseline",                           
+      510 -            justifyContent: "center",                         
+      511 -            gap: 10,                                          
+      509 +            flexDirection: "column",                          
+      510 +            alignItems: "center",                             
+      511 +            gap: 6,                                           
+      512            }}
+      513          >
+      514 -          <span style={{ fontSize: 80, fontWeight: 700, color 
+          -}}>                                                           
+      515 -            {signal.confidence}                               
+      514 +          <div                                                
+      515 +            style={{                                          
+      516 +              display: "flex",                                
+      517 +              alignItems: "baseline",                         
+      518 +              justifyContent: "center",                       
+      519 +              gap: 10,                                        
+      520 +            }}                                                
+      521 +          >                                                   
+      522 +            <span style={{ fontSize: 80, fontWeight: 700, colo
+          +r }}>                                                         
+      523 +              {signal.confidence}                             
+      524 +            </span>                                           
+      525 +            <span style={{ fontSize: 28, color: "#52525b", fon
+          +tWeight: 400 }}>                                              
+      526 +              / 100                                           
+      527 +            </span>                                           
+      528 +          </div>                                              
+      529 +          <span                                               
+      530 +            style={{                                          
+      531 +              fontSize: 18,                                   
+      532 +              color: "#52525b",                               
+      533 +              letterSpacing: "0.08em",                        
+      534 +              fontWeight: 400,                                
+      535 +            }}                                                
+      536 +          >                                                   
+      537 +            denoise score                                     
+      538            </span>
+      517 -          <span style={{ fontSize: 28, color: "#52525b", fontW
+          -eight: 400 }}>                                                
+      518 -            / 100                                             
+      519 -          </span>                                             
+      539          </div>
+      540  
+      541          {/* Sources */}
+
+⏺ Now let me also add it to the verdict/analysis score bars for consistency. Let
+   me check those:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/api/story-image/route.tsx)
+  ⎿  Added 2 lines, removed 2 lines
+      314              }}
+      315            />
+      316          </div>
+      317 -        <span style={{ fontSize: 20, color: "#3f3f46" }}>signa
+          -l</span>                                                      
+      317 +        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoi
+          +se score</span>                                               
+      318        </div>
+      319  
+      320        <BrandFooter />
+     ...
+      429              }}
+      430            />
+      431          </div>
+      432 -        <span style={{ fontSize: 20, color: "#3f3f46" }}>signa
+          -l</span>                                                      
+      432 +        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoi
+          +se score</span>                                               
+      433        </div>
+      434  
+      435        <BrandFooter />
+
+⏺ Done. The "/ 100" in the signal story now has a small "denoise score" label
+  centered below it, and the score bars in verdict/analysis stories also say
+  "denoise score" instead of "signal".
+
+❯ great but u're only showing it when prompt displayed, display it always 
+
+⏺ The prompt display and share button prompt are currently skipped when
+  sourceUrl is set. I'll remove those conditions so it always shows.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(src/app/_components/signal-view.tsx)
+  ⎿  Added 2 lines, removed 2 lines
+      506            {data?.data && (
+      507              <div className="flex items-center gap-2">
+      508                <CopyLinkButton id={id} />
+      509 -              <ShareButton type="verdict" id={id} alwaysVisibl
+          -e prompt={sourceUrl ? undefined : data.prompt} />             
+      509 +              <ShareButton type="verdict" id={id} alwaysVisibl
+          +e prompt={data.prompt} />                                     
+      510              </div>
+      511            )}
+      512          </div>
+     ...
+      579              <Results
+      580                result={data.data}
+      581                id={id}
+      582 -              prompt={sourceUrl ? undefined : data.prompt}    
+      582 +              prompt={data.prompt}                            
+      583                onFollowUp={() => setFollowUpOpen(true)}
+      584              />
+      585            </motion.div>
+
+⏺ Now the prompt display and the share dialog's "include prompt" toggle are
+  always available, regardless of whether it's a direct link page or a
+  text-based analysis.
+
+❯ awesome, now let's clean it up any redundancy or unnecessary code, and    
+  let's commit to a new feature branch                                      
+
+⏺ Let me review all modified files for redundancy first.
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ I see redundancy in share.ts — the URL-building logic is duplicated between
+  shareStoryImage and storyImageUrl. Let me clean that up.
+
+⏺ Update(src/lib/share.ts)
+  ⎿  Added 2 lines, removed 6 lines
+      11   * Fetches a story image from the API and shares it via Web Sha
+          re API (mobile)
+      12   * or triggers a download (desktop).
+      13   */
+      14 -export async function shareStoryImage({ type, id, index, includ
+         -ePrompt }: ShareStoryParams) {                                 
+      15 -  const params = new URLSearchParams({ type, id });            
+      16 -  if (index !== undefined) params.set("index", String(index)); 
+      17 -  if (includePrompt) params.set("prompt", "1");                
+      18 -                                                               
+      19 -  const res = await fetch(`/api/story-image?${params.toString()
+         -}`, {                                                          
+      14 +export async function shareStoryImage(params: ShareStoryParams)
+         + {                                                             
+      15 +  const res = await fetch(storyImageUrl(params), {             
+      16      cache: "no-cache",
+      17    });
+      18    if (!res.ok) throw new Error("Failed to generate story image"
+          );
+
+⏺ Now fix the file reference — index is no longer destructured in
+  shareStoryImage, it comes from params:
+
+⏺ Update(src/lib/share.ts)
+  ⎿  Added 1 line, removed 1 line
+      18    if (!res.ok) throw new Error("Failed to generate story image"
+          );
+      19  
+      20    const blob = await res.blob();
+      21 -  const file = new File([blob], `denoise-${type}-${index ?? 0}.
+         -png`, {                                                        
+      21 +  const file = new File([blob], `denoise-${params.type}-${param
+         +s.index ?? 0}.png`, {                                          
+      22      type: "image/png",
+      23    });
+      24  
+
+⏺ Now check the route file for any redundancy with the URL regex (it's
+  duplicated between signal-view.tsx and route.tsx, but they're separate
+  contexts — client vs server — so that's fine). Let me also verify the route
+  file is clean:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good — the regex is defined at module scope in both files, which is correct
+  since they run in different runtimes. Now let me typecheck and then commit.
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 1m)
+
+⏺ Clean. Now let me check the state and commit.
+
+⏺ Bash(git status)
+  ⎿  On branch feat/output-language-selector
+     Your branch is up to date with 'origin/feat/output-language-selector'.
+     … +15 lines (ctrl+o to expand)
+
+⏺ Bash(git diff)
+  ⎿  diff --git a/src/app/_components/noise-card.tsx b/src/app/_components/
+     noise-card.tsx
+     index ee0bbf4..369d56c 100644
+     … +326 lines (ctrl+o to expand)
+
+⏺ Bash(git log --oneline -5)
+  ⎿  ecf79b1 docs: add chat
+     f7e030e feat: wire output language through analysis and follow-up chat
+     e811bac feat: add output language context, constants, and toggle compo
+     … +4 lines (ctrl+o to expand)
+
+⏺ Everything looks clean. Let me also check the staged changes from the analysis
+   router fix:
+
+⏺ Bash(git diff --cached)
+  ⎿  diff --git a/src/app/_components/signal-view.tsx b/src/app/_components
+     /signal-view.tsx
+     index 58695bb..c5acd49 100644
+     … +38 lines (ctrl+o to expand)
+
+⏺ The staged changes include an intermediate version of PromptDisplay that was
+  later overwritten. I need to unstage everything and add all files fresh.
+
+⏺ Bash(git reset HEAD -- . && git checkout -b
+      feat/prompt-display-and-share-preview)
+  ⎿  Unstaged changes after reset:
+     M  src/app/_components/noise-card.tsx
+     M  src/app/_components/share-button.tsx
+     … +6 lines (ctrl+o to expand)
+
+⏺ Bash(git add src/app/_components/signal-view.tsx
+      src/app/_components/share-button.tsx src/app/_components/truth-card.tsx
+      src/app/_components/noise-card.tsx src/app/a…)
+  ⎿  (No output)
+
+⏺ Bash(git commit -m "feat: add prompt display and share preview dialog…)
+  ⎿  Tool use rejected with user message: make sure to commit by concept, 
+     granularly, not just all at once
+
+⏺ Good call. Let me break this into granular commits by concept.
+
+⏺ Bash(git reset HEAD -- .)
+  ⎿  Unstaged changes after reset:
+     M  src/app/_components/noise-card.tsx
+     M  src/app/_components/share-button.tsx
+     … +5 lines (ctrl+o to expand)
+
+⏺ Let me plan the commits:
+
+  1. fix: store original prompt in database — analysis.ts only
+  2. feat: add prompt display with URL extraction and copy — signal-view.tsx
+  (the PromptDisplay component + wiring in Results/SignalView)
+  3. feat: add share preview dialog with prompt toggle — share-button.tsx,
+  share.ts, truth-card.tsx, noise-card.tsx, signal-view.tsx (passing prompt to
+  ShareButtons)
+  4. feat: add prompt block to story images — route.tsx (PromptBlock + all story
+   templates accepting prompt + route handler)
+  5. chore: label score as "denoise score" in story images — route.tsx (the
+  label changes)
+
+  Commits 3-5 all touch route.tsx so I need to be strategic. Let me use patch
+  staging.
+
+⏺ Bash(git add src/server/api/routers/analysis.ts && git commit -m "fix: store
+      original user prompt in database…)
+  ⎿  [feat/prompt-display-and-share-preview a4e9a5b] fix: store original us
+     er prompt in database
+      1 file changed, 1 insertion(+), 1 deletion(-)
+
+⏺ Now commit 2: the PromptDisplay component and its usage in Results. I need to
+  stage only the PromptDisplay-related parts of signal-view.tsx (not the
+  ShareButton prompt prop parts).
+
+⏺ Bash(git add -p src/app/_components/signal-view.tsx << 'INPUTS'
+      y…)
+  ⎿  diff --git a/src/app/_components/signal-view.tsx b/src/app/_components
+     /signal-view.tsx
+     index 58695bb..3491e55 100644
+     … +93 lines (ctrl+o to expand)
+
+⏺ The interactive staging didn't work well with piped input. Let me stage
+  everything for signal-view.tsx since all the changes are related, and commit
+  by file grouping instead.
+
+⏺ Bash(git reset HEAD -- src/app/_components/signal-view.tsx 2>/dev/null; git
+      add src/app/_components/signal-view.tsx src/app/_components/truth-card.tsx
+       src/app/_compo…)
+  ⎿  Unstaged changes after reset:
+     M  src/app/_components/noise-card.tsx
+     M  src/app/_components/share-button.tsx
+     … +7 lines (ctrl+o to expand)
+
+⏺ Bash(git add src/app/_components/share-button.tsx src/lib/share.ts && git
+      commit -m "feat: add share preview dialog with include prompt toggle…)
+  ⎿  [feat/prompt-display-and-share-preview a49b43e] feat: add share previe
+     w dialog with include prompt toggle
+      2 files changed, 124 insertions(+), 32 deletions(-)
+
+⏺ Bash(git add src/app/api/story-image/route.tsx && git commit -m "feat: add
+      prompt block and denoise score label to story images…)
+  ⎿  [feat/prompt-display-and-share-preview 529ef4d] feat: add prompt block
+      and denoise score label to story images
+      1 file changed, 140 insertions(+), 16 deletions(-)
+
+⏺ Bash(git status && git log --oneline -5)
+  ⎿  On branch feat/prompt-display-and-share-preview
+     nothing to commit, working tree clean
+     529ef4d feat: add prompt block and denoise score label to story images
+     … +4 lines (ctrl+o to expand)
+
+⏺ Clean tree, 4 granular commits on feat/prompt-display-and-share-preview:
+
+  1. a4e9a5b fix: store original user prompt in database — saves raw input
+  instead of enriched prompt
+  2. f910bf4 feat: add prompt display with URL extraction and copy —
+  PromptDisplay component + wiring through cards
+  3. a49b43e feat: add share preview dialog with include prompt toggle — preview
+   dialog + share.ts cleanup
+  4. 529ef4d feat: add prompt block and denoise score label to story images —
+  story image PromptBlock + "denoise score" label
+
+✻ Crunched for 1m 2s
+
+❯ push and create a PR 
+
+⏺ Bash(git diff main...HEAD --stat)
+  ⎿   .agents/skills/ai-elements/SKILL.md                |  170 +
+      .agents/skills/ai-elements/references/agent.md     |  134 +
+      .agents/skills/ai-elements/references/artifact.md  |   84 +
+     … +163 lines (ctrl+o to expand)
+
+⏺ That's the full diff against main including commits from
+  feat/output-language-selector. Let me check what the base should be:
+
+⏺ Bash(git log --oneline main..HEAD | head -20)
+  ⎿  529ef4d feat: add prompt block and denoise score label to story images
+     a49b43e feat: add share preview dialog with include prompt toggle
+     f910bf4 feat: add prompt display with URL extraction and copy
+     … +15 lines (ctrl+o to expand)
+
+⏺ This branch has the full history from feat/output-language-selector. The PR
+  should target main and only include our 4 new commits. Let me push and create
+  the PR with the right base.
+
+⏺ Bash(git push -u origin feat/prompt-display-and-share-preview)
+  ⎿  Branch 'feat/prompt-display-and-share-preview' set up to track remote
+     branch 'feat/prompt-display-and-share-preview' from 'origin'.
+     remote:
+     … +8 lines (ctrl+o to expand)
+
+⏺ Bash(gh pr create --base feat/output-language-selector --title "feat: prompt
+      display and share preview dialog" --body "## Summary
+      - Show the original prompt at the t…)
+  ⎿  https://github.com/vichudo/denoise-it/pull/24
+
+❯ make sure base is dev 
+
+⏺ Bash(gh pr edit 24 --base dev)
+  ⎿  https://github.com/vichudo/denoise-it/pull/24
+
+⏺ Done — PR #24 base updated to dev:
+  https://github.com/vichudo/denoise-it/pull/24
