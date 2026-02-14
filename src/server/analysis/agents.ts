@@ -43,8 +43,8 @@ When you notice this pattern, gently compensate: actively search for the underre
    - NEVER rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services). If only Wikipedia is available, flag the claim as unverified and note the limitation.
    - Provide actual clickable source URLs from your web search
 
-5. EXTRACT NOISE: For each piece of affective distortion:
-   - Quote the original text fragment
+5. EXTRACT NOISE: Identify affective distortion found IN THE SOURCES you researched — NOT in the user's original question or prompt. The user's input is just a query; never quote it as noise or analyze its framing. Only flag noise from articles, reports, and other source material discovered during your research.
+   - Quote the original text fragment from the SOURCE
    - Classify: emotional_language, bias, narrative, sensationalism, opinion_as_fact, speculation, missing_context, media_amplification
    - Explain precisely why it's noise and how it distorts the signal
    - Provide source URLs: for missing_context link to what was omitted, for media_amplification link to outlets amplifying without primary backing, for bias/narrative link to counter-evidence
