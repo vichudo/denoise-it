@@ -1,0 +1,495 @@
+
+ ▐▛███▜▌   Claude Code v2.1.39
+▝▜█████▛▘  Opus 4.6 · API Usage Billing
+  ▘▘ ▝▝    ~/Documents/Github/denoise-it
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Plan: Add Subtle Output Language Selector                                    │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ Users may be non-English speakers or analyzing non-English content. We need  │
+│ a way for them to receive AI-generated results (verdict, summary, signals,   │
+│ noise, follow-up chat) in their preferred language. The UI chrome stays      │
+│ English — only AI output changes.                                            │
+│                                                                              │
+│ Approach                                                                     │
+│                                                                              │
+│ Store language preference in localStorage, expose via React context, pass it │
+│  through to AI prompts as an appended instruction. No database changes       │
+│ needed.                                                                      │
+│                                                                              │
+│ Files to Create                                                              │
+│                                                                              │
+│ 1. src/components/language-provider.tsx                                      │
+│                                                                              │
+│ - React context providing { language, setLanguage }                          │
+│ - Reads/writes localStorage key "denoise-output-lang", defaults to "en"      │
+│ - useOutputLanguage() hook export                                            │
+│                                                                              │
+│ 2. src/components/language-toggle.tsx                                        │
+│                                                                              │
+│ - Mirrors src/components/mode-toggle.tsx pattern exactly (same DropdownMenu  │
+│ + icon Button)                                                               │
+│ - Globe icon from lucide-react, very muted by default (opacity-40), normal   │
+│ when non-English selected                                                    │
+│ - Dropdown lists ~10 languages in native names (English, Español, Français,  │
+│ Deutsch, Português, Italiano, 日本語, 한국어, 中文, العربية)                 │
+│ - Check mark on active language                                              │
+│                                                                              │
+│ Files to Modify                                                              │
+│                                                                              │
+│ 3. src/lib/constants.ts                                                      │
+│                                                                              │
+│ - Add OUTPUT_LANGUAGES array and getLanguageName(code) helper                │
+│                                                                              │
+│ 4. src/app/layout.tsx                                                        │
+│                                                                              │
+│ - Wrap children with <LanguageProvider> inside ThemeProvider                 │
+│ - Add <LanguageToggle /> next to <ModeToggle /> with flex items-center gap-2 │
+│                                                                              │
+│ 5. src/server/api/routers/analysis.ts                                        │
+│                                                                              │
+│ - Add optional language: z.string().max(5).optional() to create input schema │
+│ - Pass language to generateAnalysis()                                        │
+│ - In generateAnalysis(), if language !== "en", append a [LANGUAGE            │
+│ INSTRUCTION: ...] block to the prompt telling the AI to respond in that      │
+│ language (keep quoted noise originals untranslated)                          │
+│ - Note: agent singletons stay unchanged — instruction goes in the prompt,    │
+│ not system instructions                                                      │
+│                                                                              │
+│ 6. src/app/_components/denoise-hero.tsx                                      │
+│                                                                              │
+│ - Import useOutputLanguage, read language                                    │
+│ - Pass language in create.mutate() when not "en"                             │
+│                                                                              │
+│ 7. src/app/_components/follow-up-chat.tsx                                    │
+│                                                                              │
+│ - Import useOutputLanguage, read language                                    │
+│ - Pass language in DefaultChatTransport body                                 │
+│                                                                              │
+│ 8. src/app/api/chat/followup/route.ts                                        │
+│                                                                              │
+│ - Read language from request body                                            │
+│ - If non-English, append instruction to system prompt: "Respond in           │
+│ {language}"                                                                  │
+│                                                                              │
+│ What stays unchanged                                                         │
+│                                                                              │
+│ - UI labels/buttons remain English                                           │
+│ - Prisma schema — no language column                                         │
+│ - /link?url=... page generates in English (server component, no localStorage │
+│  access)                                                                     │
+│ - Existing analyses in DB unaffected                                         │
+│ - Agent singleton ANALYSIS_INSTRUCTIONS untouched                            │
+│                                                                              │
+│ Verification                                                                 │
+│                                                                              │
+│ - Run pnpm run check (lint + typecheck)                                      │
+│ - Start dev server, confirm Globe toggle appears next to theme toggle        │
+│ - Select Spanish, submit an analysis, verify output arrives in Spanish       │
+│ - Open follow-up chat, verify responses come in Spanish                      │
+│ - Switch back to English, submit new analysis, verify English output         │
+│ - Refresh page — language preference persists from localStorage              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll start by reading the key files I need to understand and modify.
+
+⏺ Read 8 files (ctrl+o to expand)
+
+⏺ Now I have a clear picture. Let me implement all the changes.
+
+⏺ Update(src/lib/constants.ts)
+  ⎿  Added 21 lines
+       1  export const POLL_INTERVAL = 2000;
+       2  
+       3 +export const OUTPUT_LANGUAGES = [                              
+       4 +  { code: "en", name: "English" },                             
+       5 +  { code: "es", name: "Español" },                             
+       6 +  { code: "fr", name: "Français" },                            
+       7 +  { code: "de", name: "Deutsch" },                             
+       8 +  { code: "pt", name: "Português" },                           
+       9 +  { code: "it", name: "Italiano" },                            
+      10 +  { code: "ja", name: "日本語" },                              
+      11 +  { code: "ko", name: "한국어" },                              
+      12 +  { code: "zh", name: "中文" },                                
+      13 +  { code: "ar", name: "العربية" },                             
+      14 +] as const;                                                    
+      15 +                                                               
+      16 +export type LanguageCode = (typeof OUTPUT_LANGUAGES)[number]["c
+         +ode"];                                                         
+      17 +                                                               
+      18 +export function getLanguageName(code: string): string {        
+      19 +  return (                                                     
+      20 +    OUTPUT_LANGUAGES.find((l) => l.code === code)?.name ?? "Eng
+         +lish"                                                          
+      21 +  );                                                           
+      22 +}                                                              
+      23 +                                                               
+      24  export const ANALYZING_PHRASES = [
+      25    "Searching for primary sources...",
+      26    "Cross-referencing claims...",
+
+⏺ Write(src/components/language-provider.tsx)
+  ⎿  Wrote 53 lines to src/components/language-provider.tsx
+       1 "use client";
+       2 
+       3 import {
+       4   createContext,
+       5   useCallback,
+       6   useContext,
+       7   useEffect,
+       8   useState,
+       9   type ReactNode,
+      10 } from "react";
+     … +43 lines (ctrl+o to expand)
+
+⏺ Write(src/components/language-toggle.tsx)
+  ⎿  Wrote 44 lines to src/components/language-toggle.tsx
+       1 "use client";
+       2 
+       3 import { Check, Globe } from "lucide-react";
+       4 
+       5 import { OUTPUT_LANGUAGES } from "@/lib/constants";
+       6 import { useOutputLanguage } from "@/components/language-provide
+         r";
+       7 import { Button } from "@/components/ui/button";
+       8 import {
+       9   DropdownMenu,
+      10   DropdownMenuContent,
+     … +34 lines (ctrl+o to expand)
+
+⏺ Now let me wire everything together — layout, analysis router, hero, follow-up
+   chat, and the followup route.
+
+⏺ Update(src/app/layout.tsx)
+  ⎿  Added 2 lines
+       3  import { type Metadata } from "next";
+       4  import { Geist } from "next/font/google";
+       5  
+       6 +import { LanguageProvider } from "@/components/language-provide
+         +r";                                                            
+       7 +import { LanguageToggle } from "@/components/language-toggle"; 
+       8  import { ModeToggle } from "@/components/mode-toggle";
+       9  import { Toaster } from "@/components/ui/sonner";
+      10  import { ThemeProvider } from "@/components/theme-provider";
+
+⏺ Update(src/app/layout.tsx)
+  ⎿  Added 7 lines, removed 4 lines
+      33            enableSystem
+      34            disableTransitionOnChange
+      35          >
+      36 -          <div className="fixed top-4 right-4 z-50">           
+      37 -            <ModeToggle />                                     
+      38 -          </div>                                               
+      39 -          <TRPCReactProvider>{children}</TRPCReactProvider>    
+      36 +          <LanguageProvider>                                   
+      37 +            <div className="fixed top-4 right-4 z-50 flex items
+         +-center gap-2">                                                
+      38 +              <LanguageToggle />                               
+      39 +              <ModeToggle />                                   
+      40 +            </div>                                             
+      41 +            <TRPCReactProvider>{children}</TRPCReactProvider>  
+      42 +          </LanguageProvider>                                  
+      43            <Toaster />
+      44          </ThemeProvider>
+      45        </body>
+
+⏺ Now the analysis router — add language to input and pass it through to
+  generateAnalysis.
+
+⏺ Update(src/server/api/routers/analysis.ts)
+  ⎿  Added 1 line
+       4  import { z } from "zod";
+       5  
+       6  import { analysisResultSchema } from "@/lib/schemas/analysis";
+       7 +import { getLanguageName } from "@/lib/constants";             
+       8  import { parseSignalData } from "@/lib/utils";
+       9  import { env } from "@/env";
+      10  import { db } from "@/server/db";
+
+⏺ Update(src/server/api/routers/analysis.ts)
+  ⎿  Added 7 lines, removed 1 line
+      73    id: string,
+      74    content: string,
+      75    useAgent: typeof agent = agent,
+      76 +  language?: string,                                           
+      77  ) {
+      78    try {
+      78 -    const result = await useAgent.generate({ prompt: content })
+         -;                                                              
+      79 +    let prompt = content;                                      
+      80 +    if (language && language !== "en") {                       
+      81 +      const langName = getLanguageName(language);              
+      82 +      prompt += `\n\n[LANGUAGE INSTRUCTION: Respond entirely in
+         + ${langName} (${language}). All output — verdict, headline, sum
+         +mary, signal descriptions, noise explanations — must be in ${la
+         +ngName}. Keep quoted noise fragments in their original language
+         +.]`;                                                           
+      83 +    }                                                          
+      84 +    const result = await useAgent.generate({ prompt });        
+      85      await db.signal.update({
+      86        where: { id },
+      87        data: { data: JSON.parse(JSON.stringify(result.output)) }
+          ,
+
+⏺ Now update the create procedure to accept and pass language.
+
+⏺ Update(src/server/api/routers/analysis.ts)
+  ⎿  Added 1 line
+      104        z.object({
+      105          content: z.string().min(1).max(10000),
+      106          sinceDays: z.number().int().min(1).max(730).optional()
+           ,
+      107 +        language: z.string().max(5).optional(),               
+      108        }),
+      109      )
+      110      .mutation(async ({ ctx, input }) => {
+
+⏺ Update(src/server/api/routers/analysis.ts)
+  ⎿  Added 1 line, removed 1 line
+      123        });
+      124  
+      125        // Fire and forget — generation runs in background
+      126 -      void generateAnalysis(String(signal.id), prompt);       
+      126 +      void generateAnalysis(String(signal.id), prompt, agent, 
+          +input.language);                                              
+      127  
+      128        return { id: signal.id };
+      129      }),
+
+⏺ Now update denoise-hero.tsx to pass language.
+
+⏺ Update(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 1 line
+       4  import { useRouter } from "next/navigation";
+       5  import { Clock, Loader2 } from "lucide-react";
+       6  
+       7 +import { useOutputLanguage } from "@/components/language-provid
+         +er";                                                           
+       8  import { Button } from "@/components/ui/button";
+       9  import { Label } from "@/components/ui/label";
+      10  import { Slider } from "@/components/ui/slider";
+
+⏺ Update(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 1 line
+      31  
+      32  export function DenoiseHero() {
+      33    const router = useRouter();
+      34 +  const { language } = useOutputLanguage();                    
+      35    const [input, setInput] = useState("");
+      36    const [timeSensitive, setTimeSensitive] = useState(false);
+      37    const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
+
+⏺ Update(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 1 line
+      48      create.mutate({
+      49        content: input,
+      50        ...(timeSensitive && { sinceDays: currentStop.days }),
+      51 +      ...(language !== "en" && { language }),                  
+      52      });
+      53    }
+      54  
+
+⏺ Now update follow-up-chat.tsx to pass language in the transport body.
+
+⏺ Update(src/app/_components/follow-up-chat.tsx)
+  ⎿  Added 1 line
+      14  import { AnimatePresence, motion } from "framer-motion";
+      15  
+      16  import { getDomain } from "@/lib/utils";
+      17 +import { useOutputLanguage } from "@/components/language-provid
+         +er";                                                           
+      18  import { Shimmer } from "@/components/ai-elements/shimmer";
+      19  import { Button } from "@/components/ui/button";
+      20  import {
+
+⏺ Update(src/app/_components/follow-up-chat.tsx)
+  ⎿  Added 8 lines, removed 2 lines
+      157    followUpId: number;
+      158    initialMessages?: UIMessage[];
+      159  }) {
+      160 +  const { language } = useOutputLanguage();                   
+      161 +                                                              
+      162    const transport = useMemo(
+      163      () =>
+      164        new DefaultChatTransport({
+      165          api: "/api/chat/followup",
+      164 -        body: { signalId, followUpId },                       
+      166 +        body: {                                               
+      167 +          signalId,                                           
+      168 +          followUpId,                                         
+      169 +          ...(language !== "en" && { language }),             
+      170 +        },                                                    
+      171        }),
+      166 -    [signalId, followUpId],                                   
+      172 +    [signalId, followUpId, language],                         
+      173    );
+      174  
+      175    const { messages, sendMessage, status, stop } = useChat({
+
+⏺ Now update the followup route to read language from body and append to system
+  prompt.
+
+⏺ Update(src/app/api/chat/followup/route.ts)
+  ⎿  Added 1 line
+      1  import { convertToModelMessages, streamText, type UIMessage } fr
+         om "ai";
+      2  import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+      3  
+      4 +import { getLanguageName } from "@/lib/constants";              
+      5  import { env } from "@/env";
+      6  import { db } from "@/server/db";
+      7  import { parseSignalData } from "@/lib/utils";
+
+⏺ Update(src/app/api/chat/followup/route.ts)
+  ⎿  Added 2 lines, removed 1 line
+      15      messages: UIMessage[];
+      16      signalId: string;
+      17      followUpId: number;
+      18 +    language?: string;                                         
+      19    };
+      20  
+      20 -  const { messages, signalId, followUpId } = body;             
+      21 +  const { messages, signalId, followUpId, language } = body;   
+      22  
+      23    // Load signal from DB for context
+      24    const signal = await db.signal.findUniqueOrThrow({
+
+⏺ Update(src/app/api/chat/followup/route.ts)
+  ⎿  Added 5 lines
+      61  - Do NOT rely solely on Wikipedia. Always cross-reference with 
+          primary sources (official records, peer-reviewed research, .gov
+          /.edu domains, wire services).
+      62  - Use markdown formatting for clarity.`;
+      63  
+      64 +  if (language && language !== "en") {                         
+      65 +    const langName = getLanguageName(language);                
+      66 +    systemPrompt += `\n- Respond entirely in ${langName} (${lan
+         +guage}).`;                                                     
+      67 +  }                                                            
+      68 +                                                               
+      69    const result = streamText({
+      70      model: openrouter.chat("x-ai/grok-4.1-fast:online"),
+      71      system: systemPrompt,
+
+⏺ Now let me run the type check and lint to verify everything compiles.
+
+⏺ Bash(pnpm run check)
+  ⎿  Tool use rejected with user message: ignore linting for now, we need to fix
+      it later
+
+⏺ Bash(npx tsc --noEmit 2>&1 | head -60)
+  ⎿  npm warn Unknown project config "public-hoist-pattern". This will stop
+      working in the next major version of npm.
+  ⎿  (timeout 2m)
+
+⏺ TypeScript compiles cleanly. Let me do a quick review of all modified files to
+   make sure everything looks correct.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Everything looks good. Here's a summary of all changes:
+
+  Changes Made
+
+  New files
+
+  - src/components/language-provider.tsx — React context + useOutputLanguage()
+  hook. Persists language choice in localStorage under "denoise-output-lang",
+  defaults to "en".
+  - src/components/language-toggle.tsx — Globe icon dropdown (mirrors ModeToggle
+   pattern). Globe is opacity-40 when English, full opacity when non-English.
+  Shows a check mark on the active language.
+
+  Modified files
+
+  - src/lib/constants.ts — Added OUTPUT_LANGUAGES array (10 languages with
+  native names), LanguageCode type, and getLanguageName() helper.
+  - src/app/layout.tsx — Wrapped children with <LanguageProvider> inside
+  ThemeProvider. Added <LanguageToggle /> next to <ModeToggle /> in a flex
+  container with gap-2.
+  - src/server/api/routers/analysis.ts — Added optional language to create input
+   schema. generateAnalysis() now accepts language param and appends a [LANGUAGE
+   INSTRUCTION] block to the prompt when non-English. Keeps quoted noise
+  fragments in their original language.
+  - src/app/_components/denoise-hero.tsx — Reads language from
+  useOutputLanguage(), passes it in create.mutate() when not "en".
+  - src/app/_components/follow-up-chat.tsx — Reads language from
+  useOutputLanguage(), passes it in DefaultChatTransport body when not "en".
+  - src/app/api/chat/followup/route.ts — Reads language from request body,
+  appends "Respond entirely in {language}" to the system prompt when
+  non-English.
+
+  TypeScript compiles cleanly. No database/schema changes needed.
+
+✻ Crunched for 1m 16s
+
+❯ Great, clean it up, unify redundant code if any, then commit to a branch  
+  by group of concept and make the PR                                       
+
+⏺ Let me review all the changed files for cleanup opportunities.
+
+⏺ Read 6 files (ctrl+o to expand)
+
+⏺ Code looks clean — both language instruction sites (analysis.ts and
+  followup/route.ts) use slightly different prompt formats, so no redundancy to
+  extract. Let me create the branch and commit by concept group.
+
+⏺ Bash(git status && git log --oneline -5)
+  ⎿  On branch dev
+     Your branch is up to date with 'origin/dev'.
+     … +20 lines (ctrl+o to expand)
+
+⏺ Bash(git checkout -b feat/output-language-selector)
+  ⎿  Switched to a new branch 'feat/output-language-selector'
+
+⏺ Now commit in two logical groups:
+
+  Commit 1: Language infrastructure (constants, provider, toggle component)
+
+⏺ Bash(git add src/lib/constants.ts src/components/language-provider.tsx
+      src/components/language-toggle.tsx)
+  ⎿  (No output)
+
+⏺ Bash(git commit -m "feat: add output language context, constants, and toggle
+      component…)
+  ⎿  [feat/output-language-selector e811bac] feat: add output language cont
+     ext, constants, and toggle component
+      3 files changed, 116 insertions(+)
+     … +2 lines (ctrl+o to expand)
+
+⏺ Commit 2: Wire language through layout, analysis, hero, and follow-up chat
+
+⏺ Bash(git add src/app/layout.tsx src/server/api/routers/analysis.ts
+      src/app/_components/denoise-hero.tsx
+      src/app/_components/follow-up-chat.tsx src/app/api/chat/follo…)
+  ⎿  (No output)
+
+⏺ Bash(git commit -m "feat: wire output language through analysis and follow-up
+      chat…)
+  ⎿  [feat/output-language-selector f7e030e] feat: wire output language thr
+     ough analysis and follow-up chat
+      5 files changed, 39 insertions(+), 9 deletions(-)
+
+⏺ Bash(git push -u origin feat/output-language-selector)
+  ⎿  Branch 'feat/output-language-selector' set up to track remote branch '
+     feat/output-language-selector' from 'origin'.
+     remote:
+     … +8 lines (ctrl+o to expand)
+
+⏺ Bash(gh pr create --base main --title "feat: add output language selector for
+      AI responses" --body "## Summary
+      - Adds a Globe icon dropdown (next to theme toggle) le…)
+  ⎿  https://github.com/vichudo/denoise-it/pull/23
+
+⏺ Done. PR created: https://github.com/vichudo/denoise-it/pull/23
+
+  Two commits grouped by concept:
+  1. Language infrastructure — constants, provider context, toggle component
+  2. Integration wiring — layout, analysis router, hero, follow-up chat, and
+  followup route
+
+✻ Worked for 38s
