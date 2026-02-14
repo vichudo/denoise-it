@@ -68,8 +68,6 @@ export const signalElementSchema = z.object({
     ),
   confidence: z
     .number()
-    .min(0)
-    .max(100)
     .describe(
       "Confidence 0-100 based on SOURCE CREDIBILITY and METHODOLOGICAL RIGOR, NOT search result prevalence. Primary sources (.gov, .edu, peer-reviewed) = higher. Viral/amplified media without primary backing = lower. Wikipedia-only = lower.",
     ),
@@ -145,9 +143,7 @@ export const analysisResultSchema = z.object({
     .describe("Type of content: 'news article', 'tweet', 'claim', 'rumor', etc."),
   signalScore: z
     .number()
-    .min(0)
-    .max(100)
-    .describe("Signal-to-noise ratio. 0 = pure noise, 100 = pure verified signal"),
+    .describe("Signal-to-noise ratio 0-100. 0 = pure noise, 100 = pure verified signal"),
   summary: z
     .string()
     .describe(
