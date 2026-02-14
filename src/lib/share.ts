@@ -4,23 +4,21 @@ interface ShareStoryParams {
   type: StoryType;
   id: string;
   index?: number;
+  includePrompt?: boolean;
 }
 
 /**
  * Fetches a story image from the API and shares it via Web Share API (mobile)
  * or triggers a download (desktop).
  */
-export async function shareStoryImage({ type, id, index }: ShareStoryParams) {
-  const params = new URLSearchParams({ type, id });
-  if (index !== undefined) params.set("index", String(index));
-
-  const res = await fetch(`/api/story-image?${params.toString()}`, {
+export async function shareStoryImage(params: ShareStoryParams) {
+  const res = await fetch(storyImageUrl(params), {
     cache: "no-cache",
   });
   if (!res.ok) throw new Error("Failed to generate story image");
 
   const blob = await res.blob();
-  const file = new File([blob], `denoise-${type}-${index ?? 0}.png`, {
+  const file = new File([blob], `denoise-${params.type}-${params.index ?? 0}.png`, {
     type: "image/png",
   });
 
@@ -41,6 +39,16 @@ export async function shareStoryImage({ type, id, index }: ShareStoryParams) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Returns the story image API URL for preview purposes.
+ */
+export function storyImageUrl({ type, id, index, includePrompt }: ShareStoryParams) {
+  const params = new URLSearchParams({ type, id });
+  if (index !== undefined) params.set("index", String(index));
+  if (includePrompt) params.set("prompt", "1");
+  return `/api/story-image?${params.toString()}`;
 }
 
 /**

@@ -118,7 +118,7 @@ export const analysisRouter = createTRPCRouter({
       const signal = await ctx.db.signal.create({
         data: {
           title: input.content.slice(0, 120).trim(),
-          prompt,
+          prompt: input.content,
         },
       });
 

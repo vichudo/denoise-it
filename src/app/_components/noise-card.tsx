@@ -13,10 +13,12 @@ export function NoiseCard({
   noise,
   index,
   signalId,
+  prompt,
 }: {
   noise: NoiseElement;
   index: number;
   signalId: string;
+  prompt?: string;
 }) {
   return (
     <div
@@ -37,7 +39,7 @@ export function NoiseCard({
               &ldquo;{noise.original}&rdquo;
             </span>
           </p>
-          <ShareButton type="noise" id={signalId} index={index} />
+          <ShareButton type="noise" id={signalId} index={index} prompt={prompt} />
         </div>
 
         {/* Reason */}
