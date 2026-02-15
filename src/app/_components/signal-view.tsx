@@ -421,8 +421,14 @@ export function SignalView({
     { id },
     {
       refetchInterval: (query) => {
+        if (query.state.error) return false;
         if (query.state.data?.data || query.state.data?.error) return false;
         return POLL_INTERVAL;
+      },
+      retry: (failureCount, err) => {
+        // Don't retry NOT_FOUND (private/deleted signals)
+        if (err.data?.code === "NOT_FOUND") return false;
+        return failureCount < 3;
       },
     },
   );
@@ -478,9 +484,16 @@ export function SignalView({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="py-32 text-center"
+            className="flex flex-col items-center gap-4 py-32 text-center"
           >
-            <p className="text-destructive text-sm">Analysis not found.</p>
+            <p className="text-muted-foreground text-sm">
+              This signal doesn&apos;t exist or is private.
+            </p>
+            <Link href="/">
+              <Button variant="outline" size="sm">
+                Back to home
+              </Button>
+            </Link>
           </motion.div>
         ) : !data ? (
           <motion.div

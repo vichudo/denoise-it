@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
 import { z } from "zod";
 
@@ -85,6 +86,14 @@ export const analysisRouter = createTRPCRouter({
       const signal = await ctx.db.signal.findUniqueOrThrow({
         where: { id: input.id },
       });
+
+      // Private signals are only visible to their owner
+      if (
+        signal.privacy === "PRIVATE" &&
+        signal.userId !== ctx.session?.user?.id
+      ) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
 
       const { data, error } = parseSignalData(signal.data);
 

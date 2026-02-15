@@ -127,6 +127,7 @@ exports.Prisma.SignalScalarFieldEnum = {
   prompt: 'prompt',
   data: 'data',
   sourceUrl: 'sourceUrl',
+  privacy: 'privacy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -208,7 +209,11 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.SignalPrivacy = exports.$Enums.SignalPrivacy = {
+  PUBLIC: 'PUBLIC',
+  UNLISTED: 'UNLISTED',
+  PRIVATE: 'PRIVATE'
+};
 
 exports.Prisma.ModelName = {
   Signal: 'Signal',
