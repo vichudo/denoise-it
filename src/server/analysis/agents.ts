@@ -77,6 +77,18 @@ function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: analysisOutput,
     stopWhen: stepCountIs(maxSteps),
+    providerOptions: maxSteps < 3 ? {
+      anthropic: {
+        reasoning: {
+          enabled: false,
+        }
+      },
+      openrouter: {
+        reasoning: {
+          enabled: false,
+        }
+      }
+    } : undefined
   });
 }
 
