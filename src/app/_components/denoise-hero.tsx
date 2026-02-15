@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 
@@ -56,6 +57,14 @@ export function DenoiseHero() {
     <section className="flex min-h-svh flex-col items-center justify-center px-4">
       <div className="flex w-full max-w-2xl flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-3 text-center">
+          <Image
+            src="/denoiseit_logo_rounded.png"
+            alt="denoise it"
+            width={72}
+            height={72}
+            className="size-[72px] drop-shadow-lg"
+            priority
+          />
           <h1 className="text-5xl font-extrabold tracking-tight">
             denoise
             <span className="text-muted-foreground font-light">it</span>
