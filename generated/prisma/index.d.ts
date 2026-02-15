@@ -45,6 +45,24 @@ export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTok
 export type FollowUps = $Result.DefaultSelection<Prisma.$FollowUpsPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const SignalPrivacy: {
+  PUBLIC: 'PUBLIC',
+  UNLISTED: 'UNLISTED',
+  PRIVATE: 'PRIVATE'
+};
+
+export type SignalPrivacy = (typeof SignalPrivacy)[keyof typeof SignalPrivacy]
+
+}
+
+export type SignalPrivacy = $Enums.SignalPrivacy
+
+export const SignalPrivacy: typeof $Enums.SignalPrivacy
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -1419,6 +1437,7 @@ export namespace Prisma {
     title: string | null
     prompt: string | null
     sourceUrl: string | null
+    privacy: $Enums.SignalPrivacy | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -1429,6 +1448,7 @@ export namespace Prisma {
     title: string | null
     prompt: string | null
     sourceUrl: string | null
+    privacy: $Enums.SignalPrivacy | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -1440,6 +1460,7 @@ export namespace Prisma {
     prompt: number
     data: number
     sourceUrl: number
+    privacy: number
     createdAt: number
     updatedAt: number
     userId: number
@@ -1452,6 +1473,7 @@ export namespace Prisma {
     title?: true
     prompt?: true
     sourceUrl?: true
+    privacy?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -1462,6 +1484,7 @@ export namespace Prisma {
     title?: true
     prompt?: true
     sourceUrl?: true
+    privacy?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -1473,6 +1496,7 @@ export namespace Prisma {
     prompt?: true
     data?: true
     sourceUrl?: true
+    privacy?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -1557,6 +1581,7 @@ export namespace Prisma {
     prompt: string
     data: JsonValue | null
     sourceUrl: string | null
+    privacy: $Enums.SignalPrivacy
     createdAt: Date
     updatedAt: Date
     userId: string | null
@@ -1585,6 +1610,7 @@ export namespace Prisma {
     prompt?: boolean
     data?: boolean
     sourceUrl?: boolean
+    privacy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -1599,6 +1625,7 @@ export namespace Prisma {
     prompt?: boolean
     data?: boolean
     sourceUrl?: boolean
+    privacy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -1611,6 +1638,7 @@ export namespace Prisma {
     prompt?: boolean
     data?: boolean
     sourceUrl?: boolean
+    privacy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -1623,12 +1651,13 @@ export namespace Prisma {
     prompt?: boolean
     data?: boolean
     sourceUrl?: boolean
+    privacy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
   }
 
-  export type SignalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "prompt" | "data" | "sourceUrl" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["signal"]>
+  export type SignalOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "prompt" | "data" | "sourceUrl" | "privacy" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["signal"]>
   export type SignalInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Signal$userArgs<ExtArgs>
     followUps?: boolean | Signal$followUpsArgs<ExtArgs>
@@ -1653,6 +1682,7 @@ export namespace Prisma {
       prompt: string
       data: Prisma.JsonValue | null
       sourceUrl: string | null
+      privacy: $Enums.SignalPrivacy
       createdAt: Date
       updatedAt: Date
       userId: string | null
@@ -2086,6 +2116,7 @@ export namespace Prisma {
     readonly prompt: FieldRef<"Signal", 'String'>
     readonly data: FieldRef<"Signal", 'Json'>
     readonly sourceUrl: FieldRef<"Signal", 'String'>
+    readonly privacy: FieldRef<"Signal", 'SignalPrivacy'>
     readonly createdAt: FieldRef<"Signal", 'DateTime'>
     readonly updatedAt: FieldRef<"Signal", 'DateTime'>
     readonly userId: FieldRef<"Signal", 'String'>
@@ -8094,6 +8125,7 @@ export namespace Prisma {
     prompt: 'prompt',
     data: 'data',
     sourceUrl: 'sourceUrl',
+    privacy: 'privacy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId'
@@ -8246,6 +8278,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'SignalPrivacy'
+   */
+  export type EnumSignalPrivacyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SignalPrivacy'>
+    
+
+
+  /**
+   * Reference to a field of type 'SignalPrivacy[]'
+   */
+  export type ListEnumSignalPrivacyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SignalPrivacy[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -8299,6 +8345,7 @@ export namespace Prisma {
     prompt?: StringFilter<"Signal"> | string
     data?: JsonNullableFilter<"Signal">
     sourceUrl?: StringNullableFilter<"Signal"> | string | null
+    privacy?: EnumSignalPrivacyFilter<"Signal"> | $Enums.SignalPrivacy
     createdAt?: DateTimeFilter<"Signal"> | Date | string
     updatedAt?: DateTimeFilter<"Signal"> | Date | string
     userId?: StringNullableFilter<"Signal"> | string | null
@@ -8312,6 +8359,7 @@ export namespace Prisma {
     prompt?: SortOrder
     data?: SortOrderInput | SortOrder
     sourceUrl?: SortOrderInput | SortOrder
+    privacy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrderInput | SortOrder
@@ -8328,6 +8376,7 @@ export namespace Prisma {
     title?: StringFilter<"Signal"> | string
     prompt?: StringFilter<"Signal"> | string
     data?: JsonNullableFilter<"Signal">
+    privacy?: EnumSignalPrivacyFilter<"Signal"> | $Enums.SignalPrivacy
     createdAt?: DateTimeFilter<"Signal"> | Date | string
     updatedAt?: DateTimeFilter<"Signal"> | Date | string
     userId?: StringNullableFilter<"Signal"> | string | null
@@ -8341,6 +8390,7 @@ export namespace Prisma {
     prompt?: SortOrder
     data?: SortOrderInput | SortOrder
     sourceUrl?: SortOrderInput | SortOrder
+    privacy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrderInput | SortOrder
@@ -8358,6 +8408,7 @@ export namespace Prisma {
     prompt?: StringWithAggregatesFilter<"Signal"> | string
     data?: JsonNullableWithAggregatesFilter<"Signal">
     sourceUrl?: StringNullableWithAggregatesFilter<"Signal"> | string | null
+    privacy?: EnumSignalPrivacyWithAggregatesFilter<"Signal"> | $Enums.SignalPrivacy
     createdAt?: DateTimeWithAggregatesFilter<"Signal"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Signal"> | Date | string
     userId?: StringNullableWithAggregatesFilter<"Signal"> | string | null
@@ -8694,6 +8745,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutSignalsInput
@@ -8706,6 +8758,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
@@ -8718,6 +8771,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutSignalsNestedInput
@@ -8730,6 +8784,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -8742,6 +8797,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
@@ -8753,6 +8809,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8763,6 +8820,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9159,6 +9217,13 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type EnumSignalPrivacyFilter<$PrismaModel = never> = {
+    equals?: $Enums.SignalPrivacy | EnumSignalPrivacyFieldRefInput<$PrismaModel>
+    in?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    not?: NestedEnumSignalPrivacyFilter<$PrismaModel> | $Enums.SignalPrivacy
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9196,6 +9261,7 @@ export namespace Prisma {
     prompt?: SortOrder
     data?: SortOrder
     sourceUrl?: SortOrder
+    privacy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -9206,6 +9272,7 @@ export namespace Prisma {
     title?: SortOrder
     prompt?: SortOrder
     sourceUrl?: SortOrder
+    privacy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -9216,6 +9283,7 @@ export namespace Prisma {
     title?: SortOrder
     prompt?: SortOrder
     sourceUrl?: SortOrder
+    privacy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -9281,6 +9349,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumSignalPrivacyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SignalPrivacy | EnumSignalPrivacyFieldRefInput<$PrismaModel>
+    in?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    not?: NestedEnumSignalPrivacyWithAggregatesFilter<$PrismaModel> | $Enums.SignalPrivacy
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSignalPrivacyFilter<$PrismaModel>
+    _max?: NestedEnumSignalPrivacyFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -9660,6 +9738,10 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type EnumSignalPrivacyFieldUpdateOperationsInput = {
+    set?: $Enums.SignalPrivacy
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -9978,6 +10060,13 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedEnumSignalPrivacyFilter<$PrismaModel = never> = {
+    equals?: $Enums.SignalPrivacy | EnumSignalPrivacyFieldRefInput<$PrismaModel>
+    in?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    not?: NestedEnumSignalPrivacyFilter<$PrismaModel> | $Enums.SignalPrivacy
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -10066,6 +10155,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSignalPrivacyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SignalPrivacy | EnumSignalPrivacyFieldRefInput<$PrismaModel>
+    in?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SignalPrivacy[] | ListEnumSignalPrivacyFieldRefInput<$PrismaModel>
+    not?: NestedEnumSignalPrivacyWithAggregatesFilter<$PrismaModel> | $Enums.SignalPrivacy
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSignalPrivacyFilter<$PrismaModel>
+    _max?: NestedEnumSignalPrivacyFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -10488,6 +10587,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     followUps?: FollowUpsCreateNestedManyWithoutSignalInput
@@ -10499,6 +10599,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     followUps?: FollowUpsUncheckedCreateNestedManyWithoutSignalInput
@@ -10627,6 +10728,7 @@ export namespace Prisma {
     prompt?: StringFilter<"Signal"> | string
     data?: JsonNullableFilter<"Signal">
     sourceUrl?: StringNullableFilter<"Signal"> | string | null
+    privacy?: EnumSignalPrivacyFilter<"Signal"> | $Enums.SignalPrivacy
     createdAt?: DateTimeFilter<"Signal"> | Date | string
     updatedAt?: DateTimeFilter<"Signal"> | Date | string
     userId?: StringNullableFilter<"Signal"> | string | null
@@ -10654,6 +10756,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutSignalsInput
@@ -10665,6 +10768,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
     userId?: string | null
@@ -10719,6 +10823,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutSignalsNestedInput
@@ -10730,6 +10835,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10830,6 +10936,7 @@ export namespace Prisma {
     prompt: string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: string | null
+    privacy?: $Enums.SignalPrivacy
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10912,6 +11019,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     followUps?: FollowUpsUpdateManyWithoutSignalNestedInput
@@ -10923,6 +11031,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     followUps?: FollowUpsUncheckedUpdateManyWithoutSignalNestedInput
@@ -10934,6 +11043,7 @@ export namespace Prisma {
     prompt?: StringFieldUpdateOperationsInput | string
     data?: NullableJsonNullValueInput | InputJsonValue
     sourceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    privacy?: EnumSignalPrivacyFieldUpdateOperationsInput | $Enums.SignalPrivacy
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

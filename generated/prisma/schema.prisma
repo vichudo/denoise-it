@@ -15,12 +15,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SignalPrivacy {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
 model Signal {
-  id        String  @id @default(nanoid())
+  id        String        @id @default(nanoid())
   title     String
   prompt    String
   data      Json?
-  sourceUrl String? @unique @map("source_url")
+  sourceUrl String?       @unique @map("source_url")
+  privacy   SignalPrivacy @default(PUBLIC)
 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
