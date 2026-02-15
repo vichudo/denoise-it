@@ -42,15 +42,14 @@ export async function GET(req: NextRequest) {
       // Stop early once we've passed </head>
       if (html.includes("</head>")) break;
     }
-    reader.cancel().catch(() => {});
+    void reader.cancel();
 
     // Try og:title first, then <title>
-    const ogMatch = html.match(
-      /<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i,
-    ) ??
-      html.match(
-        /<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i,
-      );
+    const ogTitleRegex1 =
+      /<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i;
+    const ogTitleRegex2 =
+      /<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i;
+    const ogMatch = ogTitleRegex1.exec(html) ?? ogTitleRegex2.exec(html);
 
     if (ogMatch?.[1]) {
       return NextResponse.json(
@@ -59,7 +58,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const titleMatch = /<title[^>]*>([^<]+)<\/title>/i.exec(html);
     if (titleMatch?.[1]) {
       return NextResponse.json(
         { title: decodeEntities(titleMatch[1].trim()) },
@@ -81,6 +80,9 @@ function decodeEntities(str: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&#x27;/g, "'")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    )
     .replace(/&#(\d+);/g, (_, n: string) =>
       String.fromCharCode(Number(n)),
     );
