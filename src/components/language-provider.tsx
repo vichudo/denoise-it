@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
   type ReactNode,
 } from "react";
@@ -23,13 +22,10 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<LanguageCode>("en");
-
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) setLanguageState(stored as LanguageCode);
-  }, []);
+  const [language, setLanguageState] = useState<LanguageCode>(() => {
+    if (typeof window === "undefined") return "en";
+    return (localStorage.getItem(STORAGE_KEY) as LanguageCode) ?? "en";
+  });
 
   const setLanguage = useCallback((code: LanguageCode) => {
     setLanguageState(code);
