@@ -187,9 +187,7 @@ const verdictLabels: Record<Verdict, string> = {
 };
 
 function VerdictBanner({ result }: { result: AnalysisResult }) {
-  const isDefinitive =
-    result.verdict !== "mixed" && result.verdict !== "unverifiable";
-  if (!isDefinitive) return null;
+  if (result.verdict === "unverifiable") return null;
 
   const config = verdictConfig[result.verdict];
   const Icon = config.icon;
