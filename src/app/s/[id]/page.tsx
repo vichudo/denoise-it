@@ -24,7 +24,12 @@ export default async function SignalPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  await api.analysis.get.prefetch({ id });
+
+  try {
+    await api.analysis.get.prefetch({ id });
+  } catch {
+    // Signal may be private or deleted — let client handle the error state
+  }
 
   return (
     <HydrateClient>
