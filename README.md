@@ -149,4 +149,4 @@ src/
 
 ## License
 
-Private — All rights reserved.
+This project is open source under the [MIT License](LICENSE).
