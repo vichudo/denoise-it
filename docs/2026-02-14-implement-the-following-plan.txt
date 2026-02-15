@@ -1,0 +1,1823 @@
+
+ ▐▛███▜▌   Claude Code v2.1.39
+▝▜█████▛▘  Opus 4.6 · API Usage Billing
+  ▘▘ ▝▝    ~/Documents/Github/denoise-it
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ i18n Implementation Plan — Client-Side, Zero Dependencies                    │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ All UI text is hardcoded English across ~15 component files (~200+ strings). │
+│  The app already has a LanguageProvider with localStorage persistence and a  │
+│ LanguageToggle dropdown (currently only affects AI output language). We'll   │
+│ extend this existing infrastructure to also translate the UI — no new        │
+│ dependencies, no URL routing changes.                                        │
+│                                                                              │
+│ Languages: English (default) + Spanish. Adding more later = create one .ts   │
+│ file per locale.                                                             │
+│                                                                              │
+│ ---                                                                          │
+│ Step 1: Create translation system (src/i18n/)                                │
+│                                                                              │
+│ src/i18n/en.ts — English dictionary (source of truth)                        │
+│                                                                              │
+│ - Flat keys with dot-separated namespaces: "hero.title",                     │
+│ "landing.step1.description", "verdict.true", etc.                            │
+│ - Exports TranslationKey type (union of all keys)                            │
+│ - ~150 keys covering all user-facing text                                    │
+│                                                                              │
+│ src/i18n/es.ts — Spanish dictionary                                          │
+│                                                                              │
+│ - Typed as Record<TranslationKey, string> — TypeScript enforces every key    │
+│ exists                                                                       │
+│ - Compile error if any key is missing (prevents stale translations)          │
+│                                                                              │
+│ src/i18n/index.ts — Registry                                                 │
+│                                                                              │
+│ - getDictionary(locale) — returns the locale dict, falls back to English     │
+│ - UI_LOCALES — set of locale codes that have UI translations                 │
+│                                                                              │
+│ ---                                                                          │
+│ Step 2: Extend LanguageProvider with t() function                            │
+│                                                                              │
+│ File: src/components/language-provider.tsx                                   │
+│                                                                              │
+│ - Add useMemo to resolve the dictionary from current language                │
+│ - Add t(key, vars?) function with simple {varName} interpolation             │
+│ - Add useEffect to sync document.documentElement.lang on language change     │
+│ - Export new useTranslation() hook (alias for same context, includes t)      │
+│ - Keep useOutputLanguage() for backward compatibility                        │
+│                                                                              │
+│ ---                                                                          │
+│ Step 3: Migrate all component files                                          │
+│                                                                              │
+│ Replace hardcoded strings with t() calls. For data arrays (STEPS,            │
+│ IMPACT_AREAS, etc.), change inline text to translation key references.       │
+│ File: src/app/_components/landing-sections.tsx                               │
+│ Strings: ~80                                                                 │
+│ Pattern: Data arrays use titleKey/descKey, components call t()               │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/denoise-hero.tsx                                   │
+│ Strings: ~12                                                                 │
+│ Pattern: Direct t() replacements, TIME_STOPS use labelKey                    │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/signal-view.tsx                                    │
+│ Strings: ~30                                                                 │
+│ Pattern: Verdict labels, analyzing phrases, section headers                  │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/noise-card.tsx                                     │
+│ Strings: ~1                                                                  │
+│ Pattern: t(\noise.type.${type}`)`                                            │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/truth-card.tsx                                     │
+│ Strings: ~1                                                                  │
+│ Pattern: t(\signal.category.${cat}`)`                                        │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/share-button.tsx                                   │
+│ Strings: ~5                                                                  │
+│ Pattern: Dialog text                                                         │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/follow-up-panel.tsx                                │
+│ Strings: ~6                                                                  │
+│ Pattern: Panel labels                                                        │
+│ ────────────────────────────────────────                                     │
+│ File: src/app/_components/follow-up-chat.tsx                                 │
+│ Strings: ~4                                                                  │
+│ Pattern: Chat placeholders                                                   │
+│ ────────────────────────────────────────                                     │
+│ File: src/components/language-toggle.tsx                                     │
+│ Strings: ~1                                                                  │
+│ Pattern: sr-only text + UI locale indicator                                  │
+│ ────────────────────────────────────────                                     │
+│ File: src/lib/constants.ts                                                   │
+│ Strings: 0                                                                   │
+│ Pattern: Add analyzingPhraseKey() helper (phrases move to i18n dicts)        │
+│ ---                                                                          │
+│ Step 4: Update LanguageToggle with UI locale indicator                       │
+│                                                                              │
+│ For languages without UI translations (e.g., Japanese), show (EN UI) badge   │
+│ next to the language name so users know the interface stays in English while │
+│  AI output uses their selected language.                                     │
+│                                                                              │
+│ ---                                                                          │
+│ Verification                                                                 │
+│                                                                              │
+│ 1. pnpm run check — TypeScript catches any missing keys in es.ts             │
+│ 2. pnpm run dev — toggle language, verify all UI text switches               │
+│ 3. Confirm AI output language still works independently                      │
+│ 4. Confirm <html lang> attribute updates on toggle                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll start by reading the key files to understand the current codebase before
+  implementing.
+
+⏺ Now let me read all the relevant files in parallel.
+
+⏺ Read 12 files (ctrl+o to expand)
+
+⏺ Let me create all three i18n files in parallel.
+
+⏺ Write(src/i18n/en.ts)
+  ⎿  Wrote 246 lines to src/i18n/en.ts
+       1 const en = {
+       2   // ─── Hero ─────────────────────────────────────────
+       3   "hero.tagline": "Strip the noise. See what's real.",
+       4   "hero.placeholder":
+       5     "Paste a link, tweet, headline, article, claim, a question, 
+         or rumor...",
+       6   "hero.timeSensitive": "Time-sensitive",
+       7   "hero.creating": "Creating...",
+       8   "hero.denoise": "Denoise",
+       9   "hero.error": "Something went wrong. Please try again.",
+      10   "hero.footer": "We extract signal from noise — no account requ
+         ired.",
+     … +236 lines (ctrl+o to expand)
+
+⏺ Write(src/i18n/es.ts)
+  ⎿  Wrote 253 lines to src/i18n/es.ts
+       1 import type { Dictionary } from "./en";
+       2 
+       3 const es: Dictionary = {
+       4   // ─── Hero ─────────────────────────────────────────
+       5   "hero.tagline": "Elimina el ruido. Descubre la verdad.",
+       6   "hero.placeholder":
+       7     "Pega un enlace, tweet, titular, artículo, afirmación, pregu
+         nta o rumor...",
+       8   "hero.timeSensitive": "Tiempo específico",
+       9   "hero.creating": "Creando...",
+      10   "hero.denoise": "Analizar",
+     … +243 lines (ctrl+o to expand)
+
+⏺ Write(src/i18n/index.ts)
+  ⎿  Wrote 20 lines to src/i18n/index.ts
+       1 import en from "./en";
+       2 import es from "./es";
+       3 
+       4 import type { Dictionary } from "./en";
+       5 
+       6 export type { TranslationKey, Dictionary } from "./en";
+       7 
+       8 const dictionaries: Record<string, Dictionary> = { en, es };
+       9 
+      10 /** Locale codes that have a full UI translation */
+     … +10 lines (ctrl+o to expand)
+
+⏺ Now let me extend the LanguageProvider with the t() function and update
+  constants.ts in parallel.
+
+⏺ Write(src/components/language-provider.tsx)
+  ⎿  Added 38 lines, removed 3 lines
+       5    useCallback,
+       6    useContext,
+       7    useEffect,
+       8 +  useMemo,                                                     
+       9    useState,
+      10    type ReactNode,
+      11  } from "react";
+      12  
+      13  import type { LanguageCode } from "@/lib/constants";
+      14 +import type { TranslationKey } from "@/i18n";                  
+      15 +import { getDictionary, UI_LOCALES } from "@/i18n";            
+      16  
+      17  const STORAGE_KEY = "denoise-output-lang";
+      18  
+      19  interface LanguageContextValue {
+      20    language: LanguageCode;
+      21    setLanguage: (code: LanguageCode) => void;
+      22 +  t: (                                                         
+      23 +    key: TranslationKey | (string & Record<never, never>),     
+      24 +    vars?: Record<string, string | number>,                    
+      25 +  ) => string;                                                 
+      26  }
+      27  
+      28  const LanguageContext = createContext<LanguageContextValue | un
+          defined>(
+     ...
+      38      if (stored) setLanguageState(stored as LanguageCode);
+      39    }, []);
+      40  
+      41 +  // Sync <html lang> attribute                                
+      42 +  useEffect(() => {                                            
+      43 +    document.documentElement.lang = UI_LOCALES.has(language) ? 
+         +language : "en";                                               
+      44 +  }, [language]);                                              
+      45 +                                                               
+      46    const setLanguage = useCallback((code: LanguageCode) => {
+      47      setLanguageState(code);
+      48      localStorage.setItem(STORAGE_KEY, code);
+      49    }, []);
+      50  
+      51 +  const dict = useMemo(() => getDictionary(language), [language
+         +]);                                                            
+      52 +                                                               
+      53 +  const t = useCallback(                                       
+      54 +    (                                                          
+      55 +      key: TranslationKey | (string & Record<never, never>),   
+      56 +      vars?: Record<string, string | number>,                  
+      57 +    ) => {                                                     
+      58 +      let str = (dict as Record<string, string>)[key] ?? key;  
+      59 +      if (vars) {                                              
+      60 +        for (const [k, v] of Object.entries(vars)) {           
+      61 +          str = str.replace(`{${k}}`, String(v));              
+      62 +        }                                                      
+      63 +      }                                                        
+      64 +      return str;                                              
+      65 +    },                                                         
+      66 +    [dict],                                                    
+      67 +  );                                                           
+      68 +                                                               
+      69    return (
+      40 -    <LanguageContext value={{ language, setLanguage }}>        
+      70 +    <LanguageContext value={{ language, setLanguage, t }}>     
+      71        {children}
+      72      </LanguageContext>
+      73    );
+      74  }
+      75  
+      46 -export function useOutputLanguage() {                          
+      76 +export function useTranslation() {                             
+      77    const ctx = useContext(LanguageContext);
+      78    if (!ctx) {
+      49 -    throw new Error("useOutputLanguage must be used within a La
+         -nguageProvider");                                              
+      79 +    throw new Error("useTranslation must be used within a Langu
+         +ageProvider");                                                 
+      80    }
+      81    return ctx;
+      82  }
+      83 +                                                               
+      84 +/** @deprecated Use useTranslation() instead */                
+      85 +export function useOutputLanguage() {                          
+      86 +  return useTranslation();                                     
+      87 +}                                                              
+
+⏺ Update(src/lib/constants.ts)
+  ⎿  Added 1 line
+      21    );
+      22  }
+      23  
+      24 +/** @deprecated Use ANALYZING_PHRASES_COUNT from @/i18n + t(`an
+         +alyzing.${i}`) */                                              
+      25  export const ANALYZING_PHRASES = [
+      26    "Searching for primary sources...",
+      27    "Cross-referencing claims...",
+
+⏺ Now let me migrate all the component files. I'll do several in parallel where
+  possible.
+
+⏺ Write(src/app/_components/denoise-hero.tsx)
+  ⎿  Added 23 lines, removed 21 lines
+       4  import { useRouter } from "next/navigation";
+       5  import { Clock, Loader2 } from "lucide-react";
+       6  
+       7 -import { useOutputLanguage } from "@/components/language-provid
+         -er";                                                           
+       7 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       8  import { Button } from "@/components/ui/button";
+       9  import { Label } from "@/components/ui/label";
+      10  import { Slider } from "@/components/ui/slider";
+     ...
+      12  import { Textarea } from "@/components/ui/textarea";
+      13  import { api } from "@/trpc/react";
+      14  
+      15 +import type { TranslationKey } from "@/i18n";                  
+      16 +                                                               
+      17  import { UrlPreviews } from "./url-previews";
+      18  
+      19  /** Slider stops — index-based so each step feels equal on the 
+          track */
+      18 -const TIME_STOPS = [                                           
+      19 -  { days: 1, label: "24 hours" },                              
+      20 -  { days: 3, label: "3 days" },                                
+      21 -  { days: 7, label: "1 week" },                                
+      22 -  { days: 14, label: "2 weeks" },                              
+      23 -  { days: 30, label: "1 month" },                              
+      24 -  { days: 90, label: "3 months" },                             
+      25 -  { days: 180, label: "6 months" },                            
+      26 -  { days: 365, label: "1 year" },                              
+      27 -  { days: 730, label: "2 years" },                             
+      28 -] as const;                                                    
+      20 +const TIME_STOPS: { days: number; labelKey: TranslationKey }[] 
+         += [                                                            
+      21 +  { days: 1, labelKey: "time.last.1d" },                       
+      22 +  { days: 3, labelKey: "time.last.3d" },                       
+      23 +  { days: 7, labelKey: "time.last.1w" },                       
+      24 +  { days: 14, labelKey: "time.last.2w" },                      
+      25 +  { days: 30, labelKey: "time.last.1m" },                      
+      26 +  { days: 90, labelKey: "time.last.3m" },                      
+      27 +  { days: 180, labelKey: "time.last.6m" },                     
+      28 +  { days: 365, labelKey: "time.last.1y" },                     
+      29 +  { days: 730, labelKey: "time.last.2y" },                     
+      30 +];                                                             
+      31  
+      32  const DEFAULT_STOP = 2; // index → "1 week"
+      33  
+      34  export function DenoiseHero() {
+      35    const router = useRouter();
+      34 -  const { language } = useOutputLanguage();                    
+      36 +  const { language, t } = useTranslation();                    
+      37    const [input, setInput] = useState("");
+      38    const [timeSensitive, setTimeSensitive] = useState(false);
+      39    const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
+     ...
+      63              <span className="text-muted-foreground font-light">
+          it</span>
+      64            </h1>
+      65            <p className="text-muted-foreground text-lg">
+      64 -            Strip the noise. See what&apos;s real.             
+      66 +            {t("hero.tagline")}                                
+      67            </p>
+      68          </div>
+      69  
+      70          <div className="flex w-full flex-col gap-3">
+      71            <Textarea
+      70 -            placeholder="Paste a link, tweet, headline, article
+         -, claim, a question, or rumor..."                              
+      72 +            placeholder={t("hero.placeholder")}                
+      73              className="min-h-[120px] resize-none"
+      74              value={input}
+      75              onChange={(e) => setInput(e.target.value)}
+     ...
+      105                  className="text-muted-foreground flex cursor-p
+           ointer items-center gap-1.5 text-sm"
+      106                >
+      107                  <Clock className="size-3.5" />
+      106 -                Time-sensitive                                
+      108 +                {t("hero.timeSensitive")}                     
+      109                </Label>
+      110                {timeSensitive && (
+      111                  <span className="text-foreground ml-auto text-
+           sm font-medium">
+      110 -                  Last {currentStop.label}                    
+      112 +                  {t(currentStop.labelKey)}                   
+      113                  </span>
+      114                )}
+      115              </div>
+     ...
+      134              {create.isPending ? (
+      135                <>
+      136                  <Loader2 className="animate-spin" />
+      135 -                Creating...                                   
+      137 +                {t("hero.creating")}                          
+      138                </>
+      139              ) : (
+      138 -              "Denoise"                                       
+      140 +              t("hero.denoise")                               
+      141              )}
+      142            </Button>
+      143          </div>
+      144  
+      145          {create.isError && (
+      146            <p className="text-destructive text-sm">
+      145 -            Something went wrong. Please try again.           
+      147 +            {t("hero.error")}                                 
+      148            </p>
+      149          )}
+      150  
+      151          <p className="text-muted-foreground text-xs">
+      150 -          We extract signal from noise — no account required. 
+      152 +          {t("hero.footer")}                                  
+      153          </p>
+      154        </div>
+      155      </section>
+
+⏺ Write(src/app/_components/noise-card.tsx)
+  ⎿  Added 4 lines, removed 2 lines
+       3  import { ExternalLink } from "lucide-react";
+       4  
+       5  import type { NoiseElement } from "@/lib/schemas/analysis";
+       6 -import { noiseTypeLabel } from "@/lib/schemas/analysis";       
+       6  import { getDomain } from "@/lib/utils";
+       7  import { Badge } from "@/components/ui/badge";
+       8 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       9  
+      10  import { ShareButton } from "./share-button";
+      11  
+     ...
+      20    signalId: string;
+      21    prompt?: string;
+      22  }) {
+      23 +  const { t } = useTranslation();                              
+      24 +                                                               
+      25    return (
+      26      <div
+      27        className="animate-in fade-in-0 slide-in-from-bottom-2 gr
+          oup relative rounded-lg border border-destructive/15 bg-destruc
+          tive/5 px-4 py-3 fill-mode-both dark:bg-destructive/10"
+     ...
+      34              variant="outline"
+      35              className="mt-0.5 h-5 shrink-0 border-destructive/2
+          5 px-1.5 text-[10px] font-medium text-destructive dark:text-red
+          -400"
+      36            >
+      35 -            {noiseTypeLabel[noise.type]}                       
+      37 +            {t(`noise.type.${noise.type}`)}                    
+      38            </Badge>
+      39            <p className="min-w-0 flex-1 text-xs leading-relaxed 
+          text-muted-foreground">
+      40              <span className="italic text-foreground/70">
+
+⏺ Write(src/app/_components/truth-card.tsx)
+  ⎿  Added 4 lines, removed 2 lines
+       3  import { ExternalLink } from "lucide-react";
+       4  
+       5  import type { SignalElement } from "@/lib/schemas/analysis";
+       6 -import { signalCategoryLabel } from "@/lib/schemas/analysis";  
+       6  import { getDomain } from "@/lib/utils";
+       7  import { Badge } from "@/components/ui/badge";
+       8 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       9  
+      10  import { ShareButton } from "./share-button";
+      11  
+     ...
+      32    signalId: string;
+      33    prompt?: string;
+      34  }) {
+      35 +  const { t } = useTranslation();                              
+      36 +                                                               
+      37    return (
+      38      <div
+      39        className="animate-in fade-in-0 slide-in-from-bottom-4 gr
+          oup relative rounded-xl border border-border/50 bg-card px-5 py
+          -4 fill-mode-both"
+     ...
+      61                variant="outline"
+      62                className="h-5 px-1.5 text-[10px] font-medium"
+      63              >
+      62 -              {signalCategoryLabel[signal.category]}           
+      64 +              {t(`signal.category.${signal.category}`)}        
+      65              </Badge>
+      66            </div>
+      67          </div>
+
+⏺ Write(src/app/_components/share-button.tsx)
+  ⎿  Added 8 lines, removed 6 lines
+       4  import { Download, Share, Loader2, Check } from "lucide-react";
+       5  import { toast } from "sonner";
+       6  
+       7 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       8  import { Button } from "@/components/ui/button";
+       9  import {
+      10    Dialog,
+     ...
+      38    alwaysVisible?: boolean;
+      39    prompt?: string;
+      40  }) {
+      41 +  const { t } = useTranslation();                              
+      42    const [state, setState] = useState<ShareState>("idle");
+      43    const [dialogOpen, setDialogOpen] = useState(false);
+      44    const [includePrompt, setIncludePrompt] = useState(false);
+     ...
+      53        setState("done");
+      54        setTimeout(() => setState("idle"), 2000);
+      55      } catch {
+      54 -      toast.error("Failed to generate story image");           
+      56 +      toast.error(t("share.error"));                           
+      57        setState("idle");
+      58      }
+      59    }
+     ...
+       99                )}
+      100              </Button>
+      101            </TooltipTrigger>
+      100 -          <TooltipContent side="top">Share as story</TooltipCo
+          -ntent>                                                        
+      102 +          <TooltipContent side="top">{t("share.tooltip")}</Too
+          +ltipContent>                                                  
+      103          </Tooltip>
+      104        </TooltipProvider>
+      105  
+     ...
+      108            <DialogContent className="sm:max-w-sm">
+      109              <DialogHeader>
+      110                <DialogTitle className="text-sm font-medium">
+      109 -                Story preview                                 
+      111 +                {t("share.title")}                            
+      112                </DialogTitle>
+      113                <DialogDescription className="sr-only">
+      112 -                Preview and customize your story image        
+      114 +                {t("share.description")}                      
+      115                </DialogDescription>
+      116              </DialogHeader>
+      117  
+     ...
+      129              {/* Toggle */}
+      130              <label className="flex cursor-pointer items-center
+            justify-between py-1">
+      131                <span className="text-muted-foreground text-sm">
+      130 -                Include prompt                                
+      132 +                {t("share.includePrompt")}                    
+      133                </span>
+      134                <Switch
+      135                  size="sm"
+     ...
+      146                >
+      147                  <Download className="size-3.5 [@media(hover:no
+           ne)]:hidden" />
+      148                  <Share className="hidden size-3.5 [@media(hove
+           r:none)]:block" />
+      147 -                Share                                         
+      149 +                {t("share.button")}                           
+      150                </Button>
+      151              </DialogFooter>
+      152            </DialogContent>
+
+⏺ Now let me migrate the remaining component files in parallel.
+
+⏺ Write(src/app/_components/follow-up-panel.tsx)
+  ⎿  Added 8 lines, removed 6 lines
+       4  import type { UIMessage } from "ai";
+       5  import { ArrowLeft, MessageCircle, Plus } from "lucide-react";
+       6  
+       7 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       8  import { Button } from "@/components/ui/button";
+       9  import {
+      10    Sheet,
+     ...
+      26    open: boolean;
+      27    onOpenChange: (open: boolean) => void;
+      28  }) {
+      29 +  const { t } = useTranslation();                              
+      30    const [activeFollowUpId, setActiveFollowUpId] = useState<numb
+          er | null>(null);
+      31    const [initialMessages, setInitialMessages] = useState<
+      32      UIMessage[] | undefined
+     ...
+      82                >
+      83                  <ArrowLeft className="size-4" />
+      84                </Button>
+      83 -              <SheetTitle className="text-sm">Follow-up</SheetT
+         -itle>                                                          
+      85 +              <SheetTitle className="text-sm">{t("followUp.titl
+         +eSingle")}</SheetTitle>                                        
+      86              </SheetHeader>
+      87              <div className="flex min-h-0 flex-1 flex-col">
+      88                <FollowUpChat
+     ...
+       96          ) : (
+       97            <>
+       98              <SheetHeader className="border-b">
+       97 -              <SheetTitle>Follow-ups</SheetTitle>             
+       99 +              <SheetTitle>{t("followUp.title")}</SheetTitle>  
+      100              </SheetHeader>
+      101              <div className="flex-1 overflow-y-auto p-4">
+      102                <Button
+     ...
+      110                  ) : (
+      111                    <Plus className="size-4" />
+      112                  )}
+      111 -                New conversation                              
+      113 +                {t("followUp.newConversation")}               
+      114                </Button>
+      115  
+      116                {listQuery.isLoading ? (
+     ...
+      120                ) : listQuery.data?.length === 0 ? (
+      121                  <div className="text-muted-foreground flex fle
+           x-col items-center gap-2 py-12 text-center">
+      122                    <MessageCircle className="text-muted-foregro
+           und/40 size-8" />
+      121 -                  <p className="text-sm">No conversations yet<
+          -/p>                                                           
+      123 +                  <p className="text-sm">{t("followUp.empty")}
+          +</p>                                                          
+      124                    <p className="text-xs">
+      123 -                    Start a new conversation to ask follow-up 
+          -questions                                                     
+      125 +                    {t("followUp.emptyHint")}                 
+      126                    </p>
+      127                  </div>
+      128                ) : (
+     ...
+      134                        onClick={() => handleSelectFollowUp(foll
+           owUp.id)}
+      135                      >
+      136                        <p className="truncate text-sm font-medi
+           um">
+      135 -                        {followUp.title ?? "Untitled conversat
+          -ion"}                                                         
+      137 +                        {followUp.title ?? t("followUp.untitle
+          +d")}                                                          
+      138                        </p>
+      139                        <p className="text-muted-foreground mt-0
+           .5 text-xs">
+      140                          {new Date(followUp.updatedAt).toLocale
+           DateString(
+
+⏺ Write(src/app/_components/follow-up-chat.tsx)
+  ⎿  Added 14 lines, removed 8 lines
+      14  import { AnimatePresence, motion } from "framer-motion";
+      15  
+      16  import { getDomain } from "@/lib/utils";
+      17 -import { useOutputLanguage } from "@/components/language-provid
+         -er";                                                           
+      17 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+      18  import { Shimmer } from "@/components/ai-elements/shimmer";
+      19  import { Button } from "@/components/ui/button";
+      20  import {
+     ...
+      82  }
+      83  
+      84  function MessageSources({ sources }: { sources: Source[] }) {
+      85 +  const { t } = useTranslation();                              
+      86    const [expanded, setExpanded] = useState(false);
+      87  
+      88    if (sources.length === 0) return null;
+     ...
+      100        >
+      101          <Globe className="size-3 shrink-0" />
+      102          <span>
+      102 -          {sources.length} source{sources.length !== 1 && "s"}
+      103 +          {t(                                                 
+      104 +            sources.length === 1                              
+      105 +              ? "chat.sourceSingular"                         
+      106 +              : "chat.sourcePlural",                          
+      107 +            { count: sources.length },                        
+      108 +          )}                                                  
+      109            {!expanded && (
+      110              <span className="text-muted-foreground/40">
+      111                {" "}
+     ...
+      163    followUpId: number;
+      164    initialMessages?: UIMessage[];
+      165  }) {
+      160 -  const { language } = useOutputLanguage();                   
+      166 +  const { language, t } = useTranslation();                   
+      167  
+      168    const transport = useMemo(
+      169      () =>
+     ...
+      228                <MessageCircle className="size-6" />
+      229              </div>
+      230              <div className="space-y-1">
+      225 -              <h3 className="text-sm font-medium">Ask a follow
+          --up</h3>                                                      
+      231 +              <h3 className="text-sm font-medium">{t("chat.ask
+          +Title")}</h3>                                                 
+      232                <p className="text-muted-foreground text-sm">
+      227 -                Ask anything about this analysis              
+      233 +                {t("chat.askHint")}                           
+      234                </p>
+      235              </div>
+      236            </div>
+     ...
+      249                        <p>{text}</p>
+      250                      ) : isLoading ? (
+      251                        <Shimmer as="span" duration={1.5} classN
+           ame="text-sm">
+      246 -                        Thinking...                           
+      252 +                        {t("chat.thinking")}                  
+      253                        </Shimmer>
+      254                      ) : (
+      255                        <>
+     ...
+      265                <Message from="assistant">
+      266                  <MessageContent>
+      267                    <Shimmer as="span" duration={1.5} className=
+           "text-sm">
+      262 -                    Thinking...                               
+      268 +                    {t("chat.thinking")}                      
+      269                    </Shimmer>
+      270                  </MessageContent>
+      271                </Message>
+     ...
+      294              setIsAtBottom(true);
+      295            }}
+      296          >
+      291 -          <PromptInputTextarea placeholder="Ask a follow-up qu
+          -estion..." />                                                 
+      297 +          <PromptInputTextarea placeholder={t("chat.placeholde
+          +r")} />                                                       
+      298            <PromptInputFooter>
+      299              <div />
+      300              <PromptInputSubmit
+
+⏺ Now the two big files: landing-sections.tsx and signal-view.tsx, plus the
+  language-toggle.tsx.
+
+⏺ Write(src/components/language-toggle.tsx)
+  ⎿  Added 12 lines, removed 4 lines
+       3  import { Check, Globe } from "lucide-react";
+       4  
+       5  import { OUTPUT_LANGUAGES } from "@/lib/constants";
+       6 -import { useOutputLanguage } from "@/components/language-provid
+         -er";                                                           
+       6 +import { UI_LOCALES } from "@/i18n";                           
+       7 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+       8  import { Button } from "@/components/ui/button";
+       9  import {
+      10    DropdownMenu,
+     ...
+      14  } from "@/components/ui/dropdown-menu";
+      15  
+      16  export function LanguageToggle() {
+      16 -  const { language, setLanguage } = useOutputLanguage();       
+      17 +  const { language, setLanguage, t } = useTranslation();       
+      18  
+      19    return (
+      20      <DropdownMenu>
+     ...
+      23            <Globe
+      24              className={`h-[1.2rem] w-[1.2rem] transition-opacit
+          y ${language === "en" ? "opacity-40" : "opacity-100"}`}
+      25            />
+      25 -          <span className="sr-only">Output language</span>     
+      26 +          <span className="sr-only">{t("language.srOnly")}</spa
+         +n>                                                             
+      27          </Button>
+      28        </DropdownMenuTrigger>
+      29        <DropdownMenuContent align="end">
+     ...
+      33              onClick={() => setLanguage(lang.code)}
+      34            >
+      35              <span className="flex w-full items-center justify-b
+          etween gap-2">
+      35 -              {lang.name}                                      
+      36 +              <span className="flex items-center gap-1.5">     
+      37 +                {lang.name}                                    
+      38 +                {!UI_LOCALES.has(lang.code) && (               
+      39 +                  <span className="text-muted-foreground bg-mut
+         +ed rounded px-1 py-0.5 text-[10px] font-medium leading-none">  
+      40 +                    EN UI                                      
+      41 +                  </span>                                      
+      42 +                )}                                             
+      43 +              </span>                                          
+      44                {language === lang.code && <Check className="size
+          -3.5" />}
+      45              </span>
+      46            </DropdownMenuItem>
+
+⏺ Write(src/app/_components/landing-sections.tsx)
+  ⎿  Added 132 lines, removed 114 lines
+      23    Zap,
+      24  } from "lucide-react";
+      25  
+      26 +import type { TranslationKey } from "@/i18n";                  
+      27 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+      28 +                                                               
+      29  /* ------------------------------------------------------------
+          ------ */
+      30  /*  Section 1 — How it works                                   
+                 */
+      31  /* ------------------------------------------------------------
+          ------ */
+      32  
+      30 -const STEPS = [                                                
+      33 +const STEPS: {                                                 
+      34 +  icon: typeof Megaphone;                                      
+      35 +  titleKey: TranslationKey;                                    
+      36 +  descKey: TranslationKey;                                     
+      37 +}[] = [                                                        
+      38    {
+      39      icon: Megaphone,
+      33 -    title: "Paste anything",                                   
+      34 -    description:                                               
+      35 -      "A tweet, headline, article, claim, link, question, or ru
+         -mor — any piece of content you want verified.",                
+      40 +    titleKey: "howItWorks.step1.title",                        
+      41 +    descKey: "howItWorks.step1.desc",                          
+      42    },
+      43    {
+      44      icon: BrainCircuit,
+      39 -    title: "AI analyzes",                                      
+      40 -    description:                                               
+      41 -      "Our agent cross-references primary sources, government d
+         -ata, and peer-reviewed research in real time.",                
+      45 +    titleKey: "howItWorks.step2.title",                        
+      46 +    descKey: "howItWorks.step2.desc",                          
+      47    },
+      48    {
+      49      icon: Sparkles,
+      45 -    title: "See the signal",                                   
+      46 -    description:                                               
+      47 -      "Get a clear verdict with confidence scores, sourced fact
+         -s, and every piece of noise identified and explained.",        
+      50 +    titleKey: "howItWorks.step3.title",                        
+      51 +    descKey: "howItWorks.step3.desc",                          
+      52    },
+      49 -] as const;                                                    
+      53 +];                                                             
+      54  
+      55  export function HowItWorks() {
+      56 +  const { t } = useTranslation();                              
+      57 +                                                               
+      58    return (
+      59      <section className="border-border/40 border-t px-4 py-24">
+      60        <div className="mx-auto max-w-5xl">
+      61          <p className="text-muted-foreground mb-3 text-center te
+          xt-xs font-medium uppercase tracking-widest">
+      56 -          How it works                                         
+      62 +          {t("howItWorks.label")}                              
+      63          </p>
+      64          <h2 className="mb-16 text-center text-3xl font-bold tra
+          cking-tight sm:text-4xl">
+      59 -          From noise to clarity in seconds                     
+      65 +          {t("howItWorks.title")}                              
+      66          </h2>
+      67  
+      68          <div className="grid gap-10 md:grid-cols-[1fr_auto_1fr_
+          auto_1fr] md:items-start md:gap-0">
+      69            {STEPS.map((step, i) => (
+      64 -            <Fragment key={step.title}>                        
+      70 +            <Fragment key={step.titleKey}>                     
+      71                <div
+      72                  className="flex flex-col items-center text-cent
+          er"
+      73                >
+     ...
+      84                    />
+      85                  </div>
+      86  
+      81 -                <h3 className="mb-2 text-lg font-semibold">{ste
+         -p.title}</h3>                                                  
+      87 +                <h3 className="mb-2 text-lg font-semibold">{t(s
+         +tep.titleKey)}</h3>                                            
+      88                  <p className="text-muted-foreground max-w-[280p
+          x] text-sm leading-relaxed">
+      83 -                  {step.description}                           
+      89 +                  {t(step.descKey)}                            
+      90                  </p>
+      91                </div>
+      92  
+     ...
+      110  /*  Section 2 — Impact areas (bento grid)                     
+                   */
+      111  /* -----------------------------------------------------------
+           ------- */
+      112  
+      107 -const IMPACT_AREAS = [                                        
+      113 +const IMPACT_AREAS: {                                         
+      114 +  icon: typeof Landmark;                                      
+      115 +  titleKey: TranslationKey;                                   
+      116 +  descKey: TranslationKey;                                    
+      117 +  accent: string;                                             
+      118 +  iconColor: string;                                          
+      119 +  exKeys: [TranslationKey, TranslationKey, TranslationKey];   
+      120 +}[] = [                                                       
+      121    {
+      122      icon: Landmark,
+      110 -    title: "Politics & Policy",                               
+      111 -    description:                                              
+      112 -      "Cut through partisan framing, verify political claims, 
+          -and see what legislation actually says.",                     
+      123 +    titleKey: "impact.politics.title",                        
+      124 +    descKey: "impact.politics.desc",                          
+      125      accent: "from-blue-500/20 to-blue-500/0",
+      126      iconColor: "text-blue-500",
+      115 -    examples: ["Campaign promises", "Voting records", "Policy 
+          -impact"],                                                     
+      127 +    exKeys: ["impact.politics.ex1", "impact.politics.ex2", "im
+          +pact.politics.ex3"],                                          
+      128    },
+      129    {
+      130      icon: HeartPulse,
+      119 -    title: "Health & Science",                                
+      120 -    description:                                              
+      121 -      "Separate evidence-based medicine from viral misinformat
+          -ion that puts lives at risk.",                                
+      131 +    titleKey: "impact.health.title",                          
+      132 +    descKey: "impact.health.desc",                            
+      133      accent: "from-emerald-500/20 to-emerald-500/0",
+      134      iconColor: "text-emerald-500",
+      124 -    examples: ["Clinical studies", "Drug claims", "Wellness tr
+          -ends"],                                                       
+      135 +    exKeys: ["impact.health.ex1", "impact.health.ex2", "impact
+          +.health.ex3"],                                                
+      136    },
+      137    {
+      138      icon: TrendingUp,
+      128 -    title: "Finance & Markets",                               
+      129 -    description:                                              
+      130 -      "Verify market claims, earnings reports, and financial a
+          -dvice against actual data.",                                  
+      139 +    titleKey: "impact.finance.title",                         
+      140 +    descKey: "impact.finance.desc",                           
+      141      accent: "from-amber-500/20 to-amber-500/0",
+      142      iconColor: "text-amber-500",
+      133 -    examples: ["Stock tips", "Crypto claims", "Economic data"]
+          -,                                                             
+      143 +    exKeys: ["impact.finance.ex1", "impact.finance.ex2", "impa
+          +ct.finance.ex3"],                                             
+      144    },
+      145    {
+      146      icon: Globe,
+      137 -    title: "World Events",                                    
+      138 -    description:                                              
+      139 -      "Get the facts on breaking news and global events withou
+          -t sensationalism or spin.",                                   
+      147 +    titleKey: "impact.world.title",                           
+      148 +    descKey: "impact.world.desc",                             
+      149      accent: "from-violet-500/20 to-violet-500/0",
+      150      iconColor: "text-violet-500",
+      142 -    examples: ["Conflicts", "Diplomacy", "Disasters"],        
+      151 +    exKeys: ["impact.world.ex1", "impact.world.ex2", "impact.w
+          +orld.ex3"],                                                   
+      152    },
+      153    {
+      154      icon: Users,
+      146 -    title: "Social Media",                                    
+      147 -    description:                                              
+      148 -      "Fact-check viral posts, threads, and screenshots before
+          - sharing them further.",                                      
+      155 +    titleKey: "impact.social.title",                          
+      156 +    descKey: "impact.social.desc",                            
+      157      accent: "from-pink-500/20 to-pink-500/0",
+      158      iconColor: "text-pink-500",
+      151 -    examples: ["Viral claims", "Screenshots", "Influencer take
+          -s"],                                                          
+      159 +    exKeys: ["impact.social.ex1", "impact.social.ex2", "impact
+          +.social.ex3"],                                                
+      160    },
+      161    {
+      162      icon: BookOpen,
+      155 -    title: "Education & Research",                            
+      156 -    description:                                              
+      157 -      "Verify academic claims, citations, and research finding
+          -s against primary sources.",                                  
+      163 +    titleKey: "impact.education.title",                       
+      164 +    descKey: "impact.education.desc",                         
+      165      accent: "from-cyan-500/20 to-cyan-500/0",
+      166      iconColor: "text-cyan-500",
+      160 -    examples: ["Study results", "Statistics", "Historical clai
+          -ms"],                                                         
+      167 +    exKeys: ["impact.education.ex1", "impact.education.ex2", "
+          +impact.education.ex3"],                                       
+      168    },
+      162 -] as const;                                                   
+      169 +];                                                            
+      170  
+      171  export function ImpactAreas() {
+      172 +  const { t } = useTranslation();                             
+      173 +                                                              
+      174    return (
+      175      <section className="border-border/40 border-t px-4 py-24">
+      176        <div className="mx-auto max-w-5xl">
+      177          <p className="text-muted-foreground mb-3 text-center t
+           ext-xs font-medium uppercase tracking-widest">
+      169 -          Impact                                              
+      178 +          {t("impact.label")}                                 
+      179          </p>
+      180          <h2 className="mb-4 text-center text-3xl font-bold tra
+           cking-tight sm:text-4xl">
+      172 -          Truth matters everywhere                            
+      181 +          {t("impact.title")}                                 
+      182          </h2>
+      183          <p className="text-muted-foreground mx-auto mb-16 max-
+           w-2xl text-center text-base">
+      175 -          Misinformation doesn&apos;t stay in one lane. denois
+          -e                                                             
+      176 -          <span className="font-light">it</span> works across 
+          -every domain                                                  
+      177 -          where facts matter.                                 
+      184 +          {t("impact.desc1")} denoise                         
+      185 +          <span className="font-light">it</span> {t("impact.de
+          +sc2")}                                                        
+      186          </p>
+      187  
+      188          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols
+           -3">
+      189            {IMPACT_AREAS.map((area) => (
+      190              <div
+      183 -              key={area.title}                                
+      191 +              key={area.titleKey}                             
+      192                className="border-border group relative overflow
+           -hidden rounded-xl border p-6 transition-colors hover:border-f
+           oreground/20"
+      193              >
+      194                {/* Gradient background accent */}
+     ...
+      201                    className={`${area.iconColor} mb-4 size-8`}
+      202                    strokeWidth={1.5}
+      203                  />
+      196 -                <h3 className="mb-2 text-base font-semibold">{
+          -area.title}</h3>                                              
+      204 +                <h3 className="mb-2 text-base font-semibold">{
+          +t(area.titleKey)}</h3>                                        
+      205                  <p className="text-muted-foreground mb-4 text-
+           sm leading-relaxed">
+      198 -                  {area.description}                          
+      206 +                  {t(area.descKey)}                           
+      207                  </p>
+      208                  <div className="flex flex-wrap gap-1.5">
+      201 -                  {area.examples.map((ex) => (                
+      209 +                  {area.exKeys.map((exKey) => (               
+      210                      <span
+      203 -                      key={ex}                                
+      211 +                      key={exKey}                             
+      212                        className="bg-muted text-muted-foregroun
+           d rounded-md px-2 py-0.5 text-xs"
+      213                      >
+      206 -                      {ex}                                    
+      214 +                      {t(exKey)}                              
+      215                      </span>
+      216                    ))}
+      217                  </div>
+     ...
+      228  /*  Section 3 — Signal vs Noise (visual comparison)           
+                   */
+      229  /* -----------------------------------------------------------
+           ------- */
+      230  
+      223 -const NOISE_ITEMS = [                                         
+      224 -  { text: '"SHOCKING development that changes EVERYTHING"', ty
+          -pe: "Sensational" },                                          
+      225 -  { text: '"Experts agree this is unprecedented"', type: "Vagu
+          -e attribution" },                                             
+      226 -  { text: '"Could this mean the end of...?"', type: "Speculati
+          -on" },                                                        
+      227 -  { text: '"People are furious about..."', type: "Emotional fr
+          -aming" },                                                     
+      231 +const NOISE_ITEMS: { textKey: TranslationKey; typeKey: Transla
+          +tionKey }[] = [                                               
+      232 +  { textKey: "svn.noise1.text", typeKey: "svn.noise1.type" }, 
+      233 +  { textKey: "svn.noise2.text", typeKey: "svn.noise2.type" }, 
+      234 +  { textKey: "svn.noise3.text", typeKey: "svn.noise3.type" }, 
+      235 +  { textKey: "svn.noise4.text", typeKey: "svn.noise4.type" }, 
+      236  ];
+      237  
+      230 -const SIGNAL_ITEMS = [                                        
+      231 -  { text: "FDA approved drug X on Jan 15, 2026 for condition Y
+          -", confidence: 94 },                                          
+      232 -  { text: "Study sample size: 2,340 participants across 12 cen
+          -ters", confidence: 91 },                                      
+      233 -  { text: "Treatment showed 23% improvement vs placebo (p<0.01
+          -)", confidence: 88 },                                         
+      234 -  { text: "3 of 5 independent reviews confirmed efficacy", con
+          -fidence: 85 },                                                
+      238 +const SIGNAL_ITEMS: { textKey: TranslationKey; confidence: num
+          +ber }[] = [                                                   
+      239 +  { textKey: "svn.signal1.text", confidence: 94 },            
+      240 +  { textKey: "svn.signal2.text", confidence: 91 },            
+      241 +  { textKey: "svn.signal3.text", confidence: 88 },            
+      242 +  { textKey: "svn.signal4.text", confidence: 85 },            
+      243  ];
+      244  
+      245  export function SignalVsNoise() {
+      246 +  const { t } = useTranslation();                             
+      247 +                                                              
+      248    return (
+      249      <section className="border-border/40 border-t px-4 py-24">
+      250        <div className="mx-auto max-w-5xl">
+      251          <p className="text-muted-foreground mb-3 text-center t
+           ext-xs font-medium uppercase tracking-widest">
+      242 -          The difference                                      
+      252 +          {t("svn.label")}                                    
+      253          </p>
+      254          <h2 className="mb-4 text-center text-3xl font-bold tra
+           cking-tight sm:text-4xl">
+      245 -          See what others miss                                
+      255 +          {t("svn.title")}                                    
+      256          </h2>
+      257          <p className="text-muted-foreground mx-auto mb-16 max-
+           w-2xl text-center text-base">
+      248 -          Every piece of content is a mix of verifiable facts 
+          -and narrative                                                 
+      249 -          framing. We separate them so you can think clearly. 
+      258 +          {t("svn.desc")}                                     
+      259          </p>
+      260  
+      261          <div className="grid gap-6 md:grid-cols-2">
+     ...
+      264              <div className="mb-5 flex items-center gap-2">
+      265                <Activity className="size-5 text-red-400" stroke
+           Width={1.5} />
+      266                <h3 className="text-sm font-semibold uppercase t
+           racking-wider text-red-400">
+      258 -                Noise                                         
+      267 +                {t("svn.noise")}                              
+      268                </h3>
+      269              </div>
+      270              <div className="flex flex-col gap-3">
+      271                {NOISE_ITEMS.map((item) => (
+      272                  <div
+      264 -                  key={item.text}                             
+      273 +                  key={item.textKey}                          
+      274                    className="flex items-start gap-3 rounded-lg
+            bg-red-500/5 p-3"
+      275                  >
+      276                    <div className="mt-0.5 size-1.5 shrink-0 rou
+           nded-full bg-red-400" />
+      277                    <div>
+      278                      <p className="text-muted-foreground text-s
+           m italic">
+      270 -                      {item.text}                             
+      279 +                      {t(item.textKey)}                       
+      280                      </p>
+      281                      <p className="mt-1 text-xs font-medium tex
+           t-red-400/80">
+      273 -                      {item.type}                             
+      282 +                      {t(item.typeKey)}                       
+      283                      </p>
+      284                    </div>
+      285                  </div>
+     ...
+      295                  strokeWidth={1.5}
+      296                />
+      297                <h3 className="text-sm font-semibold uppercase t
+           racking-wider text-emerald-400">
+      289 -                Signal                                        
+      298 +                {t("svn.signal")}                             
+      299                </h3>
+      300              </div>
+      301              <div className="flex flex-col gap-3">
+      302                {SIGNAL_ITEMS.map((item) => (
+      303                  <div
+      295 -                  key={item.text}                             
+      304 +                  key={item.textKey}                          
+      305                    className="flex items-start gap-3 rounded-lg
+            bg-emerald-500/5 p-3"
+      306                  >
+      307                    <CheckCircle2 className="mt-0.5 size-4 shrin
+           k-0 text-emerald-400" />
+      308                    <div className="flex-1">
+      300 -                    <p className="text-sm">{item.text}</p>    
+      309 +                    <p className="text-sm">{t(item.textKey)}</
+          +p>                                                            
+      310                      <div className="mt-1.5 flex items-center g
+           ap-2">
+      311                        <div className="bg-muted h-1 flex-1 over
+           flow-hidden rounded-full">
+      312                          <div
+     ...
+      333  /*  Section 4 — Use cases (quick prompts)                     
+                   */
+      334  /* -----------------------------------------------------------
+           ------- */
+      335  
+      327 -const USE_CASES = [                                           
+      336 +const USE_CASES: {                                            
+      337 +  icon: typeof Newspaper;                                     
+      338 +  labelKey: TranslationKey;                                   
+      339 +  promptKey: TranslationKey;                                  
+      340 +}[] = [                                                       
+      341    {
+      342      icon: Newspaper,
+      330 -    label: "Verify a headline",                               
+      331 -    prompt: "Is it true that...",                             
+      343 +    labelKey: "useCases.verify.label",                        
+      344 +    promptKey: "useCases.verify.prompt",                      
+      345    },
+      346    {
+      347      icon: Search,
+      335 -    label: "Fact-check a claim",                              
+      336 -    prompt: "Someone told me that...",                        
+      348 +    labelKey: "useCases.factCheck.label",                     
+      349 +    promptKey: "useCases.factCheck.prompt",                   
+      350    },
+      351    {
+      352      icon: Shield,
+      340 -    label: "Check health advice",                             
+      341 -    prompt: "Is this supplement safe...",                     
+      353 +    labelKey: "useCases.health.label",                        
+      354 +    promptKey: "useCases.health.prompt",                      
+      355    },
+      356    {
+      357      icon: Scale,
+      345 -    label: "Analyze a policy",                                
+      346 -    prompt: "What does this bill actually do...",             
+      358 +    labelKey: "useCases.policy.label",                        
+      359 +    promptKey: "useCases.policy.prompt",                      
+      360    },
+      361    {
+      362      icon: Zap,
+      350 -    label: "Decode viral content",                            
+      351 -    prompt: "This post went viral claiming...",               
+      363 +    labelKey: "useCases.viral.label",                         
+      364 +    promptKey: "useCases.viral.prompt",                       
+      365    },
+      366    {
+      367      icon: Globe,
+      355 -    label: "Understand world news",                           
+      356 -    prompt: "What's actually happening in...",                
+      368 +    labelKey: "useCases.worldNews.label",                     
+      369 +    promptKey: "useCases.worldNews.prompt",                   
+      370    },
+      371  ];
+      372  
+      373  export function UseCases() {
+      374 +  const { t } = useTranslation();                             
+      375 +                                                              
+      376    return (
+      377      <section className="border-border/40 border-t px-4 py-24">
+      378        <div className="mx-auto max-w-5xl">
+      379          <p className="text-muted-foreground mb-3 text-center t
+           ext-xs font-medium uppercase tracking-widest">
+      365 -          Use cases                                           
+      380 +          {t("useCases.label")}                               
+      381          </p>
+      382          <h2 className="mb-4 text-center text-3xl font-bold tra
+           cking-tight sm:text-4xl">
+      368 -          Start with a question                               
+      383 +          {t("useCases.title")}                               
+      384          </h2>
+      385          <p className="text-muted-foreground mx-auto mb-16 max-
+           w-2xl text-center text-base">
+      371 -          Whether you&apos;re a journalist, researcher, studen
+          -t, or just a                                                  
+      372 -          curious citizen — denoise                           
+      373 -          <span className="font-light">it</span> helps you thi
+          -nk for yourself.                                              
+      386 +          {t("useCases.desc1")} denoise                       
+      387 +          <span className="font-light">it</span> {t("useCases.
+          +desc2")}                                                      
+      388          </p>
+      389  
+      390          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols
+           -3">
+      391            {USE_CASES.map((uc) => (
+      392              <button
+      379 -              key={uc.label}                                  
+      393 +              key={uc.labelKey}                               
+      394                onClick={() => {
+      395                  window.scrollTo({ top: 0, behavior: "smooth" }
+           );
+      396                }}
+     ...
+      403                  />
+      404                </div>
+      405                <div>
+      392 -                <p className="text-sm font-semibold">{uc.label
+          -}</p>                                                         
+      406 +                <p className="text-sm font-semibold">{t(uc.lab
+          +elKey)}</p>                                                   
+      407                  <p className="text-muted-foreground mt-0.5 tex
+           t-sm italic">
+      394 -                  &ldquo;{uc.prompt}&rdquo;                   
+      408 +                  &ldquo;{t(uc.promptKey)}&rdquo;             
+      409                  </p>
+      410                </div>
+      411              </button>
+     ...
+      420  /*  Section 5 — Trust bar (stats + principles)                
+                   */
+      421  /* -----------------------------------------------------------
+           ------- */
+      422  
+      409 -const PRINCIPLES = [                                          
+      423 +const PRINCIPLES: {                                           
+      424 +  icon: typeof Search;                                        
+      425 +  titleKey: TranslationKey;                                   
+      426 +  descKey: TranslationKey;                                    
+      427 +}[] = [                                                       
+      428    {
+      429      icon: Search,
+      412 -    title: "Source-first",                                    
+      413 -    description:                                              
+      414 -      "Every claim is traced back to primary sources — .gov, .
+          -edu, peer-reviewed journals, and official records.",          
+      430 +    titleKey: "trust.sourceFirst.title",                      
+      431 +    descKey: "trust.sourceFirst.desc",                        
+      432    },
+      433    {
+      434      icon: Shield,
+      418 -    title: "No bias, no agenda",                              
+      419 -    description:                                              
+      420 -      "We don't tell you what to think. We separate facts from
+          - framing so you can decide for yourself.",                    
+      435 +    titleKey: "trust.noBias.title",                           
+      436 +    descKey: "trust.noBias.desc",                             
+      437    },
+      438    {
+      439      icon: Zap,
+      424 -    title: "Real-time verification",                          
+      425 -    description:                                              
+      426 -      "Live web search cross-references claims against the lat
+          -est available data, not stale databases.",                    
+      440 +    titleKey: "trust.realTime.title",                         
+      441 +    descKey: "trust.realTime.desc",                           
+      442    },
+      443  ];
+      444  
+      445  export function TrustBar() {
+      446 +  const { t } = useTranslation();                             
+      447 +                                                              
+      448    return (
+      449      <section className="border-border/40 border-t px-4 py-24">
+      450        <div className="mx-auto max-w-5xl">
+      451          <p className="text-muted-foreground mb-3 text-center t
+           ext-xs font-medium uppercase tracking-widest">
+      435 -          Our principles                                      
+      452 +          {t("trust.label")}                                  
+      453          </p>
+      454          <h2 className="mb-16 text-center text-3xl font-bold tr
+           acking-tight sm:text-4xl">
+      438 -          Built for trust                                     
+      455 +          {t("trust.title")}                                  
+      456          </h2>
+      457  
+      458          <div className="grid gap-8 md:grid-cols-3">
+      459            {PRINCIPLES.map((p) => (
+      443 -            <div key={p.title} className="flex flex-col items-
+          -center text-center">                                          
+      460 +            <div key={p.titleKey} className="flex flex-col ite
+          +ms-center text-center">                                       
+      461                <div className="bg-primary/5 border-border mb-5 
+           flex size-14 items-center justify-center rounded-xl border">
+      462                  <p.icon
+      463                    className="text-foreground size-6"
+      464                    strokeWidth={1.5}
+      465                  />
+      466                </div>
+      450 -              <h3 className="mb-2 text-base font-semibold">{p.
+          -title}</h3>                                                   
+      467 +              <h3 className="mb-2 text-base font-semibold">{t(
+          +p.titleKey)}</h3>                                             
+      468                <p className="text-muted-foreground text-sm lead
+           ing-relaxed">
+      452 -                {p.description}                               
+      469 +                {t(p.descKey)}                                
+      470                </p>
+      471              </div>
+      472            ))}
+     ...
+      481  /* -----------------------------------------------------------
+           ------- */
+      482  
+      483  export function FinalCTA() {
+      484 +  const { t } = useTranslation();                             
+      485 +                                                              
+      486    return (
+      487      <section className="border-border/40 border-t px-4 py-24">
+      488        <div className="mx-auto flex max-w-2xl flex-col items-ce
+           nter text-center">
+     ...
+      490            <Sparkles className="text-foreground size-7" strokeW
+           idth={1.5} />
+      491          </div>
+      492          <h2 className="mb-4 text-3xl font-bold tracking-tight 
+           sm:text-4xl">
+      474 -          Stop scrolling. Start knowing.                      
+      493 +          {t("cta.title")}                                    
+      494          </h2>
+      495          <p className="text-muted-foreground mb-8 max-w-md text
+           -base">
+      477 -          Paste any claim, headline, or link and get a clear, 
+          -sourced analysis                                              
+      478 -          in seconds. No account required.                    
+      496 +          {t("cta.desc")}                                     
+      497          </p>
+      498          <button
+      499            onClick={() => window.scrollTo({ top: 0, behavior: "
+           smooth" })}
+      500            className="bg-primary text-primary-foreground hover:
+           bg-primary/90 inline-flex items-center gap-2 rounded-lg px-8 p
+           y-3 text-sm font-medium transition-colors"
+      501          >
+      484 -          Try it now                                          
+      502 +          {t("cta.button")}                                   
+      503            <ArrowDown className="size-4 rotate-180" />
+      504          </button>
+      505        </div>
+
+⏺ Now let me migrate signal-view.tsx — the largest remaining file.
+
+⏺ Write(src/app/_components/signal-view.tsx)
+  ⎿  Added 27 lines, removed 29 lines
+      24  import { getDomain } from "@/lib/utils";
+      25  
+      26  import type { Verdict, AnalysisResult } from "@/lib/schemas/ana
+          lysis";
+      27 +import { useTranslation } from "@/components/language-provider"
+         +;                                                              
+      28  import { Button } from "@/components/ui/button";
+      29  import { Separator } from "@/components/ui/separator";
+      30  import { api } from "@/trpc/react";
+      30 -import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constan
+         -ts";                                                           
+      31 +import { POLL_INTERVAL } from "@/lib/constants";               
+      32 +import { ANALYZING_PHRASES_COUNT } from "@/i18n";              
+      33  
+      34  import { copySignalUrl } from "@/lib/share";
+      35  
+     ...
+       99  /* ── Analyzing state ────────────────────────────────────────
+            */
+      100  
+      101  function AnalyzingState({ id }: { id: string }) {
+      102 +  const { t } = useTranslation();                             
+      103    const [phraseIndex, setPhraseIndex] = useState(0);
+      104    const [copied, setCopied] = useState(false);
+      105  
+     ...
+      110  
+      111    useEffect(() => {
+      112      const interval = setInterval(() => {
+      110 -      setPhraseIndex((i) => (i + 1) % ANALYZING_PHRASES.length
+          -);                                                            
+      113 +      setPhraseIndex((i) => (i + 1) % ANALYZING_PHRASES_COUNT)
+          +;                                                             
+      114      }, 2800);
+      115      return () => clearInterval(interval);
+      116    }, []);
+     ...
+      132        <WaveformAnimation />
+      133  
+      134        <div className="flex flex-col items-center gap-2 text-ce
+           nter">
+      132 -        <h2 className="text-lg font-semibold">Denoising...</h2
+          ->                                                             
+      135 +        <h2 className="text-lg font-semibold">{t("signal.denoi
+          +sing")}</h2>                                                  
+      136          <div className="h-5">
+      137            <AnimatePresence mode="wait">
+      138              <motion.p
+     ...
+      143                transition={{ duration: 0.2 }}
+      144                className="text-muted-foreground text-sm"
+      145              >
+      143 -              {ANALYZING_PHRASES[phraseIndex]}                
+      146 +              {t(`analyzing.${phraseIndex}`)}                 
+      147              </motion.p>
+      148            </AnimatePresence>
+      149          </div>
+     ...
+      170  
+      171        <p className="text-muted-foreground/60 flex items-center
+            gap-1.5 text-xs">
+      172          <Bookmark className="size-3" />
+      170 -        Bookmark this page to check back later                
+      173 +        {t("signal.bookmark")}                                
+      174        </p>
+      175      </motion.div>
+      176    );
+     ...
+      178  
+      179  /* ── Verdict Banner ─────────────────────────────────────────
+            */
+      180  
+      178 -const verdictLabels: Record<Verdict, string> = {              
+      179 -  true: "Verified",                                           
+      180 -  mostly_true: "Mostly True",                                 
+      181 -  mixed: "Mixed",                                             
+      182 -  mostly_false: "Mostly False",                               
+      183 -  false: "False",                                             
+      184 -  misleading: "Misleading",                                   
+      185 -  satire: "Satire",                                           
+      186 -  unverifiable: "Unverifiable",                               
+      187 -};                                                            
+      188 -                                                              
+      181  function VerdictBanner({ result }: { result: AnalysisResult })
+            {
+      182 +  const { t } = useTranslation();                             
+      183    const isDefinitive =
+      184      result.verdict !== "mixed" && result.verdict !== "unverifi
+           able";
+      185    if (!isDefinitive) return null;
+     ...
+      196          <span
+      197            className={`text-[10px] font-semibold tracking-wides
+           t uppercase ${config.color}`}
+      198          >
+      206 -          {verdictLabels[result.verdict]}                     
+      199 +          {t(`verdict.${result.verdict}`)}                    
+      200          </span>
+      201          <p className="text-foreground text-base font-semibold 
+           leading-snug tracking-tight">
+      202            {result.verdictHeadline}
+     ...
+      244  const PROMPT_CLAMP_PX = 80; // ~3 lines of text
+      245  
+      246  function PromptDisplay({ prompt }: { prompt: string }) {
+      247 +  const { t } = useTranslation();                             
+      248    const textRef = useRef<HTMLParagraphElement>(null);
+      249    const [clamped, setClamped] = useState(false);
+      250    const [expanded, setExpanded] = useState(false);
+     ...
+      287                onClick={() => setExpanded((v) => !v)}
+      288                className="text-muted-foreground/50 hover:text-m
+           uted-foreground mt-1.5 text-xs transition-colors"
+      289              >
+      296 -              {expanded ? "show less" : "see all"}            
+      290 +              {expanded ? t("signal.showLess") : t("signal.see
+          +All")}                                                        
+      291              </button>
+      292            )}
+      293          </div>
+     ...
+      329          {copied ? (
+      330            <>
+      331              <Check className="size-3" />
+      338 -            Copied                                            
+      332 +            {t("signal.copied")}                              
+      333            </>
+      334          ) : (
+      335            <>
+      336              <Copy className="size-3" />
+      343 -            Copy prompt                                       
+      337 +            {t("signal.copyPrompt")}                          
+      338            </>
+      339          )}
+      340        </button>
+     ...
+      345  /* ── Results ────────────────────────────────────────────────
+            */
+      346  
+      347  function CopyLinkButton({ id }: { id: string }) {
+      348 +  const { t } = useTranslation();                             
+      349    const [copied, setCopied] = useState(false);
+      350  
+      351    function handleCopy() {
+     ...
+      366        ) : (
+      367          <Link2 className="size-3" />
+      368        )}
+      374 -      <span className="hidden sm:inline">{copied ? "Copied" : 
+          -"Copy link"}</span>                                           
+      369 +      <span className="hidden sm:inline">{copied ? t("signal.c
+          +opied") : t("signal.copyLink")}</span>                        
+      370      </Button>
+      371    );
+      372  }
+     ...
+      382    prompt?: string;
+      383    onFollowUp: () => void;
+      384  }) {
+      385 +  const { t } = useTranslation();                             
+      386 +                                                              
+      387    return (
+      388      <div className="w-full max-w-2xl space-y-10">
+      389        {/* 0. Original prompt */}
+     ...
+      396        <div className="bg-secondary/30 group space-y-3 rounded-
+           xl border px-6 py-5">
+      397          <div className="flex items-center justify-between">
+      398            <span className="text-muted-foreground text-xs font-
+           medium tracking-widest uppercase">
+      402 -            Analysis                                          
+      399 +            {t("signal.analysis")}                            
+      400            </span>
+      401            <div className="flex items-center gap-2">
+      402              <span className="text-muted-foreground/60 font-mon
+           o text-[11px] tabular-nums">
+      406 -              {result.signalScore}/100 signal &middot; {result
+          -.contentType}                                                 
+      403 +              {t("signal.signalScore", { score: result.signalS
+          +core })} &middot; {result.contentType}                        
+      404              </span>
+      405              <ShareButton type="analysis" id={id} prompt={promp
+           t} />
+      406            </div>
+     ...
+      417          <div className="space-y-3">
+      418            <SectionHeader
+      419              icon={Signal}
+      423 -            label="Signal"                                    
+      420 +            label={t("signal.sectionSignal")}                 
+      421              count={result.signals.length}
+      422            />
+      423            <div className="space-y-2">
+     ...
+      435            <div className="space-y-3">
+      436              <SectionHeader
+      437                icon={Volume2}
+      441 -              label="Noise Removed"                           
+      438 +              label={t("signal.sectionNoise")}                
+      439                count={result.noise.length}
+      440                muted
+      441              />
+     ...
+      457            onClick={onFollowUp}
+      458          >
+      459            <MessageCircle className="size-4" />
+      463 -          Follow Up                                           
+      460 +          {t("signal.followUp")}                              
+      461          </Button>
+      462        </div>
+      463      </div>
+     ...
+      473    id: string;
+      474    sourceUrl?: string;
+      475  }) {
+      476 +  const { t } = useTranslation();                             
+      477    const [followUpOpen, setFollowUpOpen] = useState(false);
+      478  
+      479    const { data, error } = api.analysis.get.useQuery(
+     ...
+      498                className="text-muted-foreground gap-1.5"
+      499              >
+      500                <ArrowLeft className="size-3.5" />
+      503 -              New analysis                                    
+      501 +              {t("signal.newAnalysis")}                       
+      502              </Button>
+      503            </Link>
+      504            {data?.data && (
+     ...
+      539              exit={{ opacity: 0 }}
+      540              className="py-32 text-center"
+      541            >
+      544 -            <p className="text-destructive text-sm">Analysis n
+          -ot found.</p>                                                 
+      542 +            <p className="text-destructive text-sm">{t("signal
+          +.notFound")}</p>                                              
+      543            </motion.div>
+      544          ) : !data ? (
+      545            <motion.div
+     ...
+      561              <p className="text-destructive text-sm">{data.erro
+           r}</p>
+      562              <Link href="/" className="mt-4 inline-block">
+      563                <Button variant="outline" size="sm">
+      566 -                Try again                                     
+      564 +                {t("signal.tryAgain")}                        
+      565                </Button>
+      566              </Link>
+      567            </motion.div>
+
+⏺ Now let me run the type checker and linter to verify everything compiles.
+
+⏺ Bash(pnpm run check 2>&1)
+  ⎿  Error: Exit code 1
+
+     > denoise-it@0.1.0 check /Users/vicentegonzalez/Documents/Github/denoise-it
+     > next lint && tsc --noEmit
+
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+      ELIFECYCLE  Command failed with exit code 1.
+
+⏺ Bash(pnpm run typecheck 2>&1)
+  ⎿  > denoise-it@0.1.0 typecheck /Users/vicentegonzalez/Documents/Github/d
+     enoise-it
+     > tsc --noEmit
+  ⎿  (timeout 2m)
+
+⏺ TypeScript passes cleanly. Let me also check lint separately.
+
+⏺ Bash(pnpm run lint 2>&1)
+  ⎿  Error: Exit code 1
+
+     > denoise-it@0.1.0 lint /Users/vicentegonzalez/Documents/Github/denoise-it
+     > next lint
+
+     Invalid project directory provided, no such directory: 
+     /Users/vicentegonzalez/Documents/Github/denoise-it/lint
+      ELIFECYCLE  Command failed with exit code 1.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The lint error appears to be a pre-existing next lint configuration issue, not
+   related to my changes. TypeScript compiles cleanly with zero errors, which
+  means:
+
+  1. All translation keys in es.ts match en.ts (enforced by the Dictionary type)
+  2. All t() calls are valid
+  3. All component imports/exports are correct
+
+  Let me run a quick build to fully verify.
+
+⏺ Bash(pnpm run build 2>&1 | tail -40)
+  ⎿  ⚠ Warning: Next.js inferred your workspace root, but it may not be cor
+     rect.
+      We detected multiple lockfiles and selected the directory of /Users/v
+     … +19 lines (ctrl+o to expand)
+  ⎿  (timeout 3m)
+
+⏺ Build passes successfully. Let me mark the task as complete.
+
+⏺ All done. Here's a summary of what was implemented:
+
+  i18n System — Client-Side, Zero Dependencies
+
+  New files created:
+  - src/i18n/en.ts — English dictionary (~160 keys, source of truth, exports
+  TranslationKey and Dictionary types)
+  - src/i18n/es.ts — Spanish dictionary (typed as Dictionary so TypeScript
+  enforces every key exists)
+  - src/i18n/index.ts — Registry with getDictionary(), UI_LOCALES set, and
+  ANALYZING_PHRASES_COUNT
+
+  Modified files:
+  - src/components/language-provider.tsx — Added t(key, vars?) with {varName}
+  interpolation, useTranslation() hook, <html lang> sync, backward-compatible
+  useOutputLanguage()
+  - src/components/language-toggle.tsx — Uses useTranslation(), shows EN UI
+  badge for languages without UI translations
+  - src/app/_components/landing-sections.tsx — All 6 sections migrated; data
+  arrays use titleKey/descKey pattern
+  - src/app/_components/denoise-hero.tsx — All strings use t(), TIME_STOPS use
+  labelKey
+  - src/app/_components/signal-view.tsx — Verdict labels, analyzing phrases,
+  section headers, all UI text via t()
+  - src/app/_components/noise-card.tsx — t(\noise.type.${type}`)` for noise type
+   badges
+  - src/app/_components/truth-card.tsx — t(\signal.category.${cat}`)` for signal
+   category badges
+  - src/app/_components/share-button.tsx — Dialog text, tooltip, error message
+  - src/app/_components/follow-up-panel.tsx — Panel labels, empty state
+  - src/app/_components/follow-up-chat.tsx — Chat placeholders, source counts
+  with pluralization
+  - src/lib/constants.ts — ANALYZING_PHRASES kept for backward compat with
+  deprecation note
+
+  Key design decisions:
+  - t() accepts both TranslationKey (for autocomplete) and loose strings (for
+  dynamic keys like t(\verdict.${v}`)`)
+  - Brand name "denoiseit" split into desc1/desc2 keys so it renders with proper
+   JSX styling
+  - Time stop labels include "Last" prefix to handle gendered languages
+  correctly (e.g., "Últimas 24 horas" vs "Último mes")
+  - Adding a new language = create one .ts file + add to index.ts dictionary map
+
+✻ Baked for 12m 18s
+
+❯ Why are other languages we dont support displaying? or how does it work 
+  ⎿  [Image #1]
+
+⏺ The language selector serves two purposes:
+
+  1. AI output language — This was the original feature. Selecting e.g. Japanese
+   makes the AI analysis (verdict, summary, signals, noise text) come back in
+  Japanese from the API. This works for all 10 languages.
+  2. UI language (new) — The buttons, labels, section headers, etc. Only English
+   and Spanish have UI translations right now.
+
+  The "EN UI" badge tells the user: "If you pick this language, the AI will
+  respond in it, but the interface stays in English." So selecting Français
+  means you get French analysis results with English buttons/labels.
+
+  This is intentional — it preserves the existing output language feature while
+  being transparent about which languages have full UI support. If you'd rather
+  hide languages without UI translations, or handle it differently, let me know
+  what you'd prefer.
+
+❯ let's commit this by group in a new branch and make a draft PR 
+
+⏺ Bash(git status)
+  ⎿  On branch dev
+     Your branch is up to date with 'origin/dev'.
+     … +18 lines (ctrl+o to expand)
+
+⏺ Bash(git diff --stat)
+  ⎿   src/app/_components/denoise-hero.tsx     |  44 +++---
+      src/app/_components/follow-up-chat.tsx   |  22 ++-
+      src/app/_components/follow-up-panel.tsx  |  14 +-
+     … +10 lines (ctrl+o to expand)
+
+⏺ Bash(git log --oneline -5)
+  ⎿  1c3b6e2 fix: minor system prompt adjust
+     60683b5 Merge pull request #35 from vichudo/dev
+     391efe0 Merge pull request #34 from vichudo/feat/anthropic-provider-wi
+     … +5 lines (ctrl+o to expand)
+
+⏺ I'll create a new branch and group the commits logically.
+
+⏺ Bash(git checkout -b feat/i18n-client-side)
+  ⎿  Switched to a new branch 'feat/i18n-client-side'
+
+⏺ Now I'll make 3 grouped commits: infrastructure, provider + toggle, component
+  migrations.
+
+⏺ Bash(git add src/i18n/en.ts src/i18n/es.ts src/i18n/index.ts && git commit -m
+      "feat: add i18n translation system with EN/ES dictionaries…)
+  ⎿  [feat/i18n-client-side baa222d] feat: add i18n translation system with
+      EN/ES dictionaries
+      3 files changed, 516 insertions(+)
+     … +3 lines (ctrl+o to expand)
+
+⏺ Bash(git add src/components/language-provider.tsx
+      src/components/language-toggle.tsx src/lib/constants.ts && git commit -m
+      "feat: extend LanguageProvider with t() an…)
+  ⎿  [feat/i18n-client-side 4747dcd] feat: extend LanguageProvider with t()
+      and add UI locale badge
+      3 files changed, 51 insertions(+), 7 deletions(-)
+
+⏺ Bash(git add src/app/_components/landing-sections.tsx
+      src/app/_components/denoise-hero.tsx src/app/_components/signal-view.tsx
+      src/app/_components/noise-card.tsx src…)
+  ⎿  [feat/i18n-client-side d11e56a] feat: migrate all UI components to use
+      t() translations
+      8 files changed, 220 insertions(+), 188 deletions(-)
+
+⏺ Now push and create the draft PR.
+
+⏺ Bash(git push -u origin feat/i18n-client-side 2>&1)
+  ⎿  remote:
+     remote: Create a pull request for 'feat/i18n-client-side' on GitHub by
+      visiting:
+     … +7 lines (ctrl+o to expand)
+
+⏺ Bash(gh pr create --draft --base main --title "feat: client-side i18n with
+      EN/ES support" --body "## Summary
+      - Add zero-dependency i18n translation system (`src/i18n…)
+  ⎿  https://github.com/vichudo/denoise-it/pull/39
+
+⏺ Done. Draft PR created with 3 grouped commits:
+
+  1. i18n infrastructure — src/i18n/ with EN/ES dictionaries and type system
+  2. Provider + toggle — t() function, useTranslation() hook, EN UI badge
+  3. Component migrations — All 8 component files switched to t() calls
+
+  PR: https://github.com/vichudo/denoise-it/pull/39
+
+✻ Sautéed for 55s
