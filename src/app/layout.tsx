@@ -3,12 +3,15 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { SessionProvider } from "next-auth/react";
+
 import { LanguageProvider } from "@/components/language-provider";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
+import { UserMenu } from "@/app/_components/user-menu";
 
 export const metadata: Metadata = {
   title: "Denoise It — Strip the noise. See what's real.",
@@ -37,13 +40,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <LanguageProvider>
-            <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-              <LanguageToggle />
-              <ModeToggle />
-            </div>
-            <TRPCReactProvider>{children}</TRPCReactProvider>
-          </LanguageProvider>
+          <SessionProvider>
+            <LanguageProvider>
+              <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+                <UserMenu />
+                <LanguageToggle />
+                <ModeToggle />
+              </div>
+              <TRPCReactProvider>{children}</TRPCReactProvider>
+            </LanguageProvider>
+          </SessionProvider>
           <Toaster />
         </ThemeProvider>
       </body>
