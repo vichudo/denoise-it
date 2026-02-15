@@ -27,7 +27,6 @@ export const authConfig = {
   providers: [
     GoogleProvider({
       allowDangerousEmailAccountLinking: true,
-      checks: ["state"],
     }),
   ],
   adapter: PrismaAdapter(db),
