@@ -3,12 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  HelpCircle,
-  Laugh,
-  Scale,
   Signal,
   Volume2,
   ArrowLeft,
@@ -24,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { getDomain } from "@/lib/utils";
 
 import type { Verdict, AnalysisResult } from "@/lib/schemas/analysis";
+import { verdictIcon, verdictColor, verdictBg, verdictBorder } from "@/lib/verdict";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
@@ -37,62 +32,6 @@ import { ResultsSkeleton } from "./results-skeleton";
 import { ShareButton } from "./share-button";
 import { SignalCard } from "./truth-card";
 import { WaveformAnimation } from "./waveform-animation";
-
-/* ── Verdict config ───────────────────────────────────────── */
-
-const verdictConfig: Record<
-  Verdict,
-  { icon: typeof CheckCircle; color: string; bg: string; border: string }
-> = {
-  true: {
-    icon: CheckCircle,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-50 dark:bg-emerald-950/30",
-    border: "border-emerald-200/60 dark:border-emerald-800/40",
-  },
-  mostly_true: {
-    icon: CheckCircle,
-    color: "text-emerald-600/80 dark:text-emerald-400/80",
-    bg: "bg-emerald-50/60 dark:bg-emerald-950/20",
-    border: "border-emerald-200/40 dark:border-emerald-800/30",
-  },
-  mixed: {
-    icon: Scale,
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-50 dark:bg-amber-950/30",
-    border: "border-amber-200/60 dark:border-amber-800/40",
-  },
-  mostly_false: {
-    icon: AlertTriangle,
-    color: "text-orange-600 dark:text-orange-400",
-    bg: "bg-secondary/40",
-    border: "border-border/60",
-  },
-  false: {
-    icon: XCircle,
-    color: "text-rose-600 dark:text-rose-400",
-    bg: "bg-secondary/40",
-    border: "border-border/60",
-  },
-  misleading: {
-    icon: AlertTriangle,
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-secondary/40",
-    border: "border-border/60",
-  },
-  satire: {
-    icon: Laugh,
-    color: "text-violet-600 dark:text-violet-400",
-    bg: "bg-violet-50 dark:bg-violet-950/30",
-    border: "border-violet-200/60 dark:border-violet-800/40",
-  },
-  unverifiable: {
-    icon: HelpCircle,
-    color: "text-muted-foreground",
-    bg: "bg-secondary/50",
-    border: "border-border/50",
-  },
-};
 
 /* ── Analyzing state ──────────────────────────────────────── */
 
@@ -189,17 +128,19 @@ const verdictLabels: Record<Verdict, string> = {
 function VerdictBanner({ result }: { result: AnalysisResult }) {
   if (result.verdict === "unverifiable") return null;
 
-  const config = verdictConfig[result.verdict];
-  const Icon = config.icon;
+  const Icon = verdictIcon[result.verdict];
+  const color = verdictColor[result.verdict];
+  const bg = verdictBg[result.verdict];
+  const border = verdictBorder[result.verdict];
 
   return (
     <div
-      className={`animate-in fade-in-0 slide-in-from-bottom-2 flex items-start gap-4 rounded-2xl border px-6 py-5 ${config.bg} ${config.border}`}
+      className={`animate-in fade-in-0 slide-in-from-bottom-2 flex items-start gap-4 rounded-2xl border px-6 py-5 ${bg} ${border}`}
     >
-      <Icon className={`mt-0.5 size-6 shrink-0 ${config.color}`} strokeWidth={2.5} />
+      <Icon className={`mt-0.5 size-6 shrink-0 ${color}`} strokeWidth={2.5} />
       <div className="min-w-0 space-y-1">
         <span
-          className={`text-[10px] font-semibold tracking-widest uppercase ${config.color}`}
+          className={`text-[10px] font-semibold tracking-widest uppercase ${color}`}
         >
           {verdictLabels[result.verdict]}
         </span>
