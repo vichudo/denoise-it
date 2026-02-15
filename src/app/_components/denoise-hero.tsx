@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 
-import { useOutputLanguage } from "@/components/language-provider";
+import { useTranslation } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -12,26 +12,28 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
+import type { TranslationKey } from "@/i18n";
+
 import { UrlPreviews } from "./url-previews";
 
 /** Slider stops — index-based so each step feels equal on the track */
-const TIME_STOPS = [
-  { days: 1, label: "24 hours" },
-  { days: 3, label: "3 days" },
-  { days: 7, label: "1 week" },
-  { days: 14, label: "2 weeks" },
-  { days: 30, label: "1 month" },
-  { days: 90, label: "3 months" },
-  { days: 180, label: "6 months" },
-  { days: 365, label: "1 year" },
-  { days: 730, label: "2 years" },
-] as const;
+const TIME_STOPS: { days: number; labelKey: TranslationKey }[] = [
+  { days: 1, labelKey: "time.last.1d" },
+  { days: 3, labelKey: "time.last.3d" },
+  { days: 7, labelKey: "time.last.1w" },
+  { days: 14, labelKey: "time.last.2w" },
+  { days: 30, labelKey: "time.last.1m" },
+  { days: 90, labelKey: "time.last.3m" },
+  { days: 180, labelKey: "time.last.6m" },
+  { days: 365, labelKey: "time.last.1y" },
+  { days: 730, labelKey: "time.last.2y" },
+];
 
 const DEFAULT_STOP = 2; // index → "1 week"
 
 export function DenoiseHero() {
   const router = useRouter();
-  const { language } = useOutputLanguage();
+  const { language, t } = useTranslation();
   const [input, setInput] = useState("");
   const [timeSensitive, setTimeSensitive] = useState(false);
   const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
@@ -61,13 +63,13 @@ export function DenoiseHero() {
             <span className="text-muted-foreground font-light">it</span>
           </h1>
           <p className="text-muted-foreground text-lg">
-            Strip the noise. See what&apos;s real.
+            {t("hero.tagline")}
           </p>
         </div>
 
         <div className="flex w-full flex-col gap-3">
           <Textarea
-            placeholder="Paste a link, tweet, headline, article, claim, a question, or rumor..."
+            placeholder={t("hero.placeholder")}
             className="min-h-[120px] resize-none"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -103,11 +105,11 @@ export function DenoiseHero() {
                 className="text-muted-foreground flex cursor-pointer items-center gap-1.5 text-sm"
               >
                 <Clock className="size-3.5" />
-                Time-sensitive
+                {t("hero.timeSensitive")}
               </Label>
               {timeSensitive && (
                 <span className="text-foreground ml-auto text-sm font-medium">
-                  Last {currentStop.label}
+                  {t(currentStop.labelKey)}
                 </span>
               )}
             </div>
@@ -132,22 +134,22 @@ export function DenoiseHero() {
             {create.isPending ? (
               <>
                 <Loader2 className="animate-spin" />
-                Creating...
+                {t("hero.creating")}
               </>
             ) : (
-              "Denoise"
+              t("hero.denoise")
             )}
           </Button>
         </div>
 
         {create.isError && (
           <p className="text-destructive text-sm">
-            Something went wrong. Please try again.
+            {t("hero.error")}
           </p>
         )}
 
         <p className="text-muted-foreground text-xs">
-          We extract signal from noise — no account required.
+          {t("hero.footer")}
         </p>
       </div>
     </section>

@@ -3,9 +3,9 @@
 import { ExternalLink } from "lucide-react";
 
 import type { SignalElement } from "@/lib/schemas/analysis";
-import { signalCategoryLabel } from "@/lib/schemas/analysis";
 import { getDomain } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/components/language-provider";
 
 import { ShareButton } from "./share-button";
 
@@ -32,6 +32,8 @@ export function SignalCard({
   signalId: string;
   prompt?: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="animate-in fade-in-0 slide-in-from-bottom-4 group relative rounded-xl border border-border/50 bg-card px-5 py-4 fill-mode-both"
@@ -59,7 +61,7 @@ export function SignalCard({
               variant="outline"
               className="h-5 px-1.5 text-[10px] font-medium"
             >
-              {signalCategoryLabel[signal.category]}
+              {t(`signal.category.${signal.category}`)}
             </Badge>
           </div>
         </div>

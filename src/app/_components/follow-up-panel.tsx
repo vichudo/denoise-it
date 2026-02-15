@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { UIMessage } from "ai";
 import { ArrowLeft, MessageCircle, Plus } from "lucide-react";
 
+import { useTranslation } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -25,6 +26,7 @@ export function FollowUpPanel({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const [activeFollowUpId, setActiveFollowUpId] = useState<number | null>(null);
   const [initialMessages, setInitialMessages] = useState<
     UIMessage[] | undefined
@@ -80,7 +82,7 @@ export function FollowUpPanel({
               >
                 <ArrowLeft className="size-4" />
               </Button>
-              <SheetTitle className="text-sm">Follow-up</SheetTitle>
+              <SheetTitle className="text-sm">{t("followUp.titleSingle")}</SheetTitle>
             </SheetHeader>
             <div className="flex min-h-0 flex-1 flex-col">
               <FollowUpChat
@@ -94,7 +96,7 @@ export function FollowUpPanel({
         ) : (
           <>
             <SheetHeader className="border-b">
-              <SheetTitle>Follow-ups</SheetTitle>
+              <SheetTitle>{t("followUp.title")}</SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto p-4">
               <Button
@@ -108,7 +110,7 @@ export function FollowUpPanel({
                 ) : (
                   <Plus className="size-4" />
                 )}
-                New conversation
+                {t("followUp.newConversation")}
               </Button>
 
               {listQuery.isLoading ? (
@@ -118,9 +120,9 @@ export function FollowUpPanel({
               ) : listQuery.data?.length === 0 ? (
                 <div className="text-muted-foreground flex flex-col items-center gap-2 py-12 text-center">
                   <MessageCircle className="text-muted-foreground/40 size-8" />
-                  <p className="text-sm">No conversations yet</p>
+                  <p className="text-sm">{t("followUp.empty")}</p>
                   <p className="text-xs">
-                    Start a new conversation to ask follow-up questions
+                    {t("followUp.emptyHint")}
                   </p>
                 </div>
               ) : (
@@ -132,7 +134,7 @@ export function FollowUpPanel({
                       onClick={() => handleSelectFollowUp(followUp.id)}
                     >
                       <p className="truncate text-sm font-medium">
-                        {followUp.title ?? "Untitled conversation"}
+                        {followUp.title ?? t("followUp.untitled")}
                       </p>
                       <p className="text-muted-foreground mt-0.5 text-xs">
                         {new Date(followUp.updatedAt).toLocaleDateString(

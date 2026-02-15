@@ -3,9 +3,9 @@
 import { ExternalLink } from "lucide-react";
 
 import type { NoiseElement } from "@/lib/schemas/analysis";
-import { noiseTypeLabel } from "@/lib/schemas/analysis";
 import { getDomain } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/components/language-provider";
 
 import { ShareButton } from "./share-button";
 
@@ -20,6 +20,8 @@ export function NoiseCard({
   signalId: string;
   prompt?: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="animate-in fade-in-0 slide-in-from-bottom-2 group relative rounded-lg border border-destructive/15 bg-destructive/5 px-4 py-3 fill-mode-both dark:bg-destructive/10"
@@ -32,7 +34,7 @@ export function NoiseCard({
             variant="outline"
             className="mt-0.5 h-5 shrink-0 border-destructive/25 px-1.5 text-[10px] font-medium text-destructive dark:text-red-400"
           >
-            {noiseTypeLabel[noise.type]}
+            {t(`noise.type.${noise.type}`)}
           </Badge>
           <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
             <span className="italic text-foreground/70">

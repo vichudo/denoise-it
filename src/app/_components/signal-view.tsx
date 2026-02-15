@@ -24,10 +24,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { getDomain } from "@/lib/utils";
 
 import type { Verdict, AnalysisResult } from "@/lib/schemas/analysis";
+import { useTranslation } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
-import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
+import { POLL_INTERVAL } from "@/lib/constants";
+import { ANALYZING_PHRASES_COUNT } from "@/i18n";
 
 import { copySignalUrl } from "@/lib/share";
 
@@ -97,6 +99,7 @@ const verdictConfig: Record<
 /* ── Analyzing state ──────────────────────────────────────── */
 
 function AnalyzingState({ id }: { id: string }) {
+  const { t } = useTranslation();
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
@@ -107,7 +110,7 @@ function AnalyzingState({ id }: { id: string }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPhraseIndex((i) => (i + 1) % ANALYZING_PHRASES.length);
+      setPhraseIndex((i) => (i + 1) % ANALYZING_PHRASES_COUNT);
     }, 2800);
     return () => clearInterval(interval);
   }, []);
@@ -129,7 +132,7 @@ function AnalyzingState({ id }: { id: string }) {
       <WaveformAnimation />
 
       <div className="flex flex-col items-center gap-2 text-center">
-        <h2 className="text-lg font-semibold">Denoising...</h2>
+        <h2 className="text-lg font-semibold">{t("signal.denoising")}</h2>
         <div className="h-5">
           <AnimatePresence mode="wait">
             <motion.p
@@ -140,7 +143,7 @@ function AnalyzingState({ id }: { id: string }) {
               transition={{ duration: 0.2 }}
               className="text-muted-foreground text-sm"
             >
-              {ANALYZING_PHRASES[phraseIndex]}
+              {t(`analyzing.${phraseIndex}`)}
             </motion.p>
           </AnimatePresence>
         </div>
@@ -167,7 +170,7 @@ function AnalyzingState({ id }: { id: string }) {
 
       <p className="text-muted-foreground/60 flex items-center gap-1.5 text-xs">
         <Bookmark className="size-3" />
-        Bookmark this page to check back later
+        {t("signal.bookmark")}
       </p>
     </motion.div>
   );
@@ -175,18 +178,8 @@ function AnalyzingState({ id }: { id: string }) {
 
 /* ── Verdict Banner ───────────────────────────────────────── */
 
-const verdictLabels: Record<Verdict, string> = {
-  true: "Verified",
-  mostly_true: "Mostly True",
-  mixed: "Mixed",
-  mostly_false: "Mostly False",
-  false: "False",
-  misleading: "Misleading",
-  satire: "Satire",
-  unverifiable: "Unverifiable",
-};
-
 function VerdictBanner({ result }: { result: AnalysisResult }) {
+  const { t } = useTranslation();
   const isDefinitive =
     result.verdict !== "mixed" && result.verdict !== "unverifiable";
   if (!isDefinitive) return null;
@@ -203,7 +196,7 @@ function VerdictBanner({ result }: { result: AnalysisResult }) {
         <span
           className={`text-[10px] font-semibold tracking-widest uppercase ${config.color}`}
         >
-          {verdictLabels[result.verdict]}
+          {t(`verdict.${result.verdict}`)}
         </span>
         <p className="text-foreground text-base font-semibold leading-snug tracking-tight">
           {result.verdictHeadline}
@@ -251,6 +244,7 @@ const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
 const PROMPT_CLAMP_PX = 80; // ~3 lines of text
 
 function PromptDisplay({ prompt }: { prompt: string }) {
+  const { t } = useTranslation();
   const textRef = useRef<HTMLParagraphElement>(null);
   const [clamped, setClamped] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -293,7 +287,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
               onClick={() => setExpanded((v) => !v)}
               className="text-muted-foreground/50 hover:text-muted-foreground mt-1.5 text-xs transition-colors"
             >
-              {expanded ? "show less" : "see all"}
+              {expanded ? t("signal.showLess") : t("signal.seeAll")}
             </button>
           )}
         </div>
@@ -335,12 +329,12 @@ function PromptDisplay({ prompt }: { prompt: string }) {
         {copied ? (
           <>
             <Check className="size-3" />
-            Copied
+            {t("signal.copied")}
           </>
         ) : (
           <>
             <Copy className="size-3" />
-            Copy prompt
+            {t("signal.copyPrompt")}
           </>
         )}
       </button>
@@ -351,6 +345,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
 /* ── Results ──────────────────────────────────────────────── */
 
 function CopyLinkButton({ id }: { id: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -371,7 +366,7 @@ function CopyLinkButton({ id }: { id: string }) {
       ) : (
         <Link2 className="size-3" />
       )}
-      <span className="hidden sm:inline">{copied ? "Copied" : "Copy link"}</span>
+      <span className="hidden sm:inline">{copied ? t("signal.copied") : t("signal.copyLink")}</span>
     </Button>
   );
 }
@@ -387,6 +382,8 @@ function Results({
   prompt?: string;
   onFollowUp: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full max-w-2xl space-y-10">
       {/* 0. Original prompt */}
@@ -399,11 +396,11 @@ function Results({
       <div className="bg-secondary/30 group space-y-3 rounded-xl border px-6 py-5">
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-            Analysis
+            {t("signal.analysis")}
           </span>
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
-              {result.signalScore}/100 signal &middot; {result.contentType}
+              {t("signal.signalScore", { score: result.signalScore })} &middot; {result.contentType}
             </span>
             <ShareButton type="analysis" id={id} prompt={prompt} />
           </div>
@@ -420,7 +417,7 @@ function Results({
         <div className="space-y-3">
           <SectionHeader
             icon={Signal}
-            label="Signal"
+            label={t("signal.sectionSignal")}
             count={result.signals.length}
           />
           <div className="space-y-2">
@@ -438,7 +435,7 @@ function Results({
           <div className="space-y-3">
             <SectionHeader
               icon={Volume2}
-              label="Noise Removed"
+              label={t("signal.sectionNoise")}
               count={result.noise.length}
               muted
             />
@@ -460,7 +457,7 @@ function Results({
           onClick={onFollowUp}
         >
           <MessageCircle className="size-4" />
-          Follow Up
+          {t("signal.followUp")}
         </Button>
       </div>
     </div>
@@ -476,6 +473,7 @@ export function SignalView({
   id: string;
   sourceUrl?: string;
 }) {
+  const { t } = useTranslation();
   const [followUpOpen, setFollowUpOpen] = useState(false);
 
   const { data, error } = api.analysis.get.useQuery(
@@ -500,7 +498,7 @@ export function SignalView({
               className="text-muted-foreground gap-1.5"
             >
               <ArrowLeft className="size-3.5" />
-              New analysis
+              {t("signal.newAnalysis")}
             </Button>
           </Link>
           {data?.data && (
@@ -541,7 +539,7 @@ export function SignalView({
             exit={{ opacity: 0 }}
             className="py-32 text-center"
           >
-            <p className="text-destructive text-sm">Analysis not found.</p>
+            <p className="text-destructive text-sm">{t("signal.notFound")}</p>
           </motion.div>
         ) : !data ? (
           <motion.div
@@ -563,7 +561,7 @@ export function SignalView({
             <p className="text-destructive text-sm">{data.error}</p>
             <Link href="/" className="mt-4 inline-block">
               <Button variant="outline" size="sm">
-                Try again
+                {t("signal.tryAgain")}
               </Button>
             </Link>
           </motion.div>

@@ -14,7 +14,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 
 import { getDomain } from "@/lib/utils";
-import { useOutputLanguage } from "@/components/language-provider";
+import { useTranslation } from "@/components/language-provider";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,6 +82,7 @@ function getMessageSources(message: UIMessage): Source[] {
 }
 
 function MessageSources({ sources }: { sources: Source[] }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   if (sources.length === 0) return null;
@@ -99,7 +100,12 @@ function MessageSources({ sources }: { sources: Source[] }) {
       >
         <Globe className="size-3 shrink-0" />
         <span>
-          {sources.length} source{sources.length !== 1 && "s"}
+          {t(
+            sources.length === 1
+              ? "chat.sourceSingular"
+              : "chat.sourcePlural",
+            { count: sources.length },
+          )}
           {!expanded && (
             <span className="text-muted-foreground/40">
               {" "}
@@ -157,7 +163,7 @@ export function FollowUpChat({
   followUpId: number;
   initialMessages?: UIMessage[];
 }) {
-  const { language } = useOutputLanguage();
+  const { language, t } = useTranslation();
 
   const transport = useMemo(
     () =>
@@ -222,9 +228,9 @@ export function FollowUpChat({
               <MessageCircle className="size-6" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-medium">Ask a follow-up</h3>
+              <h3 className="text-sm font-medium">{t("chat.askTitle")}</h3>
               <p className="text-muted-foreground text-sm">
-                Ask anything about this analysis
+                {t("chat.askHint")}
               </p>
             </div>
           </div>
@@ -243,7 +249,7 @@ export function FollowUpChat({
                       <p>{text}</p>
                     ) : isLoading ? (
                       <Shimmer as="span" duration={1.5} className="text-sm">
-                        Thinking...
+                        {t("chat.thinking")}
                       </Shimmer>
                     ) : (
                       <>
@@ -259,7 +265,7 @@ export function FollowUpChat({
               <Message from="assistant">
                 <MessageContent>
                   <Shimmer as="span" duration={1.5} className="text-sm">
-                    Thinking...
+                    {t("chat.thinking")}
                   </Shimmer>
                 </MessageContent>
               </Message>
@@ -288,7 +294,7 @@ export function FollowUpChat({
             setIsAtBottom(true);
           }}
         >
-          <PromptInputTextarea placeholder="Ask a follow-up question..." />
+          <PromptInputTextarea placeholder={t("chat.placeholder")} />
           <PromptInputFooter>
             <div />
             <PromptInputSubmit

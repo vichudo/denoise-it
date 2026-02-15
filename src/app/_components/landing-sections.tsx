@@ -23,45 +23,51 @@ import {
   Zap,
 } from "lucide-react";
 
+import type { TranslationKey } from "@/i18n";
+import { useTranslation } from "@/components/language-provider";
+
 /* ------------------------------------------------------------------ */
 /*  Section 1 — How it works                                          */
 /* ------------------------------------------------------------------ */
 
-const STEPS = [
+const STEPS: {
+  icon: typeof Megaphone;
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
+}[] = [
   {
     icon: Megaphone,
-    title: "Paste anything",
-    description:
-      "A tweet, headline, article, claim, link, question, or rumor — any piece of content you want verified.",
+    titleKey: "howItWorks.step1.title",
+    descKey: "howItWorks.step1.desc",
   },
   {
     icon: BrainCircuit,
-    title: "AI analyzes",
-    description:
-      "Our agent cross-references primary sources, government data, and peer-reviewed research in real time.",
+    titleKey: "howItWorks.step2.title",
+    descKey: "howItWorks.step2.desc",
   },
   {
     icon: Sparkles,
-    title: "See the signal",
-    description:
-      "Get a clear verdict with confidence scores, sourced facts, and every piece of noise identified and explained.",
+    titleKey: "howItWorks.step3.title",
+    descKey: "howItWorks.step3.desc",
   },
-] as const;
+];
 
 export function HowItWorks() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
-          How it works
+          {t("howItWorks.label")}
         </p>
         <h2 className="mb-16 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          From noise to clarity in seconds
+          {t("howItWorks.title")}
         </h2>
 
         <div className="grid gap-10 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-start md:gap-0">
           {STEPS.map((step, i) => (
-            <Fragment key={step.title}>
+            <Fragment key={step.titleKey}>
               <div
                 className="flex flex-col items-center text-center"
               >
@@ -78,9 +84,9 @@ export function HowItWorks() {
                   />
                 </div>
 
-                <h3 className="mb-2 text-lg font-semibold">{step.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold">{t(step.titleKey)}</h3>
                 <p className="text-muted-foreground max-w-[280px] text-sm leading-relaxed">
-                  {step.description}
+                  {t(step.descKey)}
                 </p>
               </div>
 
@@ -104,83 +110,85 @@ export function HowItWorks() {
 /*  Section 2 — Impact areas (bento grid)                             */
 /* ------------------------------------------------------------------ */
 
-const IMPACT_AREAS = [
+const IMPACT_AREAS: {
+  icon: typeof Landmark;
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
+  accent: string;
+  iconColor: string;
+  exKeys: [TranslationKey, TranslationKey, TranslationKey];
+}[] = [
   {
     icon: Landmark,
-    title: "Politics & Policy",
-    description:
-      "Cut through partisan framing, verify political claims, and see what legislation actually says.",
+    titleKey: "impact.politics.title",
+    descKey: "impact.politics.desc",
     accent: "from-blue-500/20 to-blue-500/0",
     iconColor: "text-blue-500",
-    examples: ["Campaign promises", "Voting records", "Policy impact"],
+    exKeys: ["impact.politics.ex1", "impact.politics.ex2", "impact.politics.ex3"],
   },
   {
     icon: HeartPulse,
-    title: "Health & Science",
-    description:
-      "Separate evidence-based medicine from viral misinformation that puts lives at risk.",
+    titleKey: "impact.health.title",
+    descKey: "impact.health.desc",
     accent: "from-emerald-500/20 to-emerald-500/0",
     iconColor: "text-emerald-500",
-    examples: ["Clinical studies", "Drug claims", "Wellness trends"],
+    exKeys: ["impact.health.ex1", "impact.health.ex2", "impact.health.ex3"],
   },
   {
     icon: TrendingUp,
-    title: "Finance & Markets",
-    description:
-      "Verify market claims, earnings reports, and financial advice against actual data.",
+    titleKey: "impact.finance.title",
+    descKey: "impact.finance.desc",
     accent: "from-amber-500/20 to-amber-500/0",
     iconColor: "text-amber-500",
-    examples: ["Stock tips", "Crypto claims", "Economic data"],
+    exKeys: ["impact.finance.ex1", "impact.finance.ex2", "impact.finance.ex3"],
   },
   {
     icon: Globe,
-    title: "World Events",
-    description:
-      "Get the facts on breaking news and global events without sensationalism or spin.",
+    titleKey: "impact.world.title",
+    descKey: "impact.world.desc",
     accent: "from-violet-500/20 to-violet-500/0",
     iconColor: "text-violet-500",
-    examples: ["Conflicts", "Diplomacy", "Disasters"],
+    exKeys: ["impact.world.ex1", "impact.world.ex2", "impact.world.ex3"],
   },
   {
     icon: Users,
-    title: "Social Media",
-    description:
-      "Fact-check viral posts, threads, and screenshots before sharing them further.",
+    titleKey: "impact.social.title",
+    descKey: "impact.social.desc",
     accent: "from-pink-500/20 to-pink-500/0",
     iconColor: "text-pink-500",
-    examples: ["Viral claims", "Screenshots", "Influencer takes"],
+    exKeys: ["impact.social.ex1", "impact.social.ex2", "impact.social.ex3"],
   },
   {
     icon: BookOpen,
-    title: "Education & Research",
-    description:
-      "Verify academic claims, citations, and research findings against primary sources.",
+    titleKey: "impact.education.title",
+    descKey: "impact.education.desc",
     accent: "from-cyan-500/20 to-cyan-500/0",
     iconColor: "text-cyan-500",
-    examples: ["Study results", "Statistics", "Historical claims"],
+    exKeys: ["impact.education.ex1", "impact.education.ex2", "impact.education.ex3"],
   },
-] as const;
+];
 
 export function ImpactAreas() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
-          Impact
+          {t("impact.label")}
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          Truth matters everywhere
+          {t("impact.title")}
         </h2>
         <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
-          Misinformation doesn&apos;t stay in one lane. denoise
-          <span className="font-light">it</span> works across every domain
-          where facts matter.
+          {t("impact.desc1")} denoise
+          <span className="font-light">it</span> {t("impact.desc2")}
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {IMPACT_AREAS.map((area) => (
             <div
-              key={area.title}
+              key={area.titleKey}
               className="border-border group relative overflow-hidden rounded-xl border p-6 transition-colors hover:border-foreground/20"
             >
               {/* Gradient background accent */}
@@ -193,17 +201,17 @@ export function ImpactAreas() {
                   className={`${area.iconColor} mb-4 size-8`}
                   strokeWidth={1.5}
                 />
-                <h3 className="mb-2 text-base font-semibold">{area.title}</h3>
+                <h3 className="mb-2 text-base font-semibold">{t(area.titleKey)}</h3>
                 <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                  {area.description}
+                  {t(area.descKey)}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {area.examples.map((ex) => (
+                  {area.exKeys.map((exKey) => (
                     <span
-                      key={ex}
+                      key={exKey}
                       className="bg-muted text-muted-foreground rounded-md px-2 py-0.5 text-xs"
                     >
-                      {ex}
+                      {t(exKey)}
                     </span>
                   ))}
                 </div>
@@ -220,33 +228,34 @@ export function ImpactAreas() {
 /*  Section 3 — Signal vs Noise (visual comparison)                   */
 /* ------------------------------------------------------------------ */
 
-const NOISE_ITEMS = [
-  { text: '"SHOCKING development that changes EVERYTHING"', type: "Sensational" },
-  { text: '"Experts agree this is unprecedented"', type: "Vague attribution" },
-  { text: '"Could this mean the end of...?"', type: "Speculation" },
-  { text: '"People are furious about..."', type: "Emotional framing" },
+const NOISE_ITEMS: { textKey: TranslationKey; typeKey: TranslationKey }[] = [
+  { textKey: "svn.noise1.text", typeKey: "svn.noise1.type" },
+  { textKey: "svn.noise2.text", typeKey: "svn.noise2.type" },
+  { textKey: "svn.noise3.text", typeKey: "svn.noise3.type" },
+  { textKey: "svn.noise4.text", typeKey: "svn.noise4.type" },
 ];
 
-const SIGNAL_ITEMS = [
-  { text: "FDA approved drug X on Jan 15, 2026 for condition Y", confidence: 94 },
-  { text: "Study sample size: 2,340 participants across 12 centers", confidence: 91 },
-  { text: "Treatment showed 23% improvement vs placebo (p<0.01)", confidence: 88 },
-  { text: "3 of 5 independent reviews confirmed efficacy", confidence: 85 },
+const SIGNAL_ITEMS: { textKey: TranslationKey; confidence: number }[] = [
+  { textKey: "svn.signal1.text", confidence: 94 },
+  { textKey: "svn.signal2.text", confidence: 91 },
+  { textKey: "svn.signal3.text", confidence: 88 },
+  { textKey: "svn.signal4.text", confidence: 85 },
 ];
 
 export function SignalVsNoise() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
-          The difference
+          {t("svn.label")}
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          See what others miss
+          {t("svn.title")}
         </h2>
         <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
-          Every piece of content is a mix of verifiable facts and narrative
-          framing. We separate them so you can think clearly.
+          {t("svn.desc")}
         </p>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -255,22 +264,22 @@ export function SignalVsNoise() {
             <div className="mb-5 flex items-center gap-2">
               <Activity className="size-5 text-red-400" strokeWidth={1.5} />
               <h3 className="text-sm font-semibold uppercase tracking-wider text-red-400">
-                Noise
+                {t("svn.noise")}
               </h3>
             </div>
             <div className="flex flex-col gap-3">
               {NOISE_ITEMS.map((item) => (
                 <div
-                  key={item.text}
+                  key={item.textKey}
                   className="flex items-start gap-3 rounded-lg bg-red-500/5 p-3"
                 >
                   <div className="mt-0.5 size-1.5 shrink-0 rounded-full bg-red-400" />
                   <div>
                     <p className="text-muted-foreground text-sm italic">
-                      {item.text}
+                      {t(item.textKey)}
                     </p>
                     <p className="mt-1 text-xs font-medium text-red-400/80">
-                      {item.type}
+                      {t(item.typeKey)}
                     </p>
                   </div>
                 </div>
@@ -286,18 +295,18 @@ export function SignalVsNoise() {
                 strokeWidth={1.5}
               />
               <h3 className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
-                Signal
+                {t("svn.signal")}
               </h3>
             </div>
             <div className="flex flex-col gap-3">
               {SIGNAL_ITEMS.map((item) => (
                 <div
-                  key={item.text}
+                  key={item.textKey}
                   className="flex items-start gap-3 rounded-lg bg-emerald-500/5 p-3"
                 >
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-400" />
                   <div className="flex-1">
-                    <p className="text-sm">{item.text}</p>
+                    <p className="text-sm">{t(item.textKey)}</p>
                     <div className="mt-1.5 flex items-center gap-2">
                       <div className="bg-muted h-1 flex-1 overflow-hidden rounded-full">
                         <div
@@ -324,59 +333,64 @@ export function SignalVsNoise() {
 /*  Section 4 — Use cases (quick prompts)                             */
 /* ------------------------------------------------------------------ */
 
-const USE_CASES = [
+const USE_CASES: {
+  icon: typeof Newspaper;
+  labelKey: TranslationKey;
+  promptKey: TranslationKey;
+}[] = [
   {
     icon: Newspaper,
-    label: "Verify a headline",
-    prompt: "Is it true that...",
+    labelKey: "useCases.verify.label",
+    promptKey: "useCases.verify.prompt",
   },
   {
     icon: Search,
-    label: "Fact-check a claim",
-    prompt: "Someone told me that...",
+    labelKey: "useCases.factCheck.label",
+    promptKey: "useCases.factCheck.prompt",
   },
   {
     icon: Shield,
-    label: "Check health advice",
-    prompt: "Is this supplement safe...",
+    labelKey: "useCases.health.label",
+    promptKey: "useCases.health.prompt",
   },
   {
     icon: Scale,
-    label: "Analyze a policy",
-    prompt: "What does this bill actually do...",
+    labelKey: "useCases.policy.label",
+    promptKey: "useCases.policy.prompt",
   },
   {
     icon: Zap,
-    label: "Decode viral content",
-    prompt: "This post went viral claiming...",
+    labelKey: "useCases.viral.label",
+    promptKey: "useCases.viral.prompt",
   },
   {
     icon: Globe,
-    label: "Understand world news",
-    prompt: "What's actually happening in...",
+    labelKey: "useCases.worldNews.label",
+    promptKey: "useCases.worldNews.prompt",
   },
 ];
 
 export function UseCases() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
-          Use cases
+          {t("useCases.label")}
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          Start with a question
+          {t("useCases.title")}
         </h2>
         <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
-          Whether you&apos;re a journalist, researcher, student, or just a
-          curious citizen — denoise
-          <span className="font-light">it</span> helps you think for yourself.
+          {t("useCases.desc1")} denoise
+          <span className="font-light">it</span> {t("useCases.desc2")}
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {USE_CASES.map((uc) => (
             <button
-              key={uc.label}
+              key={uc.labelKey}
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
@@ -389,9 +403,9 @@ export function UseCases() {
                 />
               </div>
               <div>
-                <p className="text-sm font-semibold">{uc.label}</p>
+                <p className="text-sm font-semibold">{t(uc.labelKey)}</p>
                 <p className="text-muted-foreground mt-0.5 text-sm italic">
-                  &ldquo;{uc.prompt}&rdquo;
+                  &ldquo;{t(uc.promptKey)}&rdquo;
                 </p>
               </div>
             </button>
@@ -406,50 +420,53 @@ export function UseCases() {
 /*  Section 5 — Trust bar (stats + principles)                        */
 /* ------------------------------------------------------------------ */
 
-const PRINCIPLES = [
+const PRINCIPLES: {
+  icon: typeof Search;
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
+}[] = [
   {
     icon: Search,
-    title: "Source-first",
-    description:
-      "Every claim is traced back to primary sources — .gov, .edu, peer-reviewed journals, and official records.",
+    titleKey: "trust.sourceFirst.title",
+    descKey: "trust.sourceFirst.desc",
   },
   {
     icon: Shield,
-    title: "No bias, no agenda",
-    description:
-      "We don't tell you what to think. We separate facts from framing so you can decide for yourself.",
+    titleKey: "trust.noBias.title",
+    descKey: "trust.noBias.desc",
   },
   {
     icon: Zap,
-    title: "Real-time verification",
-    description:
-      "Live web search cross-references claims against the latest available data, not stale databases.",
+    titleKey: "trust.realTime.title",
+    descKey: "trust.realTime.desc",
   },
 ];
 
 export function TrustBar() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
-          Our principles
+          {t("trust.label")}
         </p>
         <h2 className="mb-16 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          Built for trust
+          {t("trust.title")}
         </h2>
 
         <div className="grid gap-8 md:grid-cols-3">
           {PRINCIPLES.map((p) => (
-            <div key={p.title} className="flex flex-col items-center text-center">
+            <div key={p.titleKey} className="flex flex-col items-center text-center">
               <div className="bg-primary/5 border-border mb-5 flex size-14 items-center justify-center rounded-xl border">
                 <p.icon
                   className="text-foreground size-6"
                   strokeWidth={1.5}
                 />
               </div>
-              <h3 className="mb-2 text-base font-semibold">{p.title}</h3>
+              <h3 className="mb-2 text-base font-semibold">{t(p.titleKey)}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                {p.description}
+                {t(p.descKey)}
               </p>
             </div>
           ))}
@@ -464,6 +481,8 @@ export function TrustBar() {
 /* ------------------------------------------------------------------ */
 
 export function FinalCTA() {
+  const { t } = useTranslation();
+
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
@@ -471,17 +490,16 @@ export function FinalCTA() {
           <Sparkles className="text-foreground size-7" strokeWidth={1.5} />
         </div>
         <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-          Stop scrolling. Start knowing.
+          {t("cta.title")}
         </h2>
         <p className="text-muted-foreground mb-8 max-w-md text-base">
-          Paste any claim, headline, or link and get a clear, sourced analysis
-          in seconds. No account required.
+          {t("cta.desc")}
         </p>
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-medium transition-colors"
         >
-          Try it now
+          {t("cta.button")}
           <ArrowDown className="size-4 rotate-180" />
         </button>
       </div>

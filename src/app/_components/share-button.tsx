@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Share, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 
+import { useTranslation } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,6 +38,7 @@ export function ShareButton({
   alwaysVisible?: boolean;
   prompt?: string;
 }) {
+  const { t } = useTranslation();
   const [state, setState] = useState<ShareState>("idle");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [includePrompt, setIncludePrompt] = useState(false);
@@ -51,7 +53,7 @@ export function ShareButton({
       setState("done");
       setTimeout(() => setState("idle"), 2000);
     } catch {
-      toast.error("Failed to generate story image");
+      toast.error(t("share.error"));
       setState("idle");
     }
   }
@@ -97,7 +99,7 @@ export function ShareButton({
               )}
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="top">Share as story</TooltipContent>
+          <TooltipContent side="top">{t("share.tooltip")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
@@ -106,10 +108,10 @@ export function ShareButton({
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle className="text-sm font-medium">
-                Story preview
+                {t("share.title")}
               </DialogTitle>
               <DialogDescription className="sr-only">
-                Preview and customize your story image
+                {t("share.description")}
               </DialogDescription>
             </DialogHeader>
 
@@ -127,7 +129,7 @@ export function ShareButton({
             {/* Toggle */}
             <label className="flex cursor-pointer items-center justify-between py-1">
               <span className="text-muted-foreground text-sm">
-                Include prompt
+                {t("share.includePrompt")}
               </span>
               <Switch
                 size="sm"
@@ -144,7 +146,7 @@ export function ShareButton({
               >
                 <Download className="size-3.5 [@media(hover:none)]:hidden" />
                 <Share className="hidden size-3.5 [@media(hover:none)]:block" />
-                Share
+                {t("share.button")}
               </Button>
             </DialogFooter>
           </DialogContent>
