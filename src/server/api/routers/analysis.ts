@@ -27,6 +27,7 @@ export const analysisRouter = createTRPCRouter({
         data: {
           title: input.content.slice(0, 120).trim(),
           prompt: input.content,
+          userId: ctx.session?.user?.id,
         },
       });
 
@@ -53,6 +54,7 @@ export const analysisRouter = createTRPCRouter({
             title: input.url,
             prompt: input.url,
             sourceUrl: input.url,
+            userId: ctx.session?.user?.id,
           },
         });
 
