@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
+import Image from "next/image";
 import {
   Activity,
   ArrowDown,
@@ -467,9 +468,13 @@ export function FinalCTA() {
   return (
     <section className="border-border/40 border-t px-4 py-24">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <div className="bg-primary/5 border-border mb-6 flex size-16 items-center justify-center rounded-2xl border">
-          <Sparkles className="text-foreground size-7" strokeWidth={1.5} />
-        </div>
+        <Image
+          src="/denoiseit_logo_rounded.png"
+          alt="denoise it"
+          width={56}
+          height={56}
+          className="mb-6 size-14 rounded-2xl"
+        />
         <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
           Stop scrolling. Start knowing.
         </h2>
