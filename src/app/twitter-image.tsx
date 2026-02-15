@@ -28,6 +28,7 @@ export default async function TwitterImage() {
         }}
       >
         <img
+          alt=""
           src={logoSrc}
           width={140}
           height={140}
