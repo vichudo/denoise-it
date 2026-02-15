@@ -1,19 +1,12 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-export default tseslint.config(
-  {
-    ignores: [".next"],
-  },
-  ...compat.extends("next/core-web-vitals"),
+export default defineConfig([
+  ...nextVitals,
   {
     files: ["**/*.ts", "**/*.tsx"],
     extends: [
-      ...tseslint.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
     ],
@@ -38,6 +31,31 @@ export default tseslint.config(
       ],
     },
   },
+  // Relax rules for generated components (shadcn/ui + ai-elements)
+  {
+    files: [
+      "src/components/ui/**/*.ts",
+      "src/components/ui/**/*.tsx",
+      "src/components/ai-elements/**/*.ts",
+      "src/components/ai-elements/**/*.tsx",
+    ],
+    rules: {
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-regexp-exec": "off",
+      "@typescript-eslint/consistent-indexed-object-style": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "react-hooks/purity": "off",
+      "react-hooks/static-components": "off",
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
   {
     linterOptions: {
       reportUnusedDisableDirectives: true,
@@ -48,4 +66,5 @@ export default tseslint.config(
       },
     },
   },
-);
+  globalIgnores([".next/**", ".agents/**", "generated/**"]),
+]);
