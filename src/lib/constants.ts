@@ -21,6 +21,7 @@ export function getLanguageName(code: string): string {
   );
 }
 
+/** @deprecated Use ANALYZING_PHRASES_COUNT from @/i18n + t(`analyzing.${i}`) */
 export const ANALYZING_PHRASES = [
   "Searching for primary sources...",
   "Cross-referencing claims...",
