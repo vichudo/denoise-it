@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link"; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
 import { useRouter } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 
@@ -157,6 +158,12 @@ export function DenoiseHero() {
 
         <p className="text-muted-foreground text-xs">
           We extract signal from noise — no account required.
+          {/* <Link
+            href="/latest"
+            className="text-muted-foreground/70 hover:text-foreground ml-1.5 underline underline-offset-4 transition-colors"
+          >
+            Browse latest
+          </Link> */}
         </p>
       </div>
     </section>
