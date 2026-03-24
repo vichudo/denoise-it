@@ -5,6 +5,7 @@ import { z } from "zod";
 import { parseSignalData } from "@/lib/utils";
 import { generateAnalysis } from "@/server/analysis/generate";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { Prisma } from "generated/prisma";
 
 export const analysisRouter = createTRPCRouter({
   /** Create a signal record and start background generation. Returns the ID immediately. */
@@ -77,6 +78,67 @@ export const analysisRouter = createTRPCRouter({
         }
         throw e;
       }
+    }),
+
+  /** Public feed of completed signals, newest first, with cursor pagination. */
+  latest: publicProcedure
+    .input(
+      z
+        .object({
+          cursor: z.string().nullish(),
+          limit: z.number().int().min(1).max(50).default(20),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input?.limit ?? 20;
+      const cursor = input?.cursor;
+
+      const signals = await ctx.db.signal.findMany({
+        where: {
+          privacy: "PUBLIC",
+          NOT: { data: { equals: Prisma.JsonNull } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        skip: cursor ? 1 : 0,
+        include: {
+          _count: { select: { followUps: true } },
+          user: { select: { name: true, image: true } },
+        },
+      });
+
+      let nextCursor: string | undefined;
+      if (signals.length > limit) {
+        const next = signals.pop()!;
+        nextCursor = next.id;
+      }
+
+      const items = [];
+      for (const signal of signals) {
+        const { data } = parseSignalData(signal.data);
+        if (!data) continue;
+        items.push({
+          id: signal.id,
+          title: signal.title,
+          sourceUrl: signal.sourceUrl,
+          createdAt: signal.createdAt,
+          followUpCount: signal._count.followUps,
+          verdict: data.verdict,
+          verdictHeadline: data.verdictHeadline,
+          signalScore: data.signalScore,
+          contentType: data.contentType,
+          summary: data.summary,
+          signalCount: data.signals.length,
+          noiseCount: data.noise.length,
+          user: signal.user
+            ? { name: signal.user.name, image: signal.user.image }
+            : null,
+        });
+      }
+
+      return { items, nextCursor };
     }),
 
   /** Get a signal by ID. Returns null data while still generating. */
