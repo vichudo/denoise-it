@@ -74,8 +74,10 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    signals       Signal[]
-    followUps     FollowUps[]
+    signals         Signal[]
+    followUps       FollowUps[]
+    feedPreferences FeedPreferences?
+    feedItems       FeedItem[]
 }
 
 model VerificationToken {
@@ -84,6 +86,46 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model FeedPreferences {
+    id                 String   @id @default(nanoid())
+    topics             String[]
+    xAccounts          String[] @map("x_accounts")
+    communicationStyle String   @default("balanced") @map("communication_style")
+    affectiveLevel     Int      @default(30) @map("affective_level")
+    language           String   @default("en")
+    additionalInstructions String?  @map("additional_instructions")
+    generatingBatchId      String?  @map("generating_batch_id")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String   @unique
+
+    @@map("feed_preferences")
+}
+
+model FeedItem {
+    id              String  @id @default(nanoid())
+    headline        String
+    content         String
+    expandedContent String  @map("expanded_content")
+    source          String
+    sourceUrl       String  @map("source_url")
+    sourceType      String  @default("article") @map("source_type")
+    imageUrl        String?  @map("image_url")
+    contentDate     String?  @map("content_date")
+    topic           String
+    batchId         String  @map("batch_id")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
+
+    @@index([userId, createdAt])
+    @@map("feed_items")
 }
 
 model FollowUps {

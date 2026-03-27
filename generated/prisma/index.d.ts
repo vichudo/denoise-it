@@ -39,6 +39,16 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
 /**
+ * Model FeedPreferences
+ * 
+ */
+export type FeedPreferences = $Result.DefaultSelection<Prisma.$FeedPreferencesPayload>
+/**
+ * Model FeedItem
+ * 
+ */
+export type FeedItem = $Result.DefaultSelection<Prisma.$FeedItemPayload>
+/**
  * Model FollowUps
  * 
  */
@@ -229,6 +239,26 @@ export class PrismaClient<
     * ```
     */
   get verificationToken(): Prisma.VerificationTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.feedPreferences`: Exposes CRUD operations for the **FeedPreferences** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FeedPreferences
+    * const feedPreferences = await prisma.feedPreferences.findMany()
+    * ```
+    */
+  get feedPreferences(): Prisma.FeedPreferencesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.feedItem`: Exposes CRUD operations for the **FeedItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FeedItems
+    * const feedItems = await prisma.feedItem.findMany()
+    * ```
+    */
+  get feedItem(): Prisma.FeedItemDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.followUps`: Exposes CRUD operations for the **FollowUps** model.
@@ -685,6 +715,8 @@ export namespace Prisma {
     Session: 'Session',
     User: 'User',
     VerificationToken: 'VerificationToken',
+    FeedPreferences: 'FeedPreferences',
+    FeedItem: 'FeedItem',
     FollowUps: 'FollowUps'
   };
 
@@ -704,7 +736,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "signal" | "account" | "session" | "user" | "verificationToken" | "followUps"
+      modelProps: "signal" | "account" | "session" | "user" | "verificationToken" | "feedPreferences" | "feedItem" | "followUps"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1078,6 +1110,154 @@ export namespace Prisma {
           }
         }
       }
+      FeedPreferences: {
+        payload: Prisma.$FeedPreferencesPayload<ExtArgs>
+        fields: Prisma.FeedPreferencesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FeedPreferencesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FeedPreferencesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          findFirst: {
+            args: Prisma.FeedPreferencesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FeedPreferencesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          findMany: {
+            args: Prisma.FeedPreferencesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>[]
+          }
+          create: {
+            args: Prisma.FeedPreferencesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          createMany: {
+            args: Prisma.FeedPreferencesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FeedPreferencesCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>[]
+          }
+          delete: {
+            args: Prisma.FeedPreferencesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          update: {
+            args: Prisma.FeedPreferencesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          deleteMany: {
+            args: Prisma.FeedPreferencesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FeedPreferencesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FeedPreferencesUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>[]
+          }
+          upsert: {
+            args: Prisma.FeedPreferencesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedPreferencesPayload>
+          }
+          aggregate: {
+            args: Prisma.FeedPreferencesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFeedPreferences>
+          }
+          groupBy: {
+            args: Prisma.FeedPreferencesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FeedPreferencesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FeedPreferencesCountArgs<ExtArgs>
+            result: $Utils.Optional<FeedPreferencesCountAggregateOutputType> | number
+          }
+        }
+      }
+      FeedItem: {
+        payload: Prisma.$FeedItemPayload<ExtArgs>
+        fields: Prisma.FeedItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FeedItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FeedItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          findFirst: {
+            args: Prisma.FeedItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FeedItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          findMany: {
+            args: Prisma.FeedItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+          }
+          create: {
+            args: Prisma.FeedItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          createMany: {
+            args: Prisma.FeedItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FeedItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+          }
+          delete: {
+            args: Prisma.FeedItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          update: {
+            args: Prisma.FeedItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.FeedItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FeedItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FeedItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.FeedItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FeedItemPayload>
+          }
+          aggregate: {
+            args: Prisma.FeedItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFeedItem>
+          }
+          groupBy: {
+            args: Prisma.FeedItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FeedItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FeedItemCountArgs<ExtArgs>
+            result: $Utils.Optional<FeedItemCountAggregateOutputType> | number
+          }
+        }
+      }
       FollowUps: {
         payload: Prisma.$FollowUpsPayload<ExtArgs>
         fields: Prisma.FollowUpsFieldRefs
@@ -1253,6 +1433,8 @@ export namespace Prisma {
     session?: SessionOmit
     user?: UserOmit
     verificationToken?: VerificationTokenOmit
+    feedPreferences?: FeedPreferencesOmit
+    feedItem?: FeedItemOmit
     followUps?: FollowUpsOmit
   }
 
@@ -1369,6 +1551,7 @@ export namespace Prisma {
     sessions: number
     signals: number
     followUps: number
+    feedItems: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1376,6 +1559,7 @@ export namespace Prisma {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     signals?: boolean | UserCountOutputTypeCountSignalsArgs
     followUps?: boolean | UserCountOutputTypeCountFollowUpsArgs
+    feedItems?: boolean | UserCountOutputTypeCountFeedItemsArgs
   }
 
   // Custom InputTypes
@@ -1415,6 +1599,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFollowUpsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FollowUpsWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFeedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedItemWhereInput
   }
 
 
@@ -4990,6 +5181,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     signals?: boolean | User$signalsArgs<ExtArgs>
     followUps?: boolean | User$followUpsArgs<ExtArgs>
+    feedPreferences?: boolean | User$feedPreferencesArgs<ExtArgs>
+    feedItems?: boolean | User$feedItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5023,6 +5216,8 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     signals?: boolean | User$signalsArgs<ExtArgs>
     followUps?: boolean | User$followUpsArgs<ExtArgs>
+    feedPreferences?: boolean | User$feedPreferencesArgs<ExtArgs>
+    feedItems?: boolean | User$feedItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5035,6 +5230,8 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       signals: Prisma.$SignalPayload<ExtArgs>[]
       followUps: Prisma.$FollowUpsPayload<ExtArgs>[]
+      feedPreferences: Prisma.$FeedPreferencesPayload<ExtArgs> | null
+      feedItems: Prisma.$FeedItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5440,6 +5637,8 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     signals<T extends User$signalsArgs<ExtArgs> = {}>(args?: Subset<T, User$signalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SignalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     followUps<T extends User$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, User$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowUpsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    feedPreferences<T extends User$feedPreferencesArgs<ExtArgs> = {}>(args?: Subset<T, User$feedPreferencesArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    feedItems<T extends User$feedItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$feedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5955,6 +6154,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FollowUpsScalarFieldEnum | FollowUpsScalarFieldEnum[]
+  }
+
+  /**
+   * User.feedPreferences
+   */
+  export type User$feedPreferencesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    where?: FeedPreferencesWhereInput
+  }
+
+  /**
+   * User.feedItems
+   */
+  export type User$feedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    where?: FeedItemWhereInput
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    cursor?: FeedItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
   }
 
   /**
@@ -6942,6 +7184,2343 @@ export namespace Prisma {
      * Omit specific fields from the VerificationToken
      */
     omit?: VerificationTokenOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FeedPreferences
+   */
+
+  export type AggregateFeedPreferences = {
+    _count: FeedPreferencesCountAggregateOutputType | null
+    _avg: FeedPreferencesAvgAggregateOutputType | null
+    _sum: FeedPreferencesSumAggregateOutputType | null
+    _min: FeedPreferencesMinAggregateOutputType | null
+    _max: FeedPreferencesMaxAggregateOutputType | null
+  }
+
+  export type FeedPreferencesAvgAggregateOutputType = {
+    affectiveLevel: number | null
+  }
+
+  export type FeedPreferencesSumAggregateOutputType = {
+    affectiveLevel: number | null
+  }
+
+  export type FeedPreferencesMinAggregateOutputType = {
+    id: string | null
+    communicationStyle: string | null
+    affectiveLevel: number | null
+    language: string | null
+    additionalInstructions: string | null
+    generatingBatchId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    userId: string | null
+  }
+
+  export type FeedPreferencesMaxAggregateOutputType = {
+    id: string | null
+    communicationStyle: string | null
+    affectiveLevel: number | null
+    language: string | null
+    additionalInstructions: string | null
+    generatingBatchId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    userId: string | null
+  }
+
+  export type FeedPreferencesCountAggregateOutputType = {
+    id: number
+    topics: number
+    xAccounts: number
+    communicationStyle: number
+    affectiveLevel: number
+    language: number
+    additionalInstructions: number
+    generatingBatchId: number
+    createdAt: number
+    updatedAt: number
+    userId: number
+    _all: number
+  }
+
+
+  export type FeedPreferencesAvgAggregateInputType = {
+    affectiveLevel?: true
+  }
+
+  export type FeedPreferencesSumAggregateInputType = {
+    affectiveLevel?: true
+  }
+
+  export type FeedPreferencesMinAggregateInputType = {
+    id?: true
+    communicationStyle?: true
+    affectiveLevel?: true
+    language?: true
+    additionalInstructions?: true
+    generatingBatchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+  }
+
+  export type FeedPreferencesMaxAggregateInputType = {
+    id?: true
+    communicationStyle?: true
+    affectiveLevel?: true
+    language?: true
+    additionalInstructions?: true
+    generatingBatchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+  }
+
+  export type FeedPreferencesCountAggregateInputType = {
+    id?: true
+    topics?: true
+    xAccounts?: true
+    communicationStyle?: true
+    affectiveLevel?: true
+    language?: true
+    additionalInstructions?: true
+    generatingBatchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type FeedPreferencesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedPreferences to aggregate.
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedPreferences to fetch.
+     */
+    orderBy?: FeedPreferencesOrderByWithRelationInput | FeedPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FeedPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FeedPreferences
+    **/
+    _count?: true | FeedPreferencesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FeedPreferencesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FeedPreferencesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FeedPreferencesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FeedPreferencesMaxAggregateInputType
+  }
+
+  export type GetFeedPreferencesAggregateType<T extends FeedPreferencesAggregateArgs> = {
+        [P in keyof T & keyof AggregateFeedPreferences]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFeedPreferences[P]>
+      : GetScalarType<T[P], AggregateFeedPreferences[P]>
+  }
+
+
+
+
+  export type FeedPreferencesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedPreferencesWhereInput
+    orderBy?: FeedPreferencesOrderByWithAggregationInput | FeedPreferencesOrderByWithAggregationInput[]
+    by: FeedPreferencesScalarFieldEnum[] | FeedPreferencesScalarFieldEnum
+    having?: FeedPreferencesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FeedPreferencesCountAggregateInputType | true
+    _avg?: FeedPreferencesAvgAggregateInputType
+    _sum?: FeedPreferencesSumAggregateInputType
+    _min?: FeedPreferencesMinAggregateInputType
+    _max?: FeedPreferencesMaxAggregateInputType
+  }
+
+  export type FeedPreferencesGroupByOutputType = {
+    id: string
+    topics: string[]
+    xAccounts: string[]
+    communicationStyle: string
+    affectiveLevel: number
+    language: string
+    additionalInstructions: string | null
+    generatingBatchId: string | null
+    createdAt: Date
+    updatedAt: Date
+    userId: string
+    _count: FeedPreferencesCountAggregateOutputType | null
+    _avg: FeedPreferencesAvgAggregateOutputType | null
+    _sum: FeedPreferencesSumAggregateOutputType | null
+    _min: FeedPreferencesMinAggregateOutputType | null
+    _max: FeedPreferencesMaxAggregateOutputType | null
+  }
+
+  type GetFeedPreferencesGroupByPayload<T extends FeedPreferencesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FeedPreferencesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FeedPreferencesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FeedPreferencesGroupByOutputType[P]>
+            : GetScalarType<T[P], FeedPreferencesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FeedPreferencesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    topics?: boolean
+    xAccounts?: boolean
+    communicationStyle?: boolean
+    affectiveLevel?: boolean
+    language?: boolean
+    additionalInstructions?: boolean
+    generatingBatchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedPreferences"]>
+
+  export type FeedPreferencesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    topics?: boolean
+    xAccounts?: boolean
+    communicationStyle?: boolean
+    affectiveLevel?: boolean
+    language?: boolean
+    additionalInstructions?: boolean
+    generatingBatchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedPreferences"]>
+
+  export type FeedPreferencesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    topics?: boolean
+    xAccounts?: boolean
+    communicationStyle?: boolean
+    affectiveLevel?: boolean
+    language?: boolean
+    additionalInstructions?: boolean
+    generatingBatchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedPreferences"]>
+
+  export type FeedPreferencesSelectScalar = {
+    id?: boolean
+    topics?: boolean
+    xAccounts?: boolean
+    communicationStyle?: boolean
+    affectiveLevel?: boolean
+    language?: boolean
+    additionalInstructions?: boolean
+    generatingBatchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+  }
+
+  export type FeedPreferencesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topics" | "xAccounts" | "communicationStyle" | "affectiveLevel" | "language" | "additionalInstructions" | "generatingBatchId" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["feedPreferences"]>
+  export type FeedPreferencesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedPreferencesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedPreferencesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FeedPreferencesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FeedPreferences"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      topics: string[]
+      xAccounts: string[]
+      communicationStyle: string
+      affectiveLevel: number
+      language: string
+      additionalInstructions: string | null
+      generatingBatchId: string | null
+      createdAt: Date
+      updatedAt: Date
+      userId: string
+    }, ExtArgs["result"]["feedPreferences"]>
+    composites: {}
+  }
+
+  type FeedPreferencesGetPayload<S extends boolean | null | undefined | FeedPreferencesDefaultArgs> = $Result.GetResult<Prisma.$FeedPreferencesPayload, S>
+
+  type FeedPreferencesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FeedPreferencesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FeedPreferencesCountAggregateInputType | true
+    }
+
+  export interface FeedPreferencesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FeedPreferences'], meta: { name: 'FeedPreferences' } }
+    /**
+     * Find zero or one FeedPreferences that matches the filter.
+     * @param {FeedPreferencesFindUniqueArgs} args - Arguments to find a FeedPreferences
+     * @example
+     * // Get one FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FeedPreferencesFindUniqueArgs>(args: SelectSubset<T, FeedPreferencesFindUniqueArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FeedPreferences that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FeedPreferencesFindUniqueOrThrowArgs} args - Arguments to find a FeedPreferences
+     * @example
+     * // Get one FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FeedPreferencesFindUniqueOrThrowArgs>(args: SelectSubset<T, FeedPreferencesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesFindFirstArgs} args - Arguments to find a FeedPreferences
+     * @example
+     * // Get one FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FeedPreferencesFindFirstArgs>(args?: SelectSubset<T, FeedPreferencesFindFirstArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedPreferences that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesFindFirstOrThrowArgs} args - Arguments to find a FeedPreferences
+     * @example
+     * // Get one FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FeedPreferencesFindFirstOrThrowArgs>(args?: SelectSubset<T, FeedPreferencesFindFirstOrThrowArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FeedPreferences that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findMany()
+     * 
+     * // Get first 10 FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const feedPreferencesWithIdOnly = await prisma.feedPreferences.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FeedPreferencesFindManyArgs>(args?: SelectSubset<T, FeedPreferencesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FeedPreferences.
+     * @param {FeedPreferencesCreateArgs} args - Arguments to create a FeedPreferences.
+     * @example
+     * // Create one FeedPreferences
+     * const FeedPreferences = await prisma.feedPreferences.create({
+     *   data: {
+     *     // ... data to create a FeedPreferences
+     *   }
+     * })
+     * 
+     */
+    create<T extends FeedPreferencesCreateArgs>(args: SelectSubset<T, FeedPreferencesCreateArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FeedPreferences.
+     * @param {FeedPreferencesCreateManyArgs} args - Arguments to create many FeedPreferences.
+     * @example
+     * // Create many FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FeedPreferencesCreateManyArgs>(args?: SelectSubset<T, FeedPreferencesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FeedPreferences and returns the data saved in the database.
+     * @param {FeedPreferencesCreateManyAndReturnArgs} args - Arguments to create many FeedPreferences.
+     * @example
+     * // Create many FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FeedPreferences and only return the `id`
+     * const feedPreferencesWithIdOnly = await prisma.feedPreferences.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FeedPreferencesCreateManyAndReturnArgs>(args?: SelectSubset<T, FeedPreferencesCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FeedPreferences.
+     * @param {FeedPreferencesDeleteArgs} args - Arguments to delete one FeedPreferences.
+     * @example
+     * // Delete one FeedPreferences
+     * const FeedPreferences = await prisma.feedPreferences.delete({
+     *   where: {
+     *     // ... filter to delete one FeedPreferences
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FeedPreferencesDeleteArgs>(args: SelectSubset<T, FeedPreferencesDeleteArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FeedPreferences.
+     * @param {FeedPreferencesUpdateArgs} args - Arguments to update one FeedPreferences.
+     * @example
+     * // Update one FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FeedPreferencesUpdateArgs>(args: SelectSubset<T, FeedPreferencesUpdateArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FeedPreferences.
+     * @param {FeedPreferencesDeleteManyArgs} args - Arguments to filter FeedPreferences to delete.
+     * @example
+     * // Delete a few FeedPreferences
+     * const { count } = await prisma.feedPreferences.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FeedPreferencesDeleteManyArgs>(args?: SelectSubset<T, FeedPreferencesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FeedPreferencesUpdateManyArgs>(args: SelectSubset<T, FeedPreferencesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedPreferences and returns the data updated in the database.
+     * @param {FeedPreferencesUpdateManyAndReturnArgs} args - Arguments to update many FeedPreferences.
+     * @example
+     * // Update many FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FeedPreferences and only return the `id`
+     * const feedPreferencesWithIdOnly = await prisma.feedPreferences.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FeedPreferencesUpdateManyAndReturnArgs>(args: SelectSubset<T, FeedPreferencesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FeedPreferences.
+     * @param {FeedPreferencesUpsertArgs} args - Arguments to update or create a FeedPreferences.
+     * @example
+     * // Update or create a FeedPreferences
+     * const feedPreferences = await prisma.feedPreferences.upsert({
+     *   create: {
+     *     // ... data to create a FeedPreferences
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FeedPreferences we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FeedPreferencesUpsertArgs>(args: SelectSubset<T, FeedPreferencesUpsertArgs<ExtArgs>>): Prisma__FeedPreferencesClient<$Result.GetResult<Prisma.$FeedPreferencesPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FeedPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesCountArgs} args - Arguments to filter FeedPreferences to count.
+     * @example
+     * // Count the number of FeedPreferences
+     * const count = await prisma.feedPreferences.count({
+     *   where: {
+     *     // ... the filter for the FeedPreferences we want to count
+     *   }
+     * })
+    **/
+    count<T extends FeedPreferencesCountArgs>(
+      args?: Subset<T, FeedPreferencesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FeedPreferencesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FeedPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FeedPreferencesAggregateArgs>(args: Subset<T, FeedPreferencesAggregateArgs>): Prisma.PrismaPromise<GetFeedPreferencesAggregateType<T>>
+
+    /**
+     * Group by FeedPreferences.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedPreferencesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FeedPreferencesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FeedPreferencesGroupByArgs['orderBy'] }
+        : { orderBy?: FeedPreferencesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FeedPreferencesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFeedPreferencesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FeedPreferences model
+   */
+  readonly fields: FeedPreferencesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FeedPreferences.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FeedPreferencesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FeedPreferences model
+   */
+  interface FeedPreferencesFieldRefs {
+    readonly id: FieldRef<"FeedPreferences", 'String'>
+    readonly topics: FieldRef<"FeedPreferences", 'String[]'>
+    readonly xAccounts: FieldRef<"FeedPreferences", 'String[]'>
+    readonly communicationStyle: FieldRef<"FeedPreferences", 'String'>
+    readonly affectiveLevel: FieldRef<"FeedPreferences", 'Int'>
+    readonly language: FieldRef<"FeedPreferences", 'String'>
+    readonly additionalInstructions: FieldRef<"FeedPreferences", 'String'>
+    readonly generatingBatchId: FieldRef<"FeedPreferences", 'String'>
+    readonly createdAt: FieldRef<"FeedPreferences", 'DateTime'>
+    readonly updatedAt: FieldRef<"FeedPreferences", 'DateTime'>
+    readonly userId: FieldRef<"FeedPreferences", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FeedPreferences findUnique
+   */
+  export type FeedPreferencesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedPreferences to fetch.
+     */
+    where: FeedPreferencesWhereUniqueInput
+  }
+
+  /**
+   * FeedPreferences findUniqueOrThrow
+   */
+  export type FeedPreferencesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedPreferences to fetch.
+     */
+    where: FeedPreferencesWhereUniqueInput
+  }
+
+  /**
+   * FeedPreferences findFirst
+   */
+  export type FeedPreferencesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedPreferences to fetch.
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedPreferences to fetch.
+     */
+    orderBy?: FeedPreferencesOrderByWithRelationInput | FeedPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedPreferences.
+     */
+    cursor?: FeedPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedPreferences.
+     */
+    distinct?: FeedPreferencesScalarFieldEnum | FeedPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * FeedPreferences findFirstOrThrow
+   */
+  export type FeedPreferencesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedPreferences to fetch.
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedPreferences to fetch.
+     */
+    orderBy?: FeedPreferencesOrderByWithRelationInput | FeedPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedPreferences.
+     */
+    cursor?: FeedPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedPreferences.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedPreferences.
+     */
+    distinct?: FeedPreferencesScalarFieldEnum | FeedPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * FeedPreferences findMany
+   */
+  export type FeedPreferencesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedPreferences to fetch.
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedPreferences to fetch.
+     */
+    orderBy?: FeedPreferencesOrderByWithRelationInput | FeedPreferencesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FeedPreferences.
+     */
+    cursor?: FeedPreferencesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedPreferences from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedPreferences.
+     */
+    skip?: number
+    distinct?: FeedPreferencesScalarFieldEnum | FeedPreferencesScalarFieldEnum[]
+  }
+
+  /**
+   * FeedPreferences create
+   */
+  export type FeedPreferencesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FeedPreferences.
+     */
+    data: XOR<FeedPreferencesCreateInput, FeedPreferencesUncheckedCreateInput>
+  }
+
+  /**
+   * FeedPreferences createMany
+   */
+  export type FeedPreferencesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FeedPreferences.
+     */
+    data: FeedPreferencesCreateManyInput | FeedPreferencesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FeedPreferences createManyAndReturn
+   */
+  export type FeedPreferencesCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * The data used to create many FeedPreferences.
+     */
+    data: FeedPreferencesCreateManyInput | FeedPreferencesCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedPreferences update
+   */
+  export type FeedPreferencesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FeedPreferences.
+     */
+    data: XOR<FeedPreferencesUpdateInput, FeedPreferencesUncheckedUpdateInput>
+    /**
+     * Choose, which FeedPreferences to update.
+     */
+    where: FeedPreferencesWhereUniqueInput
+  }
+
+  /**
+   * FeedPreferences updateMany
+   */
+  export type FeedPreferencesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FeedPreferences.
+     */
+    data: XOR<FeedPreferencesUpdateManyMutationInput, FeedPreferencesUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedPreferences to update
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * Limit how many FeedPreferences to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedPreferences updateManyAndReturn
+   */
+  export type FeedPreferencesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * The data used to update FeedPreferences.
+     */
+    data: XOR<FeedPreferencesUpdateManyMutationInput, FeedPreferencesUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedPreferences to update
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * Limit how many FeedPreferences to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedPreferences upsert
+   */
+  export type FeedPreferencesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FeedPreferences to update in case it exists.
+     */
+    where: FeedPreferencesWhereUniqueInput
+    /**
+     * In case the FeedPreferences found by the `where` argument doesn't exist, create a new FeedPreferences with this data.
+     */
+    create: XOR<FeedPreferencesCreateInput, FeedPreferencesUncheckedCreateInput>
+    /**
+     * In case the FeedPreferences was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FeedPreferencesUpdateInput, FeedPreferencesUncheckedUpdateInput>
+  }
+
+  /**
+   * FeedPreferences delete
+   */
+  export type FeedPreferencesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+    /**
+     * Filter which FeedPreferences to delete.
+     */
+    where: FeedPreferencesWhereUniqueInput
+  }
+
+  /**
+   * FeedPreferences deleteMany
+   */
+  export type FeedPreferencesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedPreferences to delete
+     */
+    where?: FeedPreferencesWhereInput
+    /**
+     * Limit how many FeedPreferences to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedPreferences without action
+   */
+  export type FeedPreferencesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedPreferences
+     */
+    select?: FeedPreferencesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedPreferences
+     */
+    omit?: FeedPreferencesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedPreferencesInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FeedItem
+   */
+
+  export type AggregateFeedItem = {
+    _count: FeedItemCountAggregateOutputType | null
+    _min: FeedItemMinAggregateOutputType | null
+    _max: FeedItemMaxAggregateOutputType | null
+  }
+
+  export type FeedItemMinAggregateOutputType = {
+    id: string | null
+    headline: string | null
+    content: string | null
+    expandedContent: string | null
+    source: string | null
+    sourceUrl: string | null
+    sourceType: string | null
+    imageUrl: string | null
+    contentDate: string | null
+    topic: string | null
+    batchId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    userId: string | null
+  }
+
+  export type FeedItemMaxAggregateOutputType = {
+    id: string | null
+    headline: string | null
+    content: string | null
+    expandedContent: string | null
+    source: string | null
+    sourceUrl: string | null
+    sourceType: string | null
+    imageUrl: string | null
+    contentDate: string | null
+    topic: string | null
+    batchId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    userId: string | null
+  }
+
+  export type FeedItemCountAggregateOutputType = {
+    id: number
+    headline: number
+    content: number
+    expandedContent: number
+    source: number
+    sourceUrl: number
+    sourceType: number
+    imageUrl: number
+    contentDate: number
+    topic: number
+    batchId: number
+    createdAt: number
+    updatedAt: number
+    userId: number
+    _all: number
+  }
+
+
+  export type FeedItemMinAggregateInputType = {
+    id?: true
+    headline?: true
+    content?: true
+    expandedContent?: true
+    source?: true
+    sourceUrl?: true
+    sourceType?: true
+    imageUrl?: true
+    contentDate?: true
+    topic?: true
+    batchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+  }
+
+  export type FeedItemMaxAggregateInputType = {
+    id?: true
+    headline?: true
+    content?: true
+    expandedContent?: true
+    source?: true
+    sourceUrl?: true
+    sourceType?: true
+    imageUrl?: true
+    contentDate?: true
+    topic?: true
+    batchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+  }
+
+  export type FeedItemCountAggregateInputType = {
+    id?: true
+    headline?: true
+    content?: true
+    expandedContent?: true
+    source?: true
+    sourceUrl?: true
+    sourceType?: true
+    imageUrl?: true
+    contentDate?: true
+    topic?: true
+    batchId?: true
+    createdAt?: true
+    updatedAt?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type FeedItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedItem to aggregate.
+     */
+    where?: FeedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedItems to fetch.
+     */
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FeedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FeedItems
+    **/
+    _count?: true | FeedItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FeedItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FeedItemMaxAggregateInputType
+  }
+
+  export type GetFeedItemAggregateType<T extends FeedItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateFeedItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFeedItem[P]>
+      : GetScalarType<T[P], AggregateFeedItem[P]>
+  }
+
+
+
+
+  export type FeedItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FeedItemWhereInput
+    orderBy?: FeedItemOrderByWithAggregationInput | FeedItemOrderByWithAggregationInput[]
+    by: FeedItemScalarFieldEnum[] | FeedItemScalarFieldEnum
+    having?: FeedItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FeedItemCountAggregateInputType | true
+    _min?: FeedItemMinAggregateInputType
+    _max?: FeedItemMaxAggregateInputType
+  }
+
+  export type FeedItemGroupByOutputType = {
+    id: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType: string
+    imageUrl: string | null
+    contentDate: string | null
+    topic: string
+    batchId: string
+    createdAt: Date
+    updatedAt: Date
+    userId: string
+    _count: FeedItemCountAggregateOutputType | null
+    _min: FeedItemMinAggregateOutputType | null
+    _max: FeedItemMaxAggregateOutputType | null
+  }
+
+  type GetFeedItemGroupByPayload<T extends FeedItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FeedItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FeedItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FeedItemGroupByOutputType[P]>
+            : GetScalarType<T[P], FeedItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FeedItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    headline?: boolean
+    content?: boolean
+    expandedContent?: boolean
+    source?: boolean
+    sourceUrl?: boolean
+    sourceType?: boolean
+    imageUrl?: boolean
+    contentDate?: boolean
+    topic?: boolean
+    batchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedItem"]>
+
+  export type FeedItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    headline?: boolean
+    content?: boolean
+    expandedContent?: boolean
+    source?: boolean
+    sourceUrl?: boolean
+    sourceType?: boolean
+    imageUrl?: boolean
+    contentDate?: boolean
+    topic?: boolean
+    batchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedItem"]>
+
+  export type FeedItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    headline?: boolean
+    content?: boolean
+    expandedContent?: boolean
+    source?: boolean
+    sourceUrl?: boolean
+    sourceType?: boolean
+    imageUrl?: boolean
+    contentDate?: boolean
+    topic?: boolean
+    batchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["feedItem"]>
+
+  export type FeedItemSelectScalar = {
+    id?: boolean
+    headline?: boolean
+    content?: boolean
+    expandedContent?: boolean
+    source?: boolean
+    sourceUrl?: boolean
+    sourceType?: boolean
+    imageUrl?: boolean
+    contentDate?: boolean
+    topic?: boolean
+    batchId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+  }
+
+  export type FeedItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "headline" | "content" | "expandedContent" | "source" | "sourceUrl" | "sourceType" | "imageUrl" | "contentDate" | "topic" | "batchId" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["feedItem"]>
+  export type FeedItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FeedItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FeedItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FeedItem"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      headline: string
+      content: string
+      expandedContent: string
+      source: string
+      sourceUrl: string
+      sourceType: string
+      imageUrl: string | null
+      contentDate: string | null
+      topic: string
+      batchId: string
+      createdAt: Date
+      updatedAt: Date
+      userId: string
+    }, ExtArgs["result"]["feedItem"]>
+    composites: {}
+  }
+
+  type FeedItemGetPayload<S extends boolean | null | undefined | FeedItemDefaultArgs> = $Result.GetResult<Prisma.$FeedItemPayload, S>
+
+  type FeedItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FeedItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FeedItemCountAggregateInputType | true
+    }
+
+  export interface FeedItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FeedItem'], meta: { name: 'FeedItem' } }
+    /**
+     * Find zero or one FeedItem that matches the filter.
+     * @param {FeedItemFindUniqueArgs} args - Arguments to find a FeedItem
+     * @example
+     * // Get one FeedItem
+     * const feedItem = await prisma.feedItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FeedItemFindUniqueArgs>(args: SelectSubset<T, FeedItemFindUniqueArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FeedItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FeedItemFindUniqueOrThrowArgs} args - Arguments to find a FeedItem
+     * @example
+     * // Get one FeedItem
+     * const feedItem = await prisma.feedItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FeedItemFindUniqueOrThrowArgs>(args: SelectSubset<T, FeedItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemFindFirstArgs} args - Arguments to find a FeedItem
+     * @example
+     * // Get one FeedItem
+     * const feedItem = await prisma.feedItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FeedItemFindFirstArgs>(args?: SelectSubset<T, FeedItemFindFirstArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FeedItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemFindFirstOrThrowArgs} args - Arguments to find a FeedItem
+     * @example
+     * // Get one FeedItem
+     * const feedItem = await prisma.feedItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FeedItemFindFirstOrThrowArgs>(args?: SelectSubset<T, FeedItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FeedItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FeedItems
+     * const feedItems = await prisma.feedItem.findMany()
+     * 
+     * // Get first 10 FeedItems
+     * const feedItems = await prisma.feedItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const feedItemWithIdOnly = await prisma.feedItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FeedItemFindManyArgs>(args?: SelectSubset<T, FeedItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FeedItem.
+     * @param {FeedItemCreateArgs} args - Arguments to create a FeedItem.
+     * @example
+     * // Create one FeedItem
+     * const FeedItem = await prisma.feedItem.create({
+     *   data: {
+     *     // ... data to create a FeedItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends FeedItemCreateArgs>(args: SelectSubset<T, FeedItemCreateArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FeedItems.
+     * @param {FeedItemCreateManyArgs} args - Arguments to create many FeedItems.
+     * @example
+     * // Create many FeedItems
+     * const feedItem = await prisma.feedItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FeedItemCreateManyArgs>(args?: SelectSubset<T, FeedItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FeedItems and returns the data saved in the database.
+     * @param {FeedItemCreateManyAndReturnArgs} args - Arguments to create many FeedItems.
+     * @example
+     * // Create many FeedItems
+     * const feedItem = await prisma.feedItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FeedItems and only return the `id`
+     * const feedItemWithIdOnly = await prisma.feedItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FeedItemCreateManyAndReturnArgs>(args?: SelectSubset<T, FeedItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FeedItem.
+     * @param {FeedItemDeleteArgs} args - Arguments to delete one FeedItem.
+     * @example
+     * // Delete one FeedItem
+     * const FeedItem = await prisma.feedItem.delete({
+     *   where: {
+     *     // ... filter to delete one FeedItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FeedItemDeleteArgs>(args: SelectSubset<T, FeedItemDeleteArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FeedItem.
+     * @param {FeedItemUpdateArgs} args - Arguments to update one FeedItem.
+     * @example
+     * // Update one FeedItem
+     * const feedItem = await prisma.feedItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FeedItemUpdateArgs>(args: SelectSubset<T, FeedItemUpdateArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FeedItems.
+     * @param {FeedItemDeleteManyArgs} args - Arguments to filter FeedItems to delete.
+     * @example
+     * // Delete a few FeedItems
+     * const { count } = await prisma.feedItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FeedItemDeleteManyArgs>(args?: SelectSubset<T, FeedItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FeedItems
+     * const feedItem = await prisma.feedItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FeedItemUpdateManyArgs>(args: SelectSubset<T, FeedItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FeedItems and returns the data updated in the database.
+     * @param {FeedItemUpdateManyAndReturnArgs} args - Arguments to update many FeedItems.
+     * @example
+     * // Update many FeedItems
+     * const feedItem = await prisma.feedItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FeedItems and only return the `id`
+     * const feedItemWithIdOnly = await prisma.feedItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FeedItemUpdateManyAndReturnArgs>(args: SelectSubset<T, FeedItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FeedItem.
+     * @param {FeedItemUpsertArgs} args - Arguments to update or create a FeedItem.
+     * @example
+     * // Update or create a FeedItem
+     * const feedItem = await prisma.feedItem.upsert({
+     *   create: {
+     *     // ... data to create a FeedItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FeedItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FeedItemUpsertArgs>(args: SelectSubset<T, FeedItemUpsertArgs<ExtArgs>>): Prisma__FeedItemClient<$Result.GetResult<Prisma.$FeedItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FeedItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemCountArgs} args - Arguments to filter FeedItems to count.
+     * @example
+     * // Count the number of FeedItems
+     * const count = await prisma.feedItem.count({
+     *   where: {
+     *     // ... the filter for the FeedItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends FeedItemCountArgs>(
+      args?: Subset<T, FeedItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FeedItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FeedItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FeedItemAggregateArgs>(args: Subset<T, FeedItemAggregateArgs>): Prisma.PrismaPromise<GetFeedItemAggregateType<T>>
+
+    /**
+     * Group by FeedItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FeedItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FeedItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FeedItemGroupByArgs['orderBy'] }
+        : { orderBy?: FeedItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FeedItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFeedItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FeedItem model
+   */
+  readonly fields: FeedItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FeedItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FeedItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FeedItem model
+   */
+  interface FeedItemFieldRefs {
+    readonly id: FieldRef<"FeedItem", 'String'>
+    readonly headline: FieldRef<"FeedItem", 'String'>
+    readonly content: FieldRef<"FeedItem", 'String'>
+    readonly expandedContent: FieldRef<"FeedItem", 'String'>
+    readonly source: FieldRef<"FeedItem", 'String'>
+    readonly sourceUrl: FieldRef<"FeedItem", 'String'>
+    readonly sourceType: FieldRef<"FeedItem", 'String'>
+    readonly imageUrl: FieldRef<"FeedItem", 'String'>
+    readonly contentDate: FieldRef<"FeedItem", 'String'>
+    readonly topic: FieldRef<"FeedItem", 'String'>
+    readonly batchId: FieldRef<"FeedItem", 'String'>
+    readonly createdAt: FieldRef<"FeedItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"FeedItem", 'DateTime'>
+    readonly userId: FieldRef<"FeedItem", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FeedItem findUnique
+   */
+  export type FeedItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedItem to fetch.
+     */
+    where: FeedItemWhereUniqueInput
+  }
+
+  /**
+   * FeedItem findUniqueOrThrow
+   */
+  export type FeedItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedItem to fetch.
+     */
+    where: FeedItemWhereUniqueInput
+  }
+
+  /**
+   * FeedItem findFirst
+   */
+  export type FeedItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedItem to fetch.
+     */
+    where?: FeedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedItems to fetch.
+     */
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedItems.
+     */
+    cursor?: FeedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedItems.
+     */
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
+  }
+
+  /**
+   * FeedItem findFirstOrThrow
+   */
+  export type FeedItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedItem to fetch.
+     */
+    where?: FeedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedItems to fetch.
+     */
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FeedItems.
+     */
+    cursor?: FeedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FeedItems.
+     */
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
+  }
+
+  /**
+   * FeedItem findMany
+   */
+  export type FeedItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which FeedItems to fetch.
+     */
+    where?: FeedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FeedItems to fetch.
+     */
+    orderBy?: FeedItemOrderByWithRelationInput | FeedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FeedItems.
+     */
+    cursor?: FeedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FeedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FeedItems.
+     */
+    skip?: number
+    distinct?: FeedItemScalarFieldEnum | FeedItemScalarFieldEnum[]
+  }
+
+  /**
+   * FeedItem create
+   */
+  export type FeedItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FeedItem.
+     */
+    data: XOR<FeedItemCreateInput, FeedItemUncheckedCreateInput>
+  }
+
+  /**
+   * FeedItem createMany
+   */
+  export type FeedItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FeedItems.
+     */
+    data: FeedItemCreateManyInput | FeedItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FeedItem createManyAndReturn
+   */
+  export type FeedItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many FeedItems.
+     */
+    data: FeedItemCreateManyInput | FeedItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedItem update
+   */
+  export type FeedItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FeedItem.
+     */
+    data: XOR<FeedItemUpdateInput, FeedItemUncheckedUpdateInput>
+    /**
+     * Choose, which FeedItem to update.
+     */
+    where: FeedItemWhereUniqueInput
+  }
+
+  /**
+   * FeedItem updateMany
+   */
+  export type FeedItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FeedItems.
+     */
+    data: XOR<FeedItemUpdateManyMutationInput, FeedItemUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedItems to update
+     */
+    where?: FeedItemWhereInput
+    /**
+     * Limit how many FeedItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedItem updateManyAndReturn
+   */
+  export type FeedItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * The data used to update FeedItems.
+     */
+    data: XOR<FeedItemUpdateManyMutationInput, FeedItemUncheckedUpdateManyInput>
+    /**
+     * Filter which FeedItems to update
+     */
+    where?: FeedItemWhereInput
+    /**
+     * Limit how many FeedItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FeedItem upsert
+   */
+  export type FeedItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FeedItem to update in case it exists.
+     */
+    where: FeedItemWhereUniqueInput
+    /**
+     * In case the FeedItem found by the `where` argument doesn't exist, create a new FeedItem with this data.
+     */
+    create: XOR<FeedItemCreateInput, FeedItemUncheckedCreateInput>
+    /**
+     * In case the FeedItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FeedItemUpdateInput, FeedItemUncheckedUpdateInput>
+  }
+
+  /**
+   * FeedItem delete
+   */
+  export type FeedItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
+    /**
+     * Filter which FeedItem to delete.
+     */
+    where: FeedItemWhereUniqueInput
+  }
+
+  /**
+   * FeedItem deleteMany
+   */
+  export type FeedItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FeedItems to delete
+     */
+    where?: FeedItemWhereInput
+    /**
+     * Limit how many FeedItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FeedItem without action
+   */
+  export type FeedItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FeedItem
+     */
+    select?: FeedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FeedItem
+     */
+    omit?: FeedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FeedItemInclude<ExtArgs> | null
   }
 
 
@@ -8183,6 +10762,43 @@ export namespace Prisma {
   export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+  export const FeedPreferencesScalarFieldEnum: {
+    id: 'id',
+    topics: 'topics',
+    xAccounts: 'xAccounts',
+    communicationStyle: 'communicationStyle',
+    affectiveLevel: 'affectiveLevel',
+    language: 'language',
+    additionalInstructions: 'additionalInstructions',
+    generatingBatchId: 'generatingBatchId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    userId: 'userId'
+  };
+
+  export type FeedPreferencesScalarFieldEnum = (typeof FeedPreferencesScalarFieldEnum)[keyof typeof FeedPreferencesScalarFieldEnum]
+
+
+  export const FeedItemScalarFieldEnum: {
+    id: 'id',
+    headline: 'headline',
+    content: 'content',
+    expandedContent: 'expandedContent',
+    source: 'source',
+    sourceUrl: 'sourceUrl',
+    sourceType: 'sourceType',
+    imageUrl: 'imageUrl',
+    contentDate: 'contentDate',
+    topic: 'topic',
+    batchId: 'batchId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    userId: 'userId'
+  };
+
+  export type FeedItemScalarFieldEnum = (typeof FeedItemScalarFieldEnum)[keyof typeof FeedItemScalarFieldEnum]
+
+
   export const FollowUpsScalarFieldEnum: {
     id: 'id',
     title: 'title',
@@ -8575,6 +11191,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     signals?: SignalListRelationFilter
     followUps?: FollowUpsListRelationFilter
+    feedPreferences?: XOR<FeedPreferencesNullableScalarRelationFilter, FeedPreferencesWhereInput> | null
+    feedItems?: FeedItemListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -8587,6 +11205,8 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     signals?: SignalOrderByRelationAggregateInput
     followUps?: FollowUpsOrderByRelationAggregateInput
+    feedPreferences?: FeedPreferencesOrderByWithRelationInput
+    feedItems?: FeedItemOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -8602,6 +11222,8 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     signals?: SignalListRelationFilter
     followUps?: FollowUpsListRelationFilter
+    feedPreferences?: XOR<FeedPreferencesNullableScalarRelationFilter, FeedPreferencesWhereInput> | null
+    feedItems?: FeedItemListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -8667,6 +11289,193 @@ export namespace Prisma {
     identifier?: StringWithAggregatesFilter<"VerificationToken"> | string
     token?: StringWithAggregatesFilter<"VerificationToken"> | string
     expires?: DateTimeWithAggregatesFilter<"VerificationToken"> | Date | string
+  }
+
+  export type FeedPreferencesWhereInput = {
+    AND?: FeedPreferencesWhereInput | FeedPreferencesWhereInput[]
+    OR?: FeedPreferencesWhereInput[]
+    NOT?: FeedPreferencesWhereInput | FeedPreferencesWhereInput[]
+    id?: StringFilter<"FeedPreferences"> | string
+    topics?: StringNullableListFilter<"FeedPreferences">
+    xAccounts?: StringNullableListFilter<"FeedPreferences">
+    communicationStyle?: StringFilter<"FeedPreferences"> | string
+    affectiveLevel?: IntFilter<"FeedPreferences"> | number
+    language?: StringFilter<"FeedPreferences"> | string
+    additionalInstructions?: StringNullableFilter<"FeedPreferences"> | string | null
+    generatingBatchId?: StringNullableFilter<"FeedPreferences"> | string | null
+    createdAt?: DateTimeFilter<"FeedPreferences"> | Date | string
+    updatedAt?: DateTimeFilter<"FeedPreferences"> | Date | string
+    userId?: StringFilter<"FeedPreferences"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type FeedPreferencesOrderByWithRelationInput = {
+    id?: SortOrder
+    topics?: SortOrder
+    xAccounts?: SortOrder
+    communicationStyle?: SortOrder
+    affectiveLevel?: SortOrder
+    language?: SortOrder
+    additionalInstructions?: SortOrderInput | SortOrder
+    generatingBatchId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type FeedPreferencesWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: FeedPreferencesWhereInput | FeedPreferencesWhereInput[]
+    OR?: FeedPreferencesWhereInput[]
+    NOT?: FeedPreferencesWhereInput | FeedPreferencesWhereInput[]
+    topics?: StringNullableListFilter<"FeedPreferences">
+    xAccounts?: StringNullableListFilter<"FeedPreferences">
+    communicationStyle?: StringFilter<"FeedPreferences"> | string
+    affectiveLevel?: IntFilter<"FeedPreferences"> | number
+    language?: StringFilter<"FeedPreferences"> | string
+    additionalInstructions?: StringNullableFilter<"FeedPreferences"> | string | null
+    generatingBatchId?: StringNullableFilter<"FeedPreferences"> | string | null
+    createdAt?: DateTimeFilter<"FeedPreferences"> | Date | string
+    updatedAt?: DateTimeFilter<"FeedPreferences"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId">
+
+  export type FeedPreferencesOrderByWithAggregationInput = {
+    id?: SortOrder
+    topics?: SortOrder
+    xAccounts?: SortOrder
+    communicationStyle?: SortOrder
+    affectiveLevel?: SortOrder
+    language?: SortOrder
+    additionalInstructions?: SortOrderInput | SortOrder
+    generatingBatchId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+    _count?: FeedPreferencesCountOrderByAggregateInput
+    _avg?: FeedPreferencesAvgOrderByAggregateInput
+    _max?: FeedPreferencesMaxOrderByAggregateInput
+    _min?: FeedPreferencesMinOrderByAggregateInput
+    _sum?: FeedPreferencesSumOrderByAggregateInput
+  }
+
+  export type FeedPreferencesScalarWhereWithAggregatesInput = {
+    AND?: FeedPreferencesScalarWhereWithAggregatesInput | FeedPreferencesScalarWhereWithAggregatesInput[]
+    OR?: FeedPreferencesScalarWhereWithAggregatesInput[]
+    NOT?: FeedPreferencesScalarWhereWithAggregatesInput | FeedPreferencesScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FeedPreferences"> | string
+    topics?: StringNullableListFilter<"FeedPreferences">
+    xAccounts?: StringNullableListFilter<"FeedPreferences">
+    communicationStyle?: StringWithAggregatesFilter<"FeedPreferences"> | string
+    affectiveLevel?: IntWithAggregatesFilter<"FeedPreferences"> | number
+    language?: StringWithAggregatesFilter<"FeedPreferences"> | string
+    additionalInstructions?: StringNullableWithAggregatesFilter<"FeedPreferences"> | string | null
+    generatingBatchId?: StringNullableWithAggregatesFilter<"FeedPreferences"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"FeedPreferences"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FeedPreferences"> | Date | string
+    userId?: StringWithAggregatesFilter<"FeedPreferences"> | string
+  }
+
+  export type FeedItemWhereInput = {
+    AND?: FeedItemWhereInput | FeedItemWhereInput[]
+    OR?: FeedItemWhereInput[]
+    NOT?: FeedItemWhereInput | FeedItemWhereInput[]
+    id?: StringFilter<"FeedItem"> | string
+    headline?: StringFilter<"FeedItem"> | string
+    content?: StringFilter<"FeedItem"> | string
+    expandedContent?: StringFilter<"FeedItem"> | string
+    source?: StringFilter<"FeedItem"> | string
+    sourceUrl?: StringFilter<"FeedItem"> | string
+    sourceType?: StringFilter<"FeedItem"> | string
+    imageUrl?: StringNullableFilter<"FeedItem"> | string | null
+    contentDate?: StringNullableFilter<"FeedItem"> | string | null
+    topic?: StringFilter<"FeedItem"> | string
+    batchId?: StringFilter<"FeedItem"> | string
+    createdAt?: DateTimeFilter<"FeedItem"> | Date | string
+    updatedAt?: DateTimeFilter<"FeedItem"> | Date | string
+    userId?: StringFilter<"FeedItem"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type FeedItemOrderByWithRelationInput = {
+    id?: SortOrder
+    headline?: SortOrder
+    content?: SortOrder
+    expandedContent?: SortOrder
+    source?: SortOrder
+    sourceUrl?: SortOrder
+    sourceType?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    contentDate?: SortOrderInput | SortOrder
+    topic?: SortOrder
+    batchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type FeedItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: FeedItemWhereInput | FeedItemWhereInput[]
+    OR?: FeedItemWhereInput[]
+    NOT?: FeedItemWhereInput | FeedItemWhereInput[]
+    headline?: StringFilter<"FeedItem"> | string
+    content?: StringFilter<"FeedItem"> | string
+    expandedContent?: StringFilter<"FeedItem"> | string
+    source?: StringFilter<"FeedItem"> | string
+    sourceUrl?: StringFilter<"FeedItem"> | string
+    sourceType?: StringFilter<"FeedItem"> | string
+    imageUrl?: StringNullableFilter<"FeedItem"> | string | null
+    contentDate?: StringNullableFilter<"FeedItem"> | string | null
+    topic?: StringFilter<"FeedItem"> | string
+    batchId?: StringFilter<"FeedItem"> | string
+    createdAt?: DateTimeFilter<"FeedItem"> | Date | string
+    updatedAt?: DateTimeFilter<"FeedItem"> | Date | string
+    userId?: StringFilter<"FeedItem"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type FeedItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    headline?: SortOrder
+    content?: SortOrder
+    expandedContent?: SortOrder
+    source?: SortOrder
+    sourceUrl?: SortOrder
+    sourceType?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    contentDate?: SortOrderInput | SortOrder
+    topic?: SortOrder
+    batchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+    _count?: FeedItemCountOrderByAggregateInput
+    _max?: FeedItemMaxOrderByAggregateInput
+    _min?: FeedItemMinOrderByAggregateInput
+  }
+
+  export type FeedItemScalarWhereWithAggregatesInput = {
+    AND?: FeedItemScalarWhereWithAggregatesInput | FeedItemScalarWhereWithAggregatesInput[]
+    OR?: FeedItemScalarWhereWithAggregatesInput[]
+    NOT?: FeedItemScalarWhereWithAggregatesInput | FeedItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FeedItem"> | string
+    headline?: StringWithAggregatesFilter<"FeedItem"> | string
+    content?: StringWithAggregatesFilter<"FeedItem"> | string
+    expandedContent?: StringWithAggregatesFilter<"FeedItem"> | string
+    source?: StringWithAggregatesFilter<"FeedItem"> | string
+    sourceUrl?: StringWithAggregatesFilter<"FeedItem"> | string
+    sourceType?: StringWithAggregatesFilter<"FeedItem"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"FeedItem"> | string | null
+    contentDate?: StringNullableWithAggregatesFilter<"FeedItem"> | string | null
+    topic?: StringWithAggregatesFilter<"FeedItem"> | string
+    batchId?: StringWithAggregatesFilter<"FeedItem"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"FeedItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FeedItem"> | Date | string
+    userId?: StringWithAggregatesFilter<"FeedItem"> | string
   }
 
   export type FollowUpsWhereInput = {
@@ -8995,6 +11804,8 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
     followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -9007,6 +11818,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
     followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -9019,6 +11832,8 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -9031,6 +11846,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -9097,6 +11914,221 @@ export namespace Prisma {
     identifier?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedPreferencesCreateInput = {
+    id?: string
+    topics?: FeedPreferencesCreatetopicsInput | string[]
+    xAccounts?: FeedPreferencesCreatexAccountsInput | string[]
+    communicationStyle?: string
+    affectiveLevel?: number
+    language?: string
+    additionalInstructions?: string | null
+    generatingBatchId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutFeedPreferencesInput
+  }
+
+  export type FeedPreferencesUncheckedCreateInput = {
+    id?: string
+    topics?: FeedPreferencesCreatetopicsInput | string[]
+    xAccounts?: FeedPreferencesCreatexAccountsInput | string[]
+    communicationStyle?: string
+    affectiveLevel?: number
+    language?: string
+    additionalInstructions?: string | null
+    generatingBatchId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
+  export type FeedPreferencesUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutFeedPreferencesNestedInput
+  }
+
+  export type FeedPreferencesUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FeedPreferencesCreateManyInput = {
+    id?: string
+    topics?: FeedPreferencesCreatetopicsInput | string[]
+    xAccounts?: FeedPreferencesCreatexAccountsInput | string[]
+    communicationStyle?: string
+    affectiveLevel?: number
+    language?: string
+    additionalInstructions?: string | null
+    generatingBatchId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
+  export type FeedPreferencesUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedPreferencesUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FeedItemCreateInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutFeedItemsInput
+  }
+
+  export type FeedItemUncheckedCreateInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
+  export type FeedItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutFeedItemsNestedInput
+  }
+
+  export type FeedItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FeedItemCreateManyInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
+  export type FeedItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FollowUpsCreateInput = {
@@ -9520,6 +12552,17 @@ export namespace Prisma {
     none?: SignalWhereInput
   }
 
+  export type FeedPreferencesNullableScalarRelationFilter = {
+    is?: FeedPreferencesWhereInput | null
+    isNot?: FeedPreferencesWhereInput | null
+  }
+
+  export type FeedItemListRelationFilter = {
+    every?: FeedItemWhereInput
+    some?: FeedItemWhereInput
+    none?: FeedItemWhereInput
+  }
+
   export type AccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -9529,6 +12572,10 @@ export namespace Prisma {
   }
 
   export type SignalOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FeedItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9593,6 +12640,14 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -9602,6 +12657,119 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type FeedPreferencesCountOrderByAggregateInput = {
+    id?: SortOrder
+    topics?: SortOrder
+    xAccounts?: SortOrder
+    communicationStyle?: SortOrder
+    affectiveLevel?: SortOrder
+    language?: SortOrder
+    additionalInstructions?: SortOrder
+    generatingBatchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FeedPreferencesAvgOrderByAggregateInput = {
+    affectiveLevel?: SortOrder
+  }
+
+  export type FeedPreferencesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    communicationStyle?: SortOrder
+    affectiveLevel?: SortOrder
+    language?: SortOrder
+    additionalInstructions?: SortOrder
+    generatingBatchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FeedPreferencesMinOrderByAggregateInput = {
+    id?: SortOrder
+    communicationStyle?: SortOrder
+    affectiveLevel?: SortOrder
+    language?: SortOrder
+    additionalInstructions?: SortOrder
+    generatingBatchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FeedPreferencesSumOrderByAggregateInput = {
+    affectiveLevel?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type FeedItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    headline?: SortOrder
+    content?: SortOrder
+    expandedContent?: SortOrder
+    source?: SortOrder
+    sourceUrl?: SortOrder
+    sourceType?: SortOrder
+    imageUrl?: SortOrder
+    contentDate?: SortOrder
+    topic?: SortOrder
+    batchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FeedItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    headline?: SortOrder
+    content?: SortOrder
+    expandedContent?: SortOrder
+    source?: SortOrder
+    sourceUrl?: SortOrder
+    sourceType?: SortOrder
+    imageUrl?: SortOrder
+    contentDate?: SortOrder
+    topic?: SortOrder
+    batchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type FeedItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    headline?: SortOrder
+    content?: SortOrder
+    expandedContent?: SortOrder
+    source?: SortOrder
+    sourceUrl?: SortOrder
+    sourceType?: SortOrder
+    imageUrl?: SortOrder
+    contentDate?: SortOrder
+    topic?: SortOrder
+    batchId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    userId?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -9666,22 +12834,6 @@ export namespace Prisma {
 
   export type FollowUpsSumOrderByAggregateInput = {
     id?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -9848,6 +13000,19 @@ export namespace Prisma {
     connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
   }
 
+  export type FeedPreferencesCreateNestedOneWithoutUserInput = {
+    create?: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FeedPreferencesCreateOrConnectWithoutUserInput
+    connect?: FeedPreferencesWhereUniqueInput
+  }
+
+  export type FeedItemCreateNestedManyWithoutUserInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -9874,6 +13039,19 @@ export namespace Prisma {
     connectOrCreate?: FollowUpsCreateOrConnectWithoutUserInput | FollowUpsCreateOrConnectWithoutUserInput[]
     createMany?: FollowUpsCreateManyUserInputEnvelope
     connect?: FollowUpsWhereUniqueInput | FollowUpsWhereUniqueInput[]
+  }
+
+  export type FeedPreferencesUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FeedPreferencesCreateOrConnectWithoutUserInput
+    connect?: FeedPreferencesWhereUniqueInput
+  }
+
+  export type FeedItemUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -9936,6 +13114,30 @@ export namespace Prisma {
     deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
   }
 
+  export type FeedPreferencesUpdateOneWithoutUserNestedInput = {
+    create?: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FeedPreferencesCreateOrConnectWithoutUserInput
+    upsert?: FeedPreferencesUpsertWithoutUserInput
+    disconnect?: FeedPreferencesWhereInput | boolean
+    delete?: FeedPreferencesWhereInput | boolean
+    connect?: FeedPreferencesWhereUniqueInput
+    update?: XOR<XOR<FeedPreferencesUpdateToOneWithWhereWithoutUserInput, FeedPreferencesUpdateWithoutUserInput>, FeedPreferencesUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FeedItemUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -9992,6 +13194,84 @@ export namespace Prisma {
     deleteMany?: FollowUpsScalarWhereInput | FollowUpsScalarWhereInput[]
   }
 
+  export type FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+    connectOrCreate?: FeedPreferencesCreateOrConnectWithoutUserInput
+    upsert?: FeedPreferencesUpsertWithoutUserInput
+    disconnect?: FeedPreferencesWhereInput | boolean
+    delete?: FeedPreferencesWhereInput | boolean
+    connect?: FeedPreferencesWhereUniqueInput
+    update?: XOR<XOR<FeedPreferencesUpdateToOneWithWhereWithoutUserInput, FeedPreferencesUpdateWithoutUserInput>, FeedPreferencesUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FeedItemUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput> | FeedItemCreateWithoutUserInput[] | FeedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FeedItemCreateOrConnectWithoutUserInput | FeedItemCreateOrConnectWithoutUserInput[]
+    upsert?: FeedItemUpsertWithWhereUniqueWithoutUserInput | FeedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FeedItemCreateManyUserInputEnvelope
+    set?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    disconnect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    delete?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    connect?: FeedItemWhereUniqueInput | FeedItemWhereUniqueInput[]
+    update?: FeedItemUpdateWithWhereUniqueWithoutUserInput | FeedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FeedItemUpdateManyWithWhereWithoutUserInput | FeedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+  }
+
+  export type FeedPreferencesCreatetopicsInput = {
+    set: string[]
+  }
+
+  export type FeedPreferencesCreatexAccountsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutFeedPreferencesInput = {
+    create?: XOR<UserCreateWithoutFeedPreferencesInput, UserUncheckedCreateWithoutFeedPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedPreferencesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type FeedPreferencesUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type FeedPreferencesUpdatexAccountsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutFeedPreferencesNestedInput = {
+    create?: XOR<UserCreateWithoutFeedPreferencesInput, UserUncheckedCreateWithoutFeedPreferencesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedPreferencesInput
+    upsert?: UserUpsertWithoutFeedPreferencesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedPreferencesInput, UserUpdateWithoutFeedPreferencesInput>, UserUncheckedUpdateWithoutFeedPreferencesInput>
+  }
+
+  export type UserCreateNestedOneWithoutFeedItemsInput = {
+    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutFeedItemsNestedInput = {
+    create?: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFeedItemsInput
+    upsert?: UserUpsertWithoutFeedItemsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFeedItemsInput, UserUpdateWithoutFeedItemsInput>, UserUncheckedUpdateWithoutFeedItemsInput>
+  }
+
   export type SignalCreateNestedOneWithoutFollowUpsInput = {
     create?: XOR<SignalCreateWithoutFollowUpsInput, SignalUncheckedCreateWithoutFollowUpsInput>
     connectOrCreate?: SignalCreateOrConnectWithoutFollowUpsInput
@@ -10022,14 +13302,6 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFollowUpsInput, UserUpdateWithoutFollowUpsInput>, UserUncheckedUpdateWithoutFollowUpsInput>
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -10292,6 +13564,8 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSignalsInput = {
@@ -10303,6 +13577,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSignalsInput = {
@@ -10357,6 +13633,8 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSignalsInput = {
@@ -10368,6 +13646,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FollowUpsUpsertWithWhereUniqueWithoutSignalInput = {
@@ -10408,6 +13688,8 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
     followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -10419,6 +13701,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
     followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -10446,6 +13730,8 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -10457,6 +13743,8 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -10468,6 +13756,8 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
     followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -10479,6 +13769,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
     followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -10506,6 +13798,8 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -10517,6 +13811,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
     followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -10642,6 +13938,79 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FeedPreferencesCreateWithoutUserInput = {
+    id?: string
+    topics?: FeedPreferencesCreatetopicsInput | string[]
+    xAccounts?: FeedPreferencesCreatexAccountsInput | string[]
+    communicationStyle?: string
+    affectiveLevel?: number
+    language?: string
+    additionalInstructions?: string | null
+    generatingBatchId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeedPreferencesUncheckedCreateWithoutUserInput = {
+    id?: string
+    topics?: FeedPreferencesCreatetopicsInput | string[]
+    xAccounts?: FeedPreferencesCreatexAccountsInput | string[]
+    communicationStyle?: string
+    affectiveLevel?: number
+    language?: string
+    additionalInstructions?: string | null
+    generatingBatchId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeedPreferencesCreateOrConnectWithoutUserInput = {
+    where: FeedPreferencesWhereUniqueInput
+    create: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+  }
+
+  export type FeedItemCreateWithoutUserInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeedItemUncheckedCreateWithoutUserInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FeedItemCreateOrConnectWithoutUserInput = {
+    where: FeedItemWhereUniqueInput
+    create: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput>
+  }
+
+  export type FeedItemCreateManyUserInputEnvelope = {
+    data: FeedItemCreateManyUserInput | FeedItemCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -10750,6 +14119,215 @@ export namespace Prisma {
     data: XOR<FollowUpsUpdateManyMutationInput, FollowUpsUncheckedUpdateManyWithoutUserInput>
   }
 
+  export type FeedPreferencesUpsertWithoutUserInput = {
+    update: XOR<FeedPreferencesUpdateWithoutUserInput, FeedPreferencesUncheckedUpdateWithoutUserInput>
+    create: XOR<FeedPreferencesCreateWithoutUserInput, FeedPreferencesUncheckedCreateWithoutUserInput>
+    where?: FeedPreferencesWhereInput
+  }
+
+  export type FeedPreferencesUpdateToOneWithWhereWithoutUserInput = {
+    where?: FeedPreferencesWhereInput
+    data: XOR<FeedPreferencesUpdateWithoutUserInput, FeedPreferencesUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FeedPreferencesUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedPreferencesUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topics?: FeedPreferencesUpdatetopicsInput | string[]
+    xAccounts?: FeedPreferencesUpdatexAccountsInput | string[]
+    communicationStyle?: StringFieldUpdateOperationsInput | string
+    affectiveLevel?: IntFieldUpdateOperationsInput | number
+    language?: StringFieldUpdateOperationsInput | string
+    additionalInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    generatingBatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedItemUpsertWithWhereUniqueWithoutUserInput = {
+    where: FeedItemWhereUniqueInput
+    update: XOR<FeedItemUpdateWithoutUserInput, FeedItemUncheckedUpdateWithoutUserInput>
+    create: XOR<FeedItemCreateWithoutUserInput, FeedItemUncheckedCreateWithoutUserInput>
+  }
+
+  export type FeedItemUpdateWithWhereUniqueWithoutUserInput = {
+    where: FeedItemWhereUniqueInput
+    data: XOR<FeedItemUpdateWithoutUserInput, FeedItemUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FeedItemUpdateManyWithWhereWithoutUserInput = {
+    where: FeedItemScalarWhereInput
+    data: XOR<FeedItemUpdateManyMutationInput, FeedItemUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type FeedItemScalarWhereInput = {
+    AND?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+    OR?: FeedItemScalarWhereInput[]
+    NOT?: FeedItemScalarWhereInput | FeedItemScalarWhereInput[]
+    id?: StringFilter<"FeedItem"> | string
+    headline?: StringFilter<"FeedItem"> | string
+    content?: StringFilter<"FeedItem"> | string
+    expandedContent?: StringFilter<"FeedItem"> | string
+    source?: StringFilter<"FeedItem"> | string
+    sourceUrl?: StringFilter<"FeedItem"> | string
+    sourceType?: StringFilter<"FeedItem"> | string
+    imageUrl?: StringNullableFilter<"FeedItem"> | string | null
+    contentDate?: StringNullableFilter<"FeedItem"> | string | null
+    topic?: StringFilter<"FeedItem"> | string
+    batchId?: StringFilter<"FeedItem"> | string
+    createdAt?: DateTimeFilter<"FeedItem"> | Date | string
+    updatedAt?: DateTimeFilter<"FeedItem"> | Date | string
+    userId?: StringFilter<"FeedItem"> | string
+  }
+
+  export type UserCreateWithoutFeedPreferencesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    signals?: SignalCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFeedPreferencesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFeedPreferencesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFeedPreferencesInput, UserUncheckedCreateWithoutFeedPreferencesInput>
+  }
+
+  export type UserUpsertWithoutFeedPreferencesInput = {
+    update: XOR<UserUpdateWithoutFeedPreferencesInput, UserUncheckedUpdateWithoutFeedPreferencesInput>
+    create: XOR<UserCreateWithoutFeedPreferencesInput, UserUncheckedCreateWithoutFeedPreferencesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFeedPreferencesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFeedPreferencesInput, UserUncheckedUpdateWithoutFeedPreferencesInput>
+  }
+
+  export type UserUpdateWithoutFeedPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    signals?: SignalUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFeedPreferencesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutFeedItemsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    signals?: SignalCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFeedItemsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    followUps?: FollowUpsUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFeedItemsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+  }
+
+  export type UserUpsertWithoutFeedItemsInput = {
+    update: XOR<UserUpdateWithoutFeedItemsInput, UserUncheckedUpdateWithoutFeedItemsInput>
+    create: XOR<UserCreateWithoutFeedItemsInput, UserUncheckedCreateWithoutFeedItemsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFeedItemsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFeedItemsInput, UserUncheckedUpdateWithoutFeedItemsInput>
+  }
+
+  export type UserUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    signals?: SignalUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFeedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    followUps?: FollowUpsUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  }
+
   export type SignalCreateWithoutFollowUpsInput = {
     id?: string
     title: string
@@ -10788,6 +14366,8 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     signals?: SignalCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFollowUpsInput = {
@@ -10799,6 +14379,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     signals?: SignalUncheckedCreateNestedManyWithoutUserInput
+    feedPreferences?: FeedPreferencesUncheckedCreateNestedOneWithoutUserInput
+    feedItems?: FeedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFollowUpsInput = {
@@ -10861,6 +14443,8 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     signals?: SignalUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowUpsInput = {
@@ -10872,6 +14456,8 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     signals?: SignalUncheckedUpdateManyWithoutUserNestedInput
+    feedPreferences?: FeedPreferencesUncheckedUpdateOneWithoutUserNestedInput
+    feedItems?: FeedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FollowUpsCreateManySignalInput = {
@@ -10948,6 +14534,22 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     signalId?: string | null
+  }
+
+  export type FeedItemCreateManyUserInput = {
+    id?: string
+    headline: string
+    content: string
+    expandedContent: string
+    source: string
+    sourceUrl: string
+    sourceType?: string
+    imageUrl?: string | null
+    contentDate?: string | null
+    topic: string
+    batchId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -11072,6 +14674,54 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     signalId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FeedItemUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedItemUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FeedItemUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    headline?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    expandedContent?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    sourceUrl?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    contentDate?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: StringFieldUpdateOperationsInput | string
+    batchId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

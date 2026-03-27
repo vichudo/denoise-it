@@ -1,4 +1,5 @@
 import { analysisRouter } from "@/server/api/routers/analysis";
+import { feedRouter } from "@/server/api/routers/feed";
 import { followupRouter } from "@/server/api/routers/followup";
 import { userRouter } from "@/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   analysis: analysisRouter,
+  feed: feedRouter,
   followup: followupRouter,
   user: userRouter,
 });
