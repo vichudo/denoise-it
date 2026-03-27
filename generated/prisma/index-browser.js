@@ -170,6 +170,37 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.FeedPreferencesScalarFieldEnum = {
+  id: 'id',
+  topics: 'topics',
+  xAccounts: 'xAccounts',
+  communicationStyle: 'communicationStyle',
+  affectiveLevel: 'affectiveLevel',
+  language: 'language',
+  additionalInstructions: 'additionalInstructions',
+  generatingBatchId: 'generatingBatchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
+exports.Prisma.FeedItemScalarFieldEnum = {
+  id: 'id',
+  headline: 'headline',
+  content: 'content',
+  expandedContent: 'expandedContent',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  sourceType: 'sourceType',
+  imageUrl: 'imageUrl',
+  contentDate: 'contentDate',
+  topic: 'topic',
+  batchId: 'batchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
 exports.Prisma.FollowUpsScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -221,6 +252,8 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   User: 'User',
   VerificationToken: 'VerificationToken',
+  FeedPreferences: 'FeedPreferences',
+  FeedItem: 'FeedItem',
   FollowUps: 'FollowUps'
 };
 

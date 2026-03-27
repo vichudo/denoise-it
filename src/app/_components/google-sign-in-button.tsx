@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ callbackUrl = "/" }: { callbackUrl?: string }) {
   const [loading, setLoading] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ export function GoogleSignInButton() {
       disabled={loading}
       onClick={() => {
         setLoading(true);
-        void signIn("google", { callbackUrl: "/" });
+        void signIn("google", { callbackUrl });
       }}
     >
       {loading ? (
