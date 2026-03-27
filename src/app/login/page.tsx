@@ -10,11 +10,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await auth();
+  const params = await searchParams;
+  const callbackUrl = typeof params.callbackUrl === "string" ? params.callbackUrl : "/";
 
   if (session) {
-    redirect("/");
+    redirect(callbackUrl);
   }
 
   return (
@@ -27,7 +33,7 @@ export default async function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <GoogleSignInButton />
+          <GoogleSignInButton callbackUrl={callbackUrl} />
         </CardContent>
       </Card>
     </div>

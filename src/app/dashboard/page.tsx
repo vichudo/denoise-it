@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const session = await auth();
 
   if (!session) {
-    redirect("/login");
+    redirect("/login?callbackUrl=/dashboard");
   }
 
   await api.user.signals.prefetch();
