@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link"; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
 
 import { useOutputLanguage } from "@/components/language-provider";
@@ -33,8 +33,9 @@ const DEFAULT_STOP = 2; // index → "1 week"
 
 export function DenoiseHero() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { language } = useOutputLanguage();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(() => searchParams.get("q") ?? "");
   const [timeSensitive, setTimeSensitive] = useState(false);
   const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
   const currentStop = TIME_STOPS[stopIndex]!;
