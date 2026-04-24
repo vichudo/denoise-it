@@ -513,7 +513,12 @@ export function SignalView({
             className="py-32 text-center"
           >
             <p className="text-destructive text-sm">{data.error}</p>
-            <Link href="/" className="mt-4 inline-block">
+            <Link
+              href={
+                data.prompt ? `/?q=${encodeURIComponent(data.prompt)}` : "/"
+              }
+              className="mt-4 inline-block"
+            >
               <Button variant="outline" size="sm">
                 Try again
               </Button>

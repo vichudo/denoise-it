@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { DenoiseHero } from "@/app/_components/denoise-hero";
 import {
   FinalCTA,
@@ -11,7 +13,9 @@ import {
 export default function Home() {
   return (
     <main>
-      <DenoiseHero />
+      <Suspense fallback={null}>
+        <DenoiseHero />
+      </Suspense>
       <HowItWorks />
       <ImpactAreas />
       <SignalVsNoise />
