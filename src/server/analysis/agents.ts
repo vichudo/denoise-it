@@ -72,7 +72,7 @@ function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
     model:
       provider === "anthropic"
         ? anthropic("claude-opus-4-6")
-        : openrouter.chat("x-ai/grok-4.1-fast:online"),
+        : openrouter.chat("x-ai/grok-4.3:online"),
     instructions: ANALYSIS_INSTRUCTIONS,
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: analysisOutput,

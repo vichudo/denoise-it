@@ -100,7 +100,7 @@ function createFeedAgent(
     model:
       provider === "anthropic"
         ? anthropic("claude-sonnet-4-6")
-        : openrouter.chat("x-ai/grok-4.1-fast:online"),
+        : openrouter.chat("x-ai/grok-4.3:online"),
     instructions: buildInstructions(prefs, mode),
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: feedOutput,
