@@ -71,8 +71,8 @@ function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
   return new ToolLoopAgent({
     model:
       provider === "anthropic"
-        ? anthropic("claude-opus-4-6")
-        : openrouter.chat("x-ai/grok-4.3:online"),
+        ? anthropic("claude-opus-5")
+        : openrouter.chat("x-ai/grok-4.5:online"),
     instructions: ANALYSIS_INSTRUCTIONS,
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: analysisOutput,
