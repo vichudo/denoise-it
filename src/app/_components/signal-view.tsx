@@ -35,9 +35,45 @@ import { WaveformAnimation } from "./waveform-animation";
 
 /* ── Analyzing state ──────────────────────────────────────── */
 
+type ProgressMessage = { ts: number; text: string };
+
+function useProgressStream(id: string): ProgressMessage[] {
+  const [messages, setMessages] = useState<ProgressMessage[]>([]);
+
+  useEffect(() => {
+    const es = new EventSource(`/api/signal/${id}/progress`);
+    es.onmessage = (e: MessageEvent<string>) => {
+      try {
+        const data = JSON.parse(e.data) as
+          | { type: "event"; ts: number; text: string }
+          | { type: "done" };
+        if (data.type === "event") {
+          setMessages((prev) => {
+            const next = [...prev, { ts: data.ts, text: data.text }];
+            return next.length > 8 ? next.slice(next.length - 8) : next;
+          });
+        } else if (data.type === "done") {
+          es.close();
+        }
+      } catch {
+        /* ignore malformed events */
+      }
+    };
+    es.onerror = () => {
+      // EventSource auto-reconnects on transient errors; close on terminal ones.
+      if (es.readyState === EventSource.CLOSED) es.close();
+    };
+    return () => es.close();
+  }, [id]);
+
+  return messages;
+}
+
 function AnalyzingState({ id }: { id: string }) {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const progress = useProgressStream(id);
+  const latest = progress[progress.length - 1];
 
   const signalUrl =
     typeof window !== "undefined"
@@ -45,17 +81,22 @@ function AnalyzingState({ id }: { id: string }) {
       : `/s/${id}`;
 
   useEffect(() => {
+    if (progress.length > 0) return; // progress takes over once we have events
     const interval = setInterval(() => {
       setPhraseIndex((i) => (i + 1) % ANALYZING_PHRASES.length);
     }, 2800);
     return () => clearInterval(interval);
-  }, []);
+  }, [progress.length]);
 
   function handleCopy() {
     void navigator.clipboard.writeText(signalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
+
+  const headline = latest?.text ?? ANALYZING_PHRASES[phraseIndex];
+  const headlineKey = latest ? `live-${latest.ts}` : `phrase-${phraseIndex}`;
+  const trail = progress.slice(0, -1).slice(-3);
 
   return (
     <motion.div
@@ -67,22 +108,44 @@ function AnalyzingState({ id }: { id: string }) {
     >
       <WaveformAnimation />
 
-      <div className="flex flex-col items-center gap-2 text-center">
+      <div className="flex w-full flex-col items-center gap-2 text-center">
         <h2 className="text-lg font-semibold">Denoising...</h2>
-        <div className="h-5">
+        <div className="min-h-5">
           <AnimatePresence mode="wait">
             <motion.p
-              key={phraseIndex}
+              key={headlineKey}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2 }}
               className="text-muted-foreground text-sm"
             >
-              {ANALYZING_PHRASES[phraseIndex]}
+              {headline}
             </motion.p>
           </AnimatePresence>
         </div>
+        {trail.length > 0 && (
+          <div className="mt-1 flex w-full flex-col items-center gap-0.5">
+            <AnimatePresence initial={false}>
+              {trail.map((m, i) => (
+                <motion.p
+                  key={`${m.ts}-${i}`}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{
+                    opacity: 0.35 - (trail.length - 1 - i) * 0.08,
+                    y: 0,
+                  }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-muted-foreground/60 max-w-full truncate text-xs"
+                  title={m.text}
+                >
+                  {m.text}
+                </motion.p>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       {/* Shareable URL */}

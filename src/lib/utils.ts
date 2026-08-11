@@ -26,3 +26,5 @@ export function parseSignalData(raw: unknown): {
   }
   return { data: raw as AnalysisResult, error: null };
 }
+
+export type ProgressEvent = { ts: number; text: string };
