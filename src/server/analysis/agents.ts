@@ -52,7 +52,15 @@ When you notice this pattern, gently compensate: actively search for the underre
 
 6. SIGNAL SCORE: Compute 0-100 ratio of verified signal to total content.
 
-Be rigorous. Commit to assessments. Never hedge when evidence is clear.`;
+Be rigorous. Commit to assessments. Never hedge when evidence is clear.
+
+## Output discipline
+
+You MUST finish with the complete structured result. Keep every field tight so the whole
+object fits comfortably in one response: aim for 6-12 signals and 4-8 noise elements,
+picking the most load-bearing ones rather than exhaustively listing every candidate.
+Never end your turn on a tool call — once you have enough evidence, stop searching and
+emit the result. A short complete analysis is far better than a long truncated one.`;
 
 /* ── Providers & shared output ─────────────────────────────── */
 
@@ -65,39 +73,70 @@ const anthropicTools = {
   web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
 } as unknown as ToolSet;
 
+/**
+ * Neither `claude-sonnet-5` nor `claude-opus-5` is in @ai-sdk/anthropic@3's model
+ * table, so the provider falls back to a 4096-token cap for both. A full analysis
+ * routinely needs ~12k output tokens, and a truncated response finishes with
+ * `length` instead of `stop`, which makes the AI SDK throw
+ * `AI_NoOutputGeneratedError`. Always set this explicitly.
+ */
+const MAX_OUTPUT_TOKENS = 16_000;
+
+/**
+ * Zod defaults in `src/env.js` are bypassed when `SKIP_ENV_VALIDATION` is set
+ * (Docker builds), so fall back here too rather than handing the provider
+ * `undefined` as a model id.
+ */
+const ANALYSIS_MODEL = env.ANALYSIS_MODEL ?? "claude-sonnet-5";
+
 /* ── Agent factory ─────────────────────────────────────────── */
 
-function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
+type Provider = "anthropic" | "grok";
+
+function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
+  const isAnthropic = provider === "anthropic";
+
   return new ToolLoopAgent({
-    model:
-      provider === "anthropic"
-        ? anthropic("claude-opus-5")
-        : openrouter.chat("x-ai/grok-4.5:online"),
+    model: isAnthropic
+      ? anthropic(ANALYSIS_MODEL)
+      : openrouter.chat("x-ai/grok-4.5:online"),
     instructions: ANALYSIS_INSTRUCTIONS,
-    ...(provider === "anthropic" && { tools: anthropicTools }),
+    ...(isAnthropic && { tools: anthropicTools }),
     output: analysisOutput,
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
+    // Retries transient failures (429, 5xx, connection resets) inside a single attempt.
+    maxRetries: 2,
     stopWhen: stepCountIs(maxSteps),
-    providerOptions: maxSteps < 3 ? {
+    // Last step must produce the structured output, so take the tools away and
+    // let the model do nothing but answer. Without this, a loop that spends its
+    // whole budget searching ends on `tool-calls` and yields no output at all.
+    prepareStep: ({ stepNumber }) =>
+      stepNumber >= maxSteps - 1 ? { activeTools: [] } : {},
+    providerOptions: {
       anthropic: {
-        reasoning: {
-          enabled: false,
-        }
+        // Sonnet 5 and Opus 5 both support native structured outputs
+        // (`output_config.format`). The provider's `auto` mode doesn't know that
+        // for these model ids and falls back to a forced `json` tool call, which
+        // is both less reliable and throws away the model's cited text.
+        structuredOutputMode: "outputFormat",
+        // Cheaper/faster reasoning for the fast path. Do NOT disable thinking
+        // outright — with it off these models sometimes write tool calls as
+        // plain text and leak `<thinking>` tags into the response.
+        ...(fast && { effort: "low" as const }),
       },
-      openrouter: {
-        reasoning: {
-          enabled: false,
-        }
-      }
-    } : undefined
+      // Deliberately no `openrouter.reasoning` override: `x-ai/grok-4.5:online`
+      // rejects the whole request with "Reasoning is mandatory for this endpoint
+      // and cannot be disabled", so the old fast-path setting failed every call.
+    },
   });
 }
 
 /* ── Agent instances ───────────────────────────────────────── */
 
-const anthropicAgent = createAgent("anthropic", 3);
-const anthropicFastAgent = createAgent("anthropic", 2);
-const grokAgent = createAgent("grok", 3);
-const grokFastAgent = createAgent("grok", 2);
+const anthropicAgent = createAgent("anthropic", 6, false);
+const anthropicFastAgent = createAgent("anthropic", 4, true);
+const grokAgent = createAgent("grok", 6, false);
+const grokFastAgent = createAgent("grok", 4, true);
 
 /* ── Social media detection ────────────────────────────────── */
 
@@ -112,8 +151,31 @@ function isSocialMediaContent(content: string): boolean {
 
 export type AnalysisAgent = typeof anthropicAgent;
 
-export function pickAgent(content: string, fast = false): AnalysisAgent {
-  const social = isSocialMediaContent(content);
-  if (social) return fast ? grokFastAgent : grokAgent;
-  return fast ? anthropicFastAgent : anthropicAgent;
+export interface AnalysisAttempt {
+  /** Identifies the provider in logs. */
+  label: Provider;
+  agent: AnalysisAgent;
+}
+
+/**
+ * Ordered list of agents to try for a piece of content. The preferred provider
+ * comes first; the other one is the fallback, so a provider outage or a model
+ * that refuses to produce parseable output doesn't kill the whole analysis.
+ *
+ * Grok goes first for social media because its `:online` search indexes posts
+ * that Anthropic's web search cannot reach.
+ */
+export function pickAttempts(content: string, fast = false): AnalysisAttempt[] {
+  const anthropicAttempt: AnalysisAttempt = {
+    label: "anthropic",
+    agent: fast ? anthropicFastAgent : anthropicAgent,
+  };
+  const grokAttempt: AnalysisAttempt = {
+    label: "grok",
+    agent: fast ? grokFastAgent : grokAgent,
+  };
+
+  return isSocialMediaContent(content)
+    ? [grokAttempt, anthropicAttempt]
+    : [anthropicAttempt, grokAttempt];
 }

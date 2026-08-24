@@ -16,6 +16,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     ANTHROPIC_API_KEY: z.string(),
     OPENROUTER_API_KEY: z.string(),
+    /** Anthropic model used for analysis. Sonnet is ~40% cheaper than Opus. */
+    ANALYSIS_MODEL: z.string().default("claude-sonnet-5"),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -41,6 +43,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    ANALYSIS_MODEL: process.env.ANALYSIS_MODEL,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**
