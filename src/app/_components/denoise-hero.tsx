@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link"; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
 import { useRouter, useSearchParams } from "next/navigation";
 import { Clock, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { useOutputLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,10 @@ export function DenoiseHero() {
     onSuccess: (data) => {
       router.push(`/s/${data.id}`);
     },
+    // Without this the spinner just stops and the page looks like it ignored
+    // the submission.
+    onError: () =>
+      toast.error("Couldn't start that analysis. Check your connection and try again."),
   });
 
   function handleSubmit() {
