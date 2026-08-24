@@ -1,11 +1,32 @@
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
+import { after } from "next/server";
 import { z } from "zod";
 
 import { parseSignalData } from "@/lib/utils";
-import { generateAnalysis } from "@/server/analysis/generate";
+import {
+  GENERATION_TIMED_OUT_MESSAGE,
+  STALE_ANALYSIS_MS,
+  generateAnalysis,
+} from "@/server/analysis/generate";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { Prisma } from "generated/prisma";
+
+/**
+ * Generation outlives the response it was kicked off from, so it has to be
+ * registered with `after()`. A bare floating promise gets frozen or killed when
+ * the serverless invocation ends, which strands the signal at `data: null`
+ * forever.
+ */
+function startGeneration(
+  id: string,
+  prompt: string,
+  options?: { fast?: boolean; language?: string },
+) {
+  after(async () => {
+    await generateAnalysis(id, prompt, options);
+  });
+}
 
 export const analysisRouter = createTRPCRouter({
   /** Create a signal record and start background generation. Returns the ID immediately. */
@@ -33,7 +54,7 @@ export const analysisRouter = createTRPCRouter({
         },
       });
 
-      void generateAnalysis(String(signal.id), prompt, {
+      startGeneration(String(signal.id), prompt, {
         language: input.language,
       });
 
@@ -60,7 +81,7 @@ export const analysisRouter = createTRPCRouter({
           },
         });
 
-        void generateAnalysis(String(signal.id), input.url, { fast: true });
+        startGeneration(String(signal.id), input.url, { fast: true });
 
         return { id: signal.id };
       } catch (e) {
@@ -159,13 +180,75 @@ export const analysisRouter = createTRPCRouter({
 
       const { data, error } = parseSignalData(signal.data);
 
+      // A generation that never wrote a result — the function was killed, or the
+      // process restarted mid-run — would otherwise leave the client polling a
+      // loading spinner forever. Age it out so the UI can offer a retry.
+      const stale =
+        !data &&
+        !error &&
+        Date.now() - signal.updatedAt.getTime() > STALE_ANALYSIS_MS;
+
       return {
         id: signal.id,
         title: signal.title,
         prompt: signal.prompt,
         createdAt: signal.createdAt,
         data,
-        error,
+        error: stale ? GENERATION_TIMED_OUT_MESSAGE : error,
       };
+    }),
+
+  /**
+   * Re-run generation for an existing signal, keeping its id (and therefore its
+   * shareable URL and any follow-up threads).
+   */
+  retry: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        language: z.string().max(5).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const signal = await ctx.db.signal.findUniqueOrThrow({
+        where: { id: input.id },
+      });
+
+      if (
+        signal.privacy === "PRIVATE" &&
+        signal.userId !== ctx.session?.user?.id
+      ) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const { data, error } = parseSignalData(signal.data);
+
+      if (data) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This analysis already succeeded.",
+        });
+      }
+
+      // Only failed or stalled runs are retryable. Without this, repeated clicks
+      // while a run is still in flight would fan out into parallel generations
+      // racing to write the same row.
+      const stalled =
+        Date.now() - signal.updatedAt.getTime() > STALE_ANALYSIS_MS;
+      if (!error && !stalled) {
+        return { id: signal.id, restarted: false };
+      }
+
+      await ctx.db.signal.update({
+        where: { id: signal.id },
+        data: { data: Prisma.DbNull },
+      });
+
+      startGeneration(signal.id, signal.prompt, {
+        fast: signal.sourceUrl !== null,
+        language: input.language,
+      });
+
+      return { id: signal.id, restarted: true };
     }),
 });
