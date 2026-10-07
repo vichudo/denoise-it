@@ -12,8 +12,11 @@ import {
   Bookmark,
   MessageCircle,
   Link2,
+  Loader2,
+  RotateCw,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 
 import { getDomain } from "@/lib/utils";
 
@@ -22,6 +25,7 @@ import { verdictIcon, verdictColor, verdictBg, verdictBorder } from "@/lib/verdi
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/react";
+import { useOutputLanguage } from "@/components/language-provider";
 import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
 
 import { copySignalUrl } from "@/lib/share";
@@ -33,11 +37,79 @@ import { ShareButton } from "./share-button";
 import { SignalCard } from "./truth-card";
 import { WaveformAnimation } from "./waveform-animation";
 
+/* ── Retry ────────────────────────────────────────────────── */
+
+/**
+ * Re-runs generation on the same signal id, so the URL the user may already
+ * have shared keeps working instead of pointing at a permanently failed record.
+ */
+function useRetryAnalysis(id: string) {
+  const utils = api.useUtils();
+  const { language } = useOutputLanguage();
+
+  const retry = api.analysis.retry.useMutation({
+    onSuccess: () => utils.analysis.get.invalidate({ id }),
+    onError: (err) => toast.error(err.message),
+  });
+
+  return {
+    isPending: retry.isPending,
+    run: () => retry.mutate({ id, ...(language !== "en" && { language }) }),
+  };
+}
+
+/* ── Failed state ─────────────────────────────────────────── */
+
+function FailedState({ id, message }: { id: string; message: string }) {
+  const retry = useRetryAnalysis(id);
+
+  return (
+    <motion.div
+      key="data-error"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex flex-col items-center gap-4 py-32 text-center"
+    >
+      <p className="text-destructive max-w-sm text-sm">{message}</p>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={retry.run}
+          disabled={retry.isPending}
+        >
+          {retry.isPending ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <RotateCw className="size-3.5" />
+          )}
+          Try again
+        </Button>
+        <Link href="/">
+          <Button variant="ghost" size="sm">
+            New analysis
+          </Button>
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ── Analyzing state ──────────────────────────────────────── */
+
+/** Point at which a run is slow enough that silence starts to read as failure. */
+const SLOW_ANALYSIS_MS = 45_000;
 
 function AnalyzingState({ id }: { id: string }) {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [isSlow, setIsSlow] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsSlow(true), SLOW_ANALYSIS_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const signalUrl =
     typeof window !== "undefined"
@@ -83,6 +155,16 @@ function AnalyzingState({ id }: { id: string }) {
             </motion.p>
           </AnimatePresence>
         </div>
+        {isSlow && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-muted-foreground/70 max-w-xs text-xs"
+          >
+            Still working — dense sources take longer. This page updates itself,
+            so you can leave and come back.
+          </motion.p>
+        )}
       </div>
 
       {/* Shareable URL */}
@@ -505,25 +587,7 @@ export function SignalView({
             <ResultsSkeleton />
           </motion.div>
         ) : data.error ? (
-          <motion.div
-            key="data-error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="py-32 text-center"
-          >
-            <p className="text-destructive text-sm">{data.error}</p>
-            <Link
-              href={
-                data.prompt ? `/?q=${encodeURIComponent(data.prompt)}` : "/"
-              }
-              className="mt-4 inline-block"
-            >
-              <Button variant="outline" size="sm">
-                Try again
-              </Button>
-            </Link>
-          </motion.div>
+          <FailedState key="data-error" id={id} message={data.error} />
         ) : data.data ? (
           <motion.div
             key="results"

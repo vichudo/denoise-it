@@ -52,7 +52,15 @@ When you notice this pattern, gently compensate: actively search for the underre
 
 6. SIGNAL SCORE: Compute 0-100 ratio of verified signal to total content.
 
-Be rigorous. Commit to assessments. Never hedge when evidence is clear.`;
+Be rigorous. Commit to assessments. Never hedge when evidence is clear.
+
+## Output discipline
+
+You MUST finish with the complete structured result. Keep every field tight so the whole
+object fits comfortably in one response: aim for 6-12 signals and 4-8 noise elements,
+picking the most load-bearing ones rather than exhaustively listing every candidate.
+Never end your turn on a tool call — once you have enough evidence, stop searching and
+emit the result. A short complete analysis is far better than a long truncated one.`;
 
 /* ── Providers & shared output ─────────────────────────────── */
 
@@ -66,30 +74,40 @@ const anthropicTools = {
 
 /* ── Agent factory ─────────────────────────────────────────── */
 
-function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
+type Provider = "anthropic" | "grok";
+
+function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
+  const isAnthropic = provider === "anthropic";
+
   return new ToolLoopAgent({
-    model:
-      provider === "anthropic"
-        ? anthropic("claude-opus-5-5")
-        : openrouter.chat("x-ai/grok-4.7:online"),
+    model: isAnthropic
+      ? anthropic("claude-opus-5-5")
+      : openrouter.chat("x-ai/grok-4.7:online"),
     instructions: ANALYSIS_INSTRUCTIONS,
-    ...(provider === "anthropic" && { tools: anthropicTools }),
+    ...(isAnthropic && { tools: anthropicTools }),
     output: analysisOutput,
+    // Retries transient failures (429, 5xx, connection resets) inside a single attempt.
+    maxRetries: 2,
     stopWhen: stepCountIs(maxSteps),
+    // Last step must produce the structured output, so take the tools away and
+    // let the model do nothing but answer. Without this, a loop that spends its
+    // whole budget searching ends on `tool-calls` and yields no output at all.
+    prepareStep: ({ stepNumber }) =>
+      stepNumber >= maxSteps - 1 ? { activeTools: [] } : {},
     providerOptions: {
       // Opus 5.5 and Grok 4.7 can't disable reasoning; effort is the speed/depth control
-      anthropic: { effort: maxSteps < 3 ? "low" : "high" },
-      ...(maxSteps < 3 && { openrouter: { reasoning: { effort: "minimal" } } }),
+      anthropic: { effort: fast ? "low" : "high" },
+      ...(fast && { openrouter: { reasoning: { effort: "minimal" } } }),
     },
   });
 }
 
 /* ── Agent instances ───────────────────────────────────────── */
 
-const anthropicAgent = createAgent("anthropic", 3);
-const anthropicFastAgent = createAgent("anthropic", 2);
-const grokAgent = createAgent("grok", 3);
-const grokFastAgent = createAgent("grok", 2);
+const anthropicAgent = createAgent("anthropic", 6, false);
+const anthropicFastAgent = createAgent("anthropic", 4, true);
+const grokAgent = createAgent("grok", 6, false);
+const grokFastAgent = createAgent("grok", 4, true);
 
 /* ── Social media detection ────────────────────────────────── */
 
@@ -104,8 +122,31 @@ function isSocialMediaContent(content: string): boolean {
 
 export type AnalysisAgent = typeof anthropicAgent;
 
-export function pickAgent(content: string, fast = false): AnalysisAgent {
-  const social = isSocialMediaContent(content);
-  if (social) return fast ? grokFastAgent : grokAgent;
-  return fast ? anthropicFastAgent : anthropicAgent;
+export interface AnalysisAttempt {
+  /** Identifies the provider in logs. */
+  label: Provider;
+  agent: AnalysisAgent;
+}
+
+/**
+ * Ordered list of agents to try for a piece of content. The preferred provider
+ * comes first; the other one is the fallback, so a provider outage or a model
+ * that refuses to produce parseable output doesn't kill the whole analysis.
+ *
+ * Grok goes first for social media because its `:online` search indexes posts
+ * that Anthropic's web search cannot reach.
+ */
+export function pickAttempts(content: string, fast = false): AnalysisAttempt[] {
+  const anthropicAttempt: AnalysisAttempt = {
+    label: "anthropic",
+    agent: fast ? anthropicFastAgent : anthropicAgent,
+  };
+  const grokAttempt: AnalysisAttempt = {
+    label: "grok",
+    agent: fast ? grokFastAgent : grokAgent,
+  };
+
+  return isSocialMediaContent(content)
+    ? [grokAttempt, anthropicAttempt]
+    : [anthropicAttempt, grokAttempt];
 }
