@@ -6,6 +6,13 @@ import { appRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 
 /**
+ * Analysis generation is kicked off with `after()` and runs on this invocation
+ * after the response is sent, so the route needs the full compute budget rather
+ * than the platform's shorter default.
+ */
+export const maxDuration = 300;
+
+/**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a HTTP request (e.g. when you make requests from Client Components).
  */
