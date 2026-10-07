@@ -11,7 +11,7 @@ import { env } from "@/env";
 const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
 
 const anthropicTools = {
-  web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
+  web_search: anthropic.tools.webSearch_20260318({ maxUses: 5 }),
 };
 
 const feedOutput = Output.object({ schema: feedGenerationResultSchema });
@@ -99,8 +99,8 @@ function createFeedAgent(
   return new ToolLoopAgent({
     model:
       provider === "anthropic"
-        ? anthropic("claude-sonnet-4-6")
-        : openrouter.chat("x-ai/grok-4.3:online"),
+        ? anthropic("claude-sonnet-5-5")
+        : openrouter.chat("x-ai/grok-4.7:online"),
     instructions: buildInstructions(prefs, mode),
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: feedOutput,

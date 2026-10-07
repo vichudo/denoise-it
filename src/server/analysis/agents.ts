@@ -61,7 +61,7 @@ const analysisOutput = Output.object({ schema: analysisResultSchema });
 const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
 
 const anthropicTools = {
-  web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
+  web_search: anthropic.tools.webSearch_20260318({ maxUses: 5 }),
 };
 
 /* ── Agent factory ─────────────────────────────────────────── */
@@ -70,24 +70,17 @@ function createAgent(provider: "anthropic" | "grok", maxSteps: number) {
   return new ToolLoopAgent({
     model:
       provider === "anthropic"
-        ? anthropic("claude-opus-5")
-        : openrouter.chat("x-ai/grok-4.5:online"),
+        ? anthropic("claude-opus-5-5")
+        : openrouter.chat("x-ai/grok-4.7:online"),
     instructions: ANALYSIS_INSTRUCTIONS,
     ...(provider === "anthropic" && { tools: anthropicTools }),
     output: analysisOutput,
     stopWhen: stepCountIs(maxSteps),
-    providerOptions: maxSteps < 3 ? {
-      anthropic: {
-        reasoning: {
-          enabled: false,
-        }
-      },
-      openrouter: {
-        reasoning: {
-          enabled: false,
-        }
-      }
-    } : undefined
+    providerOptions: {
+      // Opus 5.5 and Grok 4.7 can't disable reasoning; effort is the speed/depth control
+      anthropic: { effort: maxSteps < 3 ? "low" : "high" },
+      ...(maxSteps < 3 && { openrouter: { reasoning: { effort: "minimal" } } }),
+    },
   });
 }
 
