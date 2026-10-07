@@ -239,10 +239,15 @@ export const analysisRouter = createTRPCRouter({
         return { id: signal.id, restarted: false };
       }
 
-      await ctx.db.signal.update({
-        where: { id: signal.id },
+      // Conditional on `updatedAt` so two near-simultaneous retries can't both
+      // pass the check above and start parallel generations.
+      const { count } = await ctx.db.signal.updateMany({
+        where: { id: signal.id, updatedAt: signal.updatedAt },
         data: { data: Prisma.DbNull },
       });
+      if (count === 0) {
+        return { id: signal.id, restarted: false };
+      }
 
       startGeneration(signal.id, signal.prompt, {
         fast: signal.sourceUrl !== null,
