@@ -67,7 +67,7 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
   }
 
   const result = streamText({
-    model: openrouter.chat("x-ai/grok-4.3:online", { reasoning: { enabled: false, effort: 'none' } }),
+    model: openrouter.chat("x-ai/grok-4.7:online", { reasoning: { effort: "minimal" } }),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     onFinish: async ({ text }) => {
