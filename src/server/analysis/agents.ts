@@ -1,4 +1,4 @@
-import { type ToolSet, ToolLoopAgent, Output, stepCountIs } from "ai";
+import { ToolLoopAgent, Output, stepCountIs } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
@@ -60,10 +60,9 @@ const analysisOutput = Output.object({ schema: analysisResultSchema });
 
 const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
 
-// Provider-executed tools have a known type mismatch with ToolSet
 const anthropicTools = {
   web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
-} as unknown as ToolSet;
+};
 
 /* ── Agent factory ─────────────────────────────────────────── */
 

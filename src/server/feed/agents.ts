@@ -1,4 +1,4 @@
-import { type ToolSet, ToolLoopAgent, Output, stepCountIs } from "ai";
+import { ToolLoopAgent, Output, stepCountIs } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
@@ -12,7 +12,7 @@ const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
 
 const anthropicTools = {
   web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
-} as unknown as ToolSet;
+};
 
 const feedOutput = Output.object({ schema: feedGenerationResultSchema });
 
