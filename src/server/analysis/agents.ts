@@ -70,13 +70,23 @@ const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
 
 const anthropicTools = {
   web_search: anthropic.tools.webSearch_20260318({ maxUses: 5 }),
+  // Reads the pages the user pasted instead of guessing from search snippets.
+  // Web fetch only opens URLs already present in the conversation.
+  web_fetch: anthropic.tools.webFetch_20260318({
+    maxUses: 3,
+    maxContentTokens: 20_000,
+  }),
 };
 
 /* ── Agent factory ─────────────────────────────────────────── */
 
-type Provider = 'anthropic' | 'grok';
+export type AnalysisProvider = 'anthropic' | 'grok';
 
-function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
+function createAgent(
+  provider: AnalysisProvider,
+  maxSteps: number,
+  fast: boolean,
+) {
   const isAnthropic = provider === 'anthropic';
 
   return new ToolLoopAgent({
@@ -95,8 +105,15 @@ function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
     prepareStep: ({ stepNumber }) =>
       stepNumber >= maxSteps - 1 ? { activeTools: [] } : {},
     providerOptions: {
-      // Opus 5.5 and Grok 4.7 can't disable reasoning; effort is the speed/depth control
-      anthropic: { effort: fast ? 'low' : 'high' },
+      anthropic: {
+        // Opus 5.5 can't disable thinking and defaults to `medium`; effort is
+        // the speed/depth control.
+        effort: fast ? 'low' : 'high',
+        // A safety-classifier refusal on a sensitive topic is retried
+        // server-side on Anthropic's recommended fallback model instead of
+        // failing the attempt.
+        fallbacks: 'default',
+      },
       ...(fast && { openrouter: { reasoning: { effort: 'minimal' } } }),
     },
   });
@@ -104,10 +121,16 @@ function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
 
 /* ── Agent instances ───────────────────────────────────────── */
 
-const anthropicAgent = createAgent('anthropic', 6, false);
-const anthropicFastAgent = createAgent('anthropic', 4, true);
-const grokAgent = createAgent('grok', 6, false);
-const grokFastAgent = createAgent('grok', 4, true);
+const agents = {
+  anthropic: {
+    full: createAgent('anthropic', 6, false),
+    fast: createAgent('anthropic', 4, true),
+  },
+  grok: {
+    full: createAgent('grok', 6, false),
+    fast: createAgent('grok', 4, true),
+  },
+} satisfies Record<AnalysisProvider, Record<'full' | 'fast', unknown>>;
 
 /* ── Social media detection ────────────────────────────────── */
 
@@ -120,33 +143,25 @@ function isSocialMediaContent(content: string): boolean {
 
 /* ── Public API ────────────────────────────────────────────── */
 
-export type AnalysisAgent = typeof anthropicAgent;
-
-export interface AnalysisAttempt {
-  /** Identifies the provider in logs. */
-  label: Provider;
-  agent: AnalysisAgent;
+/**
+ * Agents are looked up by provider rather than passed around, because workflow
+ * steps only accept serializable arguments.
+ */
+export function getAnalysisAgent(provider: AnalysisProvider, fast: boolean) {
+  return agents[provider][fast ? 'fast' : 'full'];
 }
 
 /**
- * Ordered list of agents to try for a piece of content. The preferred provider
- * comes first; the other one is the fallback, so a provider outage or a model
- * that refuses to produce parseable output doesn't kill the whole analysis.
+ * Ordered list of providers to try for a piece of content. The preferred
+ * provider comes first; the other one is the fallback, so a provider outage or
+ * a model that refuses to produce parseable output doesn't kill the whole
+ * analysis.
  *
  * Grok goes first for social media because its `:online` search indexes posts
  * that Anthropic's web search cannot reach.
  */
-export function pickAttempts(content: string, fast = false): AnalysisAttempt[] {
-  const anthropicAttempt: AnalysisAttempt = {
-    label: 'anthropic',
-    agent: fast ? anthropicFastAgent : anthropicAgent,
-  };
-  const grokAttempt: AnalysisAttempt = {
-    label: 'grok',
-    agent: fast ? grokFastAgent : grokAgent,
-  };
-
+export function pickProviders(content: string): AnalysisProvider[] {
   return isSocialMediaContent(content)
-    ? [grokAttempt, anthropicAttempt]
-    : [anthropicAttempt, grokAttempt];
+    ? ['grok', 'anthropic']
+    : ['anthropic', 'grok'];
 }

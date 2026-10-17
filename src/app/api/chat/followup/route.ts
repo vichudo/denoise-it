@@ -1,4 +1,4 @@
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { anthropic } from '@ai-sdk/anthropic';
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -7,14 +7,9 @@ import {
   type UIMessage,
 } from 'ai';
 
-import { env } from '@/env';
 import { getLanguageName } from '@/lib/constants';
 import { parseSignalData } from '@/lib/utils';
 import { db } from '@/server/db';
-
-const openrouter = createOpenRouter({
-  apiKey: env.OPENROUTER_API_KEY,
-});
 
 export async function POST(req: Request) {
   const body = (await req.json()) as {
@@ -73,10 +68,18 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
   }
 
   const result = streamText({
-    model: openrouter.chat('x-ai/grok-4.7:online', {
-      reasoning: { effort: 'minimal' },
-    }),
+    model: anthropic('claude-opus-5-5'),
     instructions: systemPrompt,
+    // Follow-ups often ask about developments the original analysis didn't
+    // cover, so the model can look things up; results stream back as sources.
+    tools: {
+      web_search: anthropic.tools.webSearch_20260318({ maxUses: 3 }),
+    },
+    providerOptions: {
+      // Conversational turns: keep latency low. Opus 5.5 can't disable
+      // thinking, so effort is the lever.
+      anthropic: { effort: 'low', fallbacks: 'default' },
+    },
     messages: await convertToModelMessages(messages),
     onEnd: async ({ text }) => {
       // Auto-generate title from first user message
@@ -114,6 +117,8 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
   });
 
   return createUIMessageStreamResponse({
-    stream: toUIMessageStream({ stream: result.stream }),
+    // Search results surface as `source-url` parts, which the chat renders
+    // as links under the answer.
+    stream: toUIMessageStream({ stream: result.stream, sendSources: true }),
   });
 }

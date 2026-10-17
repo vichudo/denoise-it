@@ -3,8 +3,11 @@
  * for Docker builds.
  */
 import './src/env.js';
+import { withWorkflow } from 'workflow/next';
 
 /** @type {import("next").NextConfig} */
 const config = {};
 
-export default config;
+// Compiles the `"use workflow"` / `"use step"` directives that run analysis
+// generation as durable background work.
+export default withWorkflow(config);

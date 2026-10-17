@@ -16,6 +16,8 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     ANTHROPIC_API_KEY: z.string(),
     OPENROUTER_API_KEY: z.string(),
+    // Set by Vercel: the project's production domain, e.g. `denoiseit.com`.
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),
@@ -41,6 +43,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**
