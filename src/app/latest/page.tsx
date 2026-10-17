@@ -1,9 +1,9 @@
-import { api, HydrateClient } from "@/trpc/server";
-import { LatestFeed } from "@/app/_components/latest-feed";
+import { LatestFeed } from '@/app/_components/latest-feed';
+import { api, HydrateClient } from '@/trpc/server';
 
 export const metadata = {
-  title: "Latest Signals — Denoise It",
-  description: "Browse the latest public signal analyses, chronologically.",
+  title: 'Latest Signals — Denoise It',
+  description: 'Browse the latest public signal analyses, chronologically.',
 };
 
 export default async function LatestPage() {
@@ -16,7 +16,7 @@ export default async function LatestPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Latest Signals
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="mt-1 text-sm text-muted-foreground">
             Public analyses from the community, newest first.
           </p>
         </div>

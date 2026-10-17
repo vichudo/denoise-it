@@ -1,16 +1,16 @@
-import { TRPCError } from "@trpc/server";
-import dayjs from "dayjs";
-import { after } from "next/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server';
+import dayjs from 'dayjs';
+import { Prisma } from 'generated/prisma';
+import { after } from 'next/server';
+import { z } from 'zod';
 
-import { parseSignalData } from "@/lib/utils";
+import { parseSignalData } from '@/lib/utils';
 import {
   GENERATION_TIMED_OUT_MESSAGE,
   STALE_ANALYSIS_MS,
   generateAnalysis,
-} from "@/server/analysis/generate";
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { Prisma } from "generated/prisma";
+} from '@/server/analysis/generate';
+import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 
 /**
  * Generation outlives the response it was kicked off from, so it has to be
@@ -42,8 +42,10 @@ export const analysisRouter = createTRPCRouter({
       let prompt = input.content;
 
       if (input.sinceDays) {
-        const since = dayjs().subtract(input.sinceDays, "day").format("YYYY-MM-DD");
-        prompt += `\n\n[TIME CONSTRAINT: Focus ONLY on information from ${since} onward (last ${input.sinceDays} day${input.sinceDays > 1 ? "s" : ""}). Discard outdated sources. Prioritize the most recent developments.]`;
+        const since = dayjs()
+          .subtract(input.sinceDays, 'day')
+          .format('YYYY-MM-DD');
+        prompt += `\n\n[TIME CONSTRAINT: Focus ONLY on information from ${since} onward (last ${input.sinceDays} day${input.sinceDays > 1 ? 's' : ''}). Discard outdated sources. Prioritize the most recent developments.]`;
       }
 
       const signal = await ctx.db.signal.create({
@@ -87,10 +89,10 @@ export const analysisRouter = createTRPCRouter({
       } catch (e) {
         // Race condition: another request created it first
         if (
-          typeof e === "object" &&
+          typeof e === 'object' &&
           e !== null &&
-          "code" in e &&
-          (e as { code: string }).code === "P2002"
+          'code' in e &&
+          (e as { code: string }).code === 'P2002'
         ) {
           const signal = await ctx.db.signal.findUniqueOrThrow({
             where: { sourceUrl: input.url },
@@ -117,10 +119,10 @@ export const analysisRouter = createTRPCRouter({
 
       const signals = await ctx.db.signal.findMany({
         where: {
-          privacy: "PUBLIC",
+          privacy: 'PUBLIC',
           NOT: { data: { equals: Prisma.JsonNull } },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         skip: cursor ? 1 : 0,
@@ -172,10 +174,10 @@ export const analysisRouter = createTRPCRouter({
 
       // Private signals are only visible to their owner
       if (
-        signal.privacy === "PRIVATE" &&
+        signal.privacy === 'PRIVATE' &&
         signal.userId !== ctx.session?.user?.id
       ) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
       const { data, error } = parseSignalData(signal.data);
@@ -215,18 +217,18 @@ export const analysisRouter = createTRPCRouter({
       });
 
       if (
-        signal.privacy === "PRIVATE" &&
+        signal.privacy === 'PRIVATE' &&
         signal.userId !== ctx.session?.user?.id
       ) {
-        throw new TRPCError({ code: "NOT_FOUND" });
+        throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
       const { data, error } = parseSignalData(signal.data);
 
       if (data) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "This analysis already succeeded.",
+          code: 'BAD_REQUEST',
+          message: 'This analysis already succeeded.',
         });
       }
 

@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import type { UIMessage } from "ai";
-import { ArrowLeft, MessageCircle, Plus } from "lucide-react";
+import type { UIMessage } from 'ai';
+import { ArrowLeft, MessageCircle, Plus } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Spinner } from "@/components/ui/spinner";
-import { api } from "@/trpc/react";
+} from '@/components/ui/sheet';
+import { Spinner } from '@/components/ui/spinner';
+import { api } from '@/trpc/react';
 
-import { FollowUpChat } from "./follow-up-chat";
+import { FollowUpChat } from './follow-up-chat';
 
 export function FollowUpPanel({
   signalId,
@@ -32,10 +32,7 @@ export function FollowUpPanel({
 
   const utils = api.useUtils();
 
-  const listQuery = api.followup.list.useQuery(
-    { signalId },
-    { enabled: open },
-  );
+  const listQuery = api.followup.list.useQuery({ signalId }, { enabled: open });
 
   const createMutation = api.followup.create.useMutation({
     onSuccess: (data) => {
@@ -116,8 +113,8 @@ export function FollowUpPanel({
                   <Spinner />
                 </div>
               ) : listQuery.data?.length === 0 ? (
-                <div className="text-muted-foreground flex flex-col items-center gap-2 py-12 text-center">
-                  <MessageCircle className="text-muted-foreground/40 size-8" />
+                <div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
+                  <MessageCircle className="size-8 text-muted-foreground/40" />
                   <p className="text-sm">No conversations yet</p>
                   <p className="text-xs">
                     Start a new conversation to ask follow-up questions
@@ -128,20 +125,20 @@ export function FollowUpPanel({
                   {listQuery.data?.map((followUp) => (
                     <button
                       key={followUp.id}
-                      className="hover:bg-secondary/80 w-full rounded-lg px-3 py-2.5 text-left transition-colors"
+                      className="w-full rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-secondary/80"
                       onClick={() => handleSelectFollowUp(followUp.id)}
                     >
                       <p className="truncate text-sm font-medium">
-                        {followUp.title ?? "Untitled conversation"}
+                        {followUp.title ?? 'Untitled conversation'}
                       </p>
-                      <p className="text-muted-foreground mt-0.5 text-xs">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {new Date(followUp.updatedAt).toLocaleDateString(
                           undefined,
                           {
-                            month: "short",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "2-digit",
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
                           },
                         )}
                       </p>

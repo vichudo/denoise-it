@@ -1,11 +1,11 @@
-import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { type Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { api, HydrateClient } from "@/trpc/server";
-import { SignalView } from "@/app/_components/signal-view";
-import { buildSignalMetadata } from "@/lib/metadata";
-import { getDomain } from "@/lib/utils";
-import { waitForAnalysis } from "@/server/wait-for-analysis";
+import { SignalView } from '@/app/_components/signal-view';
+import { buildSignalMetadata } from '@/lib/metadata';
+import { getDomain } from '@/lib/utils';
+import { waitForAnalysis } from '@/server/wait-for-analysis';
+import { api, HydrateClient } from '@/trpc/server';
 
 interface LinkPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -15,12 +15,12 @@ export async function generateMetadata({
   searchParams,
 }: LinkPageProps): Promise<Metadata> {
   const { url } = await searchParams;
-  if (typeof url !== "string") return { title: "Denoise It" };
+  if (typeof url !== 'string') return { title: 'Denoise It' };
 
   try {
     new URL(url);
   } catch {
-    return { title: "Invalid URL — Denoise It" };
+    return { title: 'Invalid URL — Denoise It' };
   }
 
   const domain = getDomain(url);
@@ -38,7 +38,7 @@ export async function generateMetadata({
 export default async function LinkPage({ searchParams }: LinkPageProps) {
   const { url } = await searchParams;
 
-  if (typeof url !== "string") notFound();
+  if (typeof url !== 'string') notFound();
 
   try {
     new URL(url);

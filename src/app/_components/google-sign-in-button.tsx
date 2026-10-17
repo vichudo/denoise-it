@@ -1,12 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
-export function GoogleSignInButton({ callbackUrl = "/" }: { callbackUrl?: string }) {
+export function GoogleSignInButton({
+  callbackUrl = '/',
+}: {
+  callbackUrl?: string;
+}) {
   const [loading, setLoading] = useState(false);
 
   return (
@@ -16,7 +20,7 @@ export function GoogleSignInButton({ callbackUrl = "/" }: { callbackUrl?: string
       disabled={loading}
       onClick={() => {
         setLoading(true);
-        void signIn("google", { callbackUrl });
+        void signIn('google', { callbackUrl });
       }}
     >
       {loading ? (

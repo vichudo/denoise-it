@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { getDomain } from "@/lib/utils";
+import { getDomain } from '@/lib/utils';
 
 const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
 
@@ -62,8 +62,8 @@ export function UrlPreviews({
             target="_blank"
             rel="noopener noreferrer"
             title={url}
-            className="animate-in fade-in-0 zoom-in-95 group inline-flex max-w-[300px] cursor-pointer items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors hover:bg-secondary hover:text-foreground"
-            style={{ animationDuration: "150ms" }}
+            className="group inline-flex max-w-[300px] animate-in cursor-pointer items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors fade-in-0 zoom-in-95 hover:bg-secondary hover:text-foreground"
+            style={{ animationDuration: '150ms' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -76,7 +76,9 @@ export function UrlPreviews({
             <span className="truncate">
               {title ? (
                 <>
-                  <span className="text-foreground/70 group-hover:text-foreground">{title}</span>
+                  <span className="text-foreground/70 group-hover:text-foreground">
+                    {title}
+                  </span>
                   <span className="mx-1 text-muted-foreground/40">·</span>
                   <span>{domain}</span>
                 </>

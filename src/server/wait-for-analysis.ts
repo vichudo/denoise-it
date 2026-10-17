@@ -1,8 +1,7 @@
-import "server-only";
-
-import { db } from "@/server/db";
-import { parseSignalData } from "@/lib/utils";
-import type { AnalysisResult } from "@/lib/schemas/analysis";
+import 'server-only';
+import type { AnalysisResult } from '@/lib/schemas/analysis';
+import { parseSignalData } from '@/lib/utils';
+import { db } from '@/server/db';
 
 const POLL_MS = 2_000;
 const TIMEOUT_MS = 120_000;
@@ -18,7 +17,7 @@ export async function waitForAnalysis(
 
   while (Date.now() < deadline) {
     const signal = await db.signal.findUnique({ where: { id } });
-    if (!signal) return { data: null, error: "Not found" };
+    if (!signal) return { data: null, error: 'Not found' };
 
     const result = parseSignalData(signal.data);
     if (result.data || result.error) return result;

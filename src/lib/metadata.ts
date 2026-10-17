@@ -1,6 +1,6 @@
-import { type Metadata } from "next";
+import { type Metadata } from 'next';
 
-import type { AnalysisResult } from "@/lib/schemas/analysis";
+import type { AnalysisResult } from '@/lib/schemas/analysis';
 
 /** Build OG + Twitter metadata for a signal page. */
 export function buildSignalMetadata(
@@ -24,7 +24,7 @@ export function buildSignalMetadata(
       images: [{ url: `/api/og-image?id=${id}`, width: 1200, height: 630 }],
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title,
       description,
       images: [`/api/og-image?id=${id}`],

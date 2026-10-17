@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link"; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
-import { useRouter, useSearchParams } from "next/navigation";
-import { Clock, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Clock, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link'; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-import { useOutputLanguage } from "@/components/language-provider";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/trpc/react";
+import { useOutputLanguage } from '@/components/language-provider';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/trpc/react';
 
-import { UrlPreviews } from "./url-previews";
+import { UrlPreviews } from './url-previews';
 
 /** Slider stops — index-based so each step feels equal on the track */
 const TIME_STOPS = [
-  { days: 1, label: "24 hours" },
-  { days: 3, label: "3 days" },
-  { days: 7, label: "1 week" },
-  { days: 14, label: "2 weeks" },
-  { days: 30, label: "1 month" },
-  { days: 90, label: "3 months" },
-  { days: 180, label: "6 months" },
-  { days: 365, label: "1 year" },
-  { days: 730, label: "2 years" },
+  { days: 1, label: '24 hours' },
+  { days: 3, label: '3 days' },
+  { days: 7, label: '1 week' },
+  { days: 14, label: '2 weeks' },
+  { days: 30, label: '1 month' },
+  { days: 90, label: '3 months' },
+  { days: 180, label: '6 months' },
+  { days: 365, label: '1 year' },
+  { days: 730, label: '2 years' },
 ] as const;
 
 const DEFAULT_STOP = 2; // index → "1 week"
@@ -36,7 +36,7 @@ export function DenoiseHero() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useOutputLanguage();
-  const [input, setInput] = useState(() => searchParams.get("q") ?? "");
+  const [input, setInput] = useState(() => searchParams.get('q') ?? '');
   const [timeSensitive, setTimeSensitive] = useState(false);
   const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
   const currentStop = TIME_STOPS[stopIndex]!;
@@ -48,7 +48,9 @@ export function DenoiseHero() {
     // Without this the spinner just stops and the page looks like it ignored
     // the submission.
     onError: () =>
-      toast.error("Couldn't start that analysis. Check your connection and try again."),
+      toast.error(
+        "Couldn't start that analysis. Check your connection and try again.",
+      ),
   });
 
   function handleSubmit() {
@@ -56,7 +58,7 @@ export function DenoiseHero() {
     create.mutate({
       content: input,
       ...(timeSensitive && { sinceDays: currentStop.days }),
-      ...(language !== "en" && { language }),
+      ...(language !== 'en' && { language }),
     });
   }
 
@@ -74,9 +76,9 @@ export function DenoiseHero() {
           />
           <h1 className="text-5xl font-extrabold tracking-tight">
             denoise
-            <span className="text-muted-foreground font-light">it</span>
+            <span className="font-light text-muted-foreground">it</span>
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-lg text-muted-foreground">
             Strip the noise. See what&apos;s real.
           </p>
         </div>
@@ -88,7 +90,7 @@ export function DenoiseHero() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                 handleSubmit();
               }
             }}
@@ -98,8 +100,8 @@ export function DenoiseHero() {
             onRemove={(url) =>
               setInput((prev) =>
                 prev
-                  .replace(url, "")
-                  .replace(/\s{2,}/g, " ")
+                  .replace(url, '')
+                  .replace(/\s{2,}/g, ' ')
                   .trim(),
               )
             }
@@ -116,13 +118,13 @@ export function DenoiseHero() {
               />
               <Label
                 htmlFor="time-sensitive"
-                className="text-muted-foreground flex cursor-pointer items-center gap-1.5 text-sm"
+                className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground"
               >
                 <Clock className="size-3.5" />
                 Time-sensitive
               </Label>
               {timeSensitive && (
-                <span className="text-foreground ml-auto text-sm font-medium">
+                <span className="ml-auto text-sm font-medium text-foreground">
                   Last {currentStop.label}
                 </span>
               )}
@@ -151,18 +153,18 @@ export function DenoiseHero() {
                 Creating...
               </>
             ) : (
-              "Denoise"
+              'Denoise'
             )}
           </Button>
         </div>
 
         {create.isError && (
-          <p className="text-destructive text-sm">
+          <p className="text-sm text-destructive">
             Something went wrong. Please try again.
           </p>
         )}
 
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           We extract signal from noise — no account required.
           {/* <Link
             href="/latest"

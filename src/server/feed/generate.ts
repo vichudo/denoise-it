@@ -1,8 +1,9 @@
-import { nanoid } from "nanoid";
+import { nanoid } from 'nanoid';
 
-import type { FeedItem } from "@/lib/schemas/feed";
-import { db } from "@/server/db";
-import { createFeedAgents } from "./agents";
+import type { FeedItem } from '@/lib/schemas/feed';
+import { db } from '@/server/db';
+
+import { createFeedAgents } from './agents';
 
 interface FeedPrefs {
   topics: string[];
@@ -27,11 +28,11 @@ export async function generateFeed(userId: string, preferences: FeedPrefs) {
 
     // Build prompt for each agent
     const prompt =
-      `Find the latest content for my feed. Today is ${new Date().toISOString().split("T")[0]}.` +
-      `\n\nTopics: ${preferences.topics.join(", ")}` +
+      `Find the latest content for my feed. Today is ${new Date().toISOString().split('T')[0]}.` +
+      `\n\nTopics: ${preferences.topics.join(', ')}` +
       (preferences.xAccounts.length > 0
-        ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, "")}`).join(", ")}`
-        : "");
+        ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, '')}`).join(', ')}`
+        : '');
 
     // Run agents in parallel
     const results = await Promise.allSettled([
@@ -42,7 +43,7 @@ export async function generateFeed(userId: string, preferences: FeedPrefs) {
     // Collect items from all successful results
     const allItems: FeedItem[] = [];
     for (const result of results) {
-      if (result.status === "fulfilled" && result.value?.output?.items) {
+      if (result.status === 'fulfilled' && result.value?.output?.items) {
         allItems.push(...result.value.output.items);
       }
     }

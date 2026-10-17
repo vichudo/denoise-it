@@ -1,6 +1,7 @@
-import { getLanguageName } from "@/lib/constants";
-import { db } from "@/server/db";
-import { pickAttempts } from "./agents";
+import { getLanguageName } from '@/lib/constants';
+import { db } from '@/server/db';
+
+import { pickAttempts } from './agents';
 
 /** Longest a single provider attempt may run before we give up on it. */
 const ATTEMPT_TIMEOUT_MS = 140_000;
@@ -19,7 +20,7 @@ export const GENERATION_FAILED_MESSAGE =
   "We couldn't complete this analysis. Try again — it usually works on a second pass.";
 
 export const GENERATION_TIMED_OUT_MESSAGE =
-  "This analysis timed out before it finished. Try again.";
+  'This analysis timed out before it finished. Try again.';
 
 /** Marks a signal as failed. Never throws — a failed write must not mask the cause. */
 export async function markAnalysisFailed(id: string, error: string) {
@@ -37,7 +38,7 @@ export async function generateAnalysis(
 ) {
   let prompt = content;
 
-  if (options?.language && options.language !== "en") {
+  if (options?.language && options.language !== 'en') {
     const langName = getLanguageName(options.language);
     prompt += `\n\n[LANGUAGE INSTRUCTION: Respond entirely in ${langName} (${options.language}). All output — verdict, headline, summary, signal descriptions, noise explanations — must be in ${langName}. Keep quoted noise fragments in their original language.]`;
   }

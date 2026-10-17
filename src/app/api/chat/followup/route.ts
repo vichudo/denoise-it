@@ -1,10 +1,10 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 
-import { getLanguageName } from "@/lib/constants";
-import { env } from "@/env";
-import { db } from "@/server/db";
-import { parseSignalData } from "@/lib/utils";
+import { env } from '@/env';
+import { getLanguageName } from '@/lib/constants';
+import { parseSignalData } from '@/lib/utils';
+import { db } from '@/server/db';
 
 const openrouter = createOpenRouter({
   apiKey: env.OPENROUTER_API_KEY,
@@ -46,10 +46,10 @@ ${signal.prompt}
 ${analysisResult.summary}
 
 ### Signals Found
-${analysisResult.signals.map((s, i) => `${i + 1}. [${s.category}] ${s.content} (confidence: ${s.confidence}%)`).join("\n")}
+${analysisResult.signals.map((s, i) => `${i + 1}. [${s.category}] ${s.content} (confidence: ${s.confidence}%)`).join('\n')}
 
 ### Noise Identified
-${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — ${n.reason}`).join("\n")}
+${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — ${n.reason}`).join('\n')}
 `;
   }
 
@@ -61,25 +61,27 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
 - Do NOT rely solely on Wikipedia. Always cross-reference with primary sources (official records, peer-reviewed research, .gov/.edu domains, wire services).
 - Use markdown formatting for clarity.`;
 
-  if (language && language !== "en") {
+  if (language && language !== 'en') {
     const langName = getLanguageName(language);
     systemPrompt += `\n- Respond entirely in ${langName} (${language}).`;
   }
 
   const result = streamText({
-    model: openrouter.chat("x-ai/grok-4.7:online", { reasoning: { effort: "minimal" } }),
+    model: openrouter.chat('x-ai/grok-4.7:online', {
+      reasoning: { effort: 'minimal' },
+    }),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     onFinish: async ({ text }) => {
       // Auto-generate title from first user message
-      const firstUserMsg = messages.find((m) => m.role === "user");
+      const firstUserMsg = messages.find((m) => m.role === 'user');
       const title = firstUserMsg
         ? firstUserMsg.parts
-          .filter((p) => p.type === "text")
-          .map((p) => p.text)
-          .join("")
-          .slice(0, 80)
-          .trim()
+            .filter((p) => p.type === 'text')
+            .map((p) => p.text)
+            .join('')
+            .slice(0, 80)
+            .trim()
         : undefined;
 
       // Persist messages + assistant response to DB
@@ -87,8 +89,8 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
         ...messages,
         {
           id: crypto.randomUUID(),
-          role: "assistant" as const,
-          parts: [{ type: "text" as const, text }],
+          role: 'assistant' as const,
+          parts: [{ type: 'text' as const, text }],
         },
       ];
 
