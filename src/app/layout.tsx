@@ -9,9 +9,18 @@ import { LanguageToggle } from '@/components/language-toggle';
 import { ModeToggle } from '@/components/mode-toggle';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { env } from '@/env';
 import { TRPCReactProvider } from '@/trpc/react';
 
 export const metadata: Metadata = {
+  // Shared links must carry absolute URLs (`og:url`, `og:image`, canonical).
+  // Every environment shares one database, so the production domain resolves
+  // any signal.
+  metadataBase: new URL(
+    env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'http://localhost:3000',
+  ),
   title: "Denoise It — Strip the noise. See what's real.",
   description:
     'Denoise It is a tool that helps extracting maximum signal out of noise from concepts, news, and other sources.',

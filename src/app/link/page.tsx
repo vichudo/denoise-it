@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { SignalView } from '@/app/_components/signal-view';
 import { buildSignalMetadata } from '@/lib/metadata';
-import { getDomain } from '@/lib/utils';
-import { waitForAnalysis } from '@/server/wait-for-analysis';
+import { withPageTitle } from '@/server/page-title';
 import { api, HydrateClient } from '@/trpc/server';
 
 interface LinkPageProps {
@@ -19,16 +18,20 @@ export async function generateMetadata({
 
   if (!URL.canParse(url)) return { title: 'Invalid URL — Denoise It' };
 
-  const domain = getDomain(url);
+  // No waiting on the analysis: crawlers give up within seconds, and the
+  // preview already says what is being checked while it runs.
   const { id } = await api.analysis.findOrCreateByUrl({ url });
-  const { data } = await waitForAnalysis(id);
-
-  return buildSignalMetadata(
-    id,
-    data,
-    `Denoising ${domain}...`,
-    `Analysis of ${domain} in progress.`,
-  );
+  try {
+    const signal = await api.analysis.get({ id });
+    // Until there is a verdict the preview names the content, so a pasted
+    // link is described by its page title.
+    return buildSignalMetadata(
+      signal.data ? signal : await withPageTitle(signal),
+    );
+  } catch {
+    // Made private by its owner since it was first analyzed.
+    return { title: 'Denoise It' };
+  }
 }
 
 export default async function LinkPage({ searchParams }: LinkPageProps) {

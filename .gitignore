@@ -44,3 +44,6 @@ yarn-error.log*
 
 # idea files
 .idea
+# workflow (local world state)
+.workflow-data
+/.swc

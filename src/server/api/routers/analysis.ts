@@ -1,31 +1,53 @@
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { Prisma } from 'generated/prisma';
-import { after } from 'next/server';
+import { start } from 'workflow/api';
 import { z } from 'zod';
 
+import { getLanguageName } from '@/lib/constants';
 import { parseSignalData } from '@/lib/utils';
+import { pickProviders } from '@/server/analysis/agents';
 import {
+  GENERATION_FAILED_MESSAGE,
   GENERATION_TIMED_OUT_MESSAGE,
   STALE_ANALYSIS_MS,
-  generateAnalysis,
-} from '@/server/analysis/generate';
+} from '@/server/analysis/status';
+import { analyzeSignal } from '@/server/analysis/workflow';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
+import { db } from '@/server/db';
 
 /**
- * Generation outlives the response it was kicked off from, so it has to be
- * registered with `after()`. A bare floating promise gets frozen or killed when
- * the serverless invocation ends, which strands the signal at `data: null`
- * forever.
+ * Hands generation to a durable workflow run, which outlives this request and
+ * survives the function that runs it being recycled. If the run can't even be
+ * enqueued, the signal is marked failed so the page offers a retry instead of
+ * polling a spinner that will never resolve.
  */
-function startGeneration(
+async function startGeneration(
   id: string,
-  prompt: string,
+  content: string,
   options?: { fast?: boolean; language?: string },
 ) {
-  after(async () => {
-    await generateAnalysis(id, prompt, options);
-  });
+  let prompt = content;
+
+  if (options?.language && options.language !== 'en') {
+    const langName = getLanguageName(options.language);
+    prompt += `\n\n[LANGUAGE INSTRUCTION: Respond entirely in ${langName} (${options.language}). All output — verdict, headline, summary, signal descriptions, noise explanations — must be in ${langName}. Keep quoted noise fragments in their original language.]`;
+  }
+
+  try {
+    await start(analyzeSignal, [
+      id,
+      prompt,
+      pickProviders(content),
+      options?.fast ?? false,
+    ]);
+  } catch (error) {
+    console.error(`[analysis] could not start generation for ${id}:`, error);
+    await db.signal.update({
+      where: { id },
+      data: { data: { error: GENERATION_FAILED_MESSAGE } },
+    });
+  }
 }
 
 export const analysisRouter = createTRPCRouter({
@@ -56,7 +78,7 @@ export const analysisRouter = createTRPCRouter({
         },
       });
 
-      startGeneration(signal.id, prompt, {
+      await startGeneration(signal.id, prompt, {
         language: input.language,
       });
 
@@ -83,7 +105,7 @@ export const analysisRouter = createTRPCRouter({
           },
         });
 
-        startGeneration(signal.id, input.url, { fast: true });
+        await startGeneration(signal.id, input.url, { fast: true });
 
         return { id: signal.id };
       } catch (e) {
@@ -167,14 +189,15 @@ export const analysisRouter = createTRPCRouter({
   get: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const signal = await ctx.db.signal.findUniqueOrThrow({
+      const signal = await ctx.db.signal.findUnique({
         where: { id: input.id },
       });
 
-      // Private signals are only visible to their owner
+      // Private signals are only visible to their owner. A missing id has to
+      // be NOT_FOUND too: the client keeps polling through any other error.
       if (
-        signal.privacy === 'PRIVATE' &&
-        signal.userId !== ctx.session?.user.id
+        !signal ||
+        (signal.privacy === 'PRIVATE' && signal.userId !== ctx.session?.user.id)
       ) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
@@ -193,7 +216,12 @@ export const analysisRouter = createTRPCRouter({
         id: signal.id,
         title: signal.title,
         prompt: signal.prompt,
+        sourceUrl: signal.sourceUrl,
         createdAt: signal.createdAt,
+        // Generation (and every retry) starts by clearing `data`, so while it
+        // runs `updatedAt` is when the current run began, and once it settles
+        // it is when the result landed.
+        updatedAt: signal.updatedAt,
         data,
         error: stale ? GENERATION_TIMED_OUT_MESSAGE : error,
       };
@@ -250,7 +278,7 @@ export const analysisRouter = createTRPCRouter({
         return { id: signal.id, restarted: false };
       }
 
-      startGeneration(signal.id, signal.prompt, {
+      await startGeneration(signal.id, signal.prompt, {
         fast: signal.sourceUrl !== null,
         language: input.language,
       });

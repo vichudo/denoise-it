@@ -104,15 +104,38 @@ function FailedState({ id, message }: { id: string; message: string }) {
 /** Point at which a run is slow enough that silence starts to read as failure. */
 const SLOW_ANALYSIS_MS = 45_000;
 
-function AnalyzingState({ id }: { id: string }) {
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [isSlow, setIsSlow] = useState(false);
+function formatElapsed(ms: number) {
+  const seconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return minutes > 0
+    ? `${minutes}m ${String(seconds % 60).padStart(2, '0')}s`
+    : `${seconds}s`;
+}
+
+/**
+ * Ticks from when the server started the run, not from when this page mounted,
+ * so leaving and coming back shows how long it has really been running.
+ */
+function useElapsed(startedAt: Date) {
+  // Seeded from `startedAt` so server and client render the same text; the
+  // first tick on mount brings it up to the real time.
+  const [now, setNow] = useState(() => startedAt.getTime());
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsSlow(true), SLOW_ANALYSIS_MS);
-    return () => clearTimeout(timer);
+    const tick = () => setNow(Date.now());
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
   }, []);
+
+  return now - startedAt.getTime();
+}
+
+function AnalyzingState({ id, startedAt }: { id: string; startedAt: Date }) {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const elapsed = useElapsed(startedAt);
+  const isSlow = elapsed > SLOW_ANALYSIS_MS;
 
   const signalUrl =
     typeof window !== 'undefined'
@@ -158,6 +181,9 @@ function AnalyzingState({ id }: { id: string }) {
             </motion.p>
           </AnimatePresence>
         </div>
+        <p className="font-mono text-[11px] text-muted-foreground/50 tabular-nums">
+          {formatElapsed(elapsed)}
+        </p>
         {isSlow && (
           <motion.p
             initial={{ opacity: 0 }}
@@ -518,9 +544,16 @@ export function SignalView({
   const { data, error } = api.analysis.get.useQuery(
     { id },
     {
+      // A settled result never changes. An unsettled one is always stale, so
+      // returning to the page or the tab refetches it straight away instead of
+      // showing whatever was cached when the user left.
+      staleTime: (query) =>
+        query.state.data?.data || query.state.data?.error ? Infinity : 0,
       refetchInterval: (query) => {
-        if (query.state.error) return false;
+        if (query.state.error?.data?.code === 'NOT_FOUND') return false;
         if (query.state.data?.data || query.state.data?.error) return false;
+        // Keep polling through transient failures (a dropped connection, a
+        // deploy): the run carries on server-side regardless.
         return POLL_INTERVAL;
       },
       retry: (failureCount, err) => {
@@ -533,7 +566,24 @@ export function SignalView({
 
   // Returns the keyed state directly, so AnimatePresence sees each switch.
   function renderContent() {
-    if (error) {
+    if (error && !data) {
+      if (error.data?.code !== 'NOT_FOUND') {
+        return (
+          <motion.div
+            key="unreachable"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center gap-3 py-32 text-center"
+          >
+            <Loader2 className="size-4 animate-spin text-muted-foreground" />
+            <p className="max-w-xs text-sm text-muted-foreground">
+              Can&apos;t reach Denoise It right now. Retrying — your analysis
+              keeps running in the meantime.
+            </p>
+          </motion.div>
+        );
+      }
       return (
         <motion.div
           key="error"
@@ -587,7 +637,9 @@ export function SignalView({
         </motion.div>
       );
     }
-    return <AnalyzingState key="analyzing" id={id} />;
+    return (
+      <AnalyzingState key="analyzing" id={id} startedAt={data.updatedAt} />
+    );
   }
 
   return (
