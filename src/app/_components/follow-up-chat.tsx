@@ -1,39 +1,39 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import type { UIMessage } from "ai";
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import type { UIMessage } from 'ai';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowDown,
   ChevronDown,
   ExternalLink,
   Globe,
   MessageCircle,
-} from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getDomain } from "@/lib/utils";
-import { useOutputLanguage } from "@/components/language-provider";
-import { Shimmer } from "@/components/ai-elements/shimmer";
-import { Button } from "@/components/ui/button";
 import {
   Message,
   MessageContent,
   MessageResponse,
-} from "@/components/ai-elements/message";
+} from '@/components/ai-elements/message';
 import {
   PromptInput,
   PromptInputTextarea,
   PromptInputSubmit,
   PromptInputFooter,
-} from "@/components/ai-elements/prompt-input";
+} from '@/components/ai-elements/prompt-input';
+import { Shimmer } from '@/components/ai-elements/shimmer';
+import { useOutputLanguage } from '@/components/language-provider';
+import { Button } from '@/components/ui/button';
+import { getDomain } from '@/lib/utils';
 
 function getMessageText(message: UIMessage): string {
   return message.parts
-    .filter((part) => part.type === "text")
+    .filter((part) => part.type === 'text')
     .map((part) => part.text)
-    .join("");
+    .join('');
 }
 
 interface Source {
@@ -47,7 +47,7 @@ function getMessageSources(message: UIMessage): Source[] {
 
   // 1. Check for source-url parts from the AI SDK stream
   for (const part of message.parts) {
-    if (part.type === "source-url" && !seen.has(part.url)) {
+    if (part.type === 'source-url' && !seen.has(part.url)) {
       seen.add(part.url);
       sources.push({
         url: part.url,
@@ -59,18 +59,16 @@ function getMessageSources(message: UIMessage): Source[] {
   // 2. Extract markdown links [title](url) from text
   const text = getMessageText(message);
   const mdLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
-  let match;
-  while ((match = mdLinkRegex.exec(text)) !== null) {
-    const url = match[2]!;
-    if (!seen.has(url)) {
+  for (const [, title, url] of text.matchAll(mdLinkRegex)) {
+    if (url && !seen.has(url)) {
       seen.add(url);
-      sources.push({ url, title: match[1] ?? getDomain(url) });
+      sources.push({ url, title: title ?? getDomain(url) });
     }
   }
 
   // 3. Extract bare URLs not already captured
   const bareUrlRegex = /(?<!\()(https?:\/\/[^\s)<>]+)/g;
-  while ((match = bareUrlRegex.exec(text)) !== null) {
+  for (const match of text.matchAll(bareUrlRegex)) {
     const url = match[1] ?? match[0];
     if (!seen.has(url)) {
       seen.add(url);
@@ -81,6 +79,30 @@ function getMessageSources(message: UIMessage): Source[] {
   return sources;
 }
 
+function AssistantContent({
+  text,
+  sources,
+  isLoading,
+}: {
+  text: string;
+  sources: Source[];
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <Shimmer as="span" duration={1.5} className="text-sm">
+        Thinking...
+      </Shimmer>
+    );
+  }
+  return (
+    <>
+      <MessageResponse>{text}</MessageResponse>
+      <MessageSources sources={sources} />
+    </>
+  );
+}
+
 function MessageSources({ sources }: { sources: Source[] }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -88,28 +110,28 @@ function MessageSources({ sources }: { sources: Source[] }) {
 
   const preview = sources.slice(0, 3);
   const remaining = sources.length - preview.length;
-  const domainList = preview.map((s) => getDomain(s.url)).join(", ");
+  const domainList = preview.map((s) => getDomain(s.url)).join(', ');
 
   return (
     <div className="mt-2">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="text-muted-foreground/60 hover:text-muted-foreground flex items-center gap-1.5 text-[11px] transition-colors"
+        className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 transition-colors hover:text-muted-foreground"
       >
         <Globe className="size-3 shrink-0" />
         <span>
-          {sources.length} source{sources.length !== 1 && "s"}
+          {sources.length} source{sources.length !== 1 && 's'}
           {!expanded && (
             <span className="text-muted-foreground/40">
-              {" "}
+              {' '}
               &middot; {domainList}
               {remaining > 0 && ` +${remaining}`}
             </span>
           )}
         </span>
         <ChevronDown
-          className={`size-3 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`size-3 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -117,7 +139,7 @@ function MessageSources({ sources }: { sources: Source[] }) {
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.15 }}
             className="overflow-hidden"
@@ -129,11 +151,11 @@ function MessageSources({ sources }: { sources: Source[] }) {
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground/50 hover:text-muted-foreground flex items-center gap-1.5 py-0.5 text-[11px] transition-colors"
+                  className="flex items-center gap-1.5 py-0.5 text-[11px] text-muted-foreground/50 transition-colors hover:text-muted-foreground"
                 >
                   <ExternalLink className="size-2.5 shrink-0" />
                   <span className="min-w-0 truncate">{source.title}</span>
-                  <span className="text-muted-foreground/30 shrink-0">
+                  <span className="shrink-0 text-muted-foreground/30">
                     {getDomain(source.url)}
                   </span>
                 </a>
@@ -162,11 +184,11 @@ export function FollowUpChat({
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
-        api: "/api/chat/followup",
+        api: '/api/chat/followup',
         body: {
           signalId,
           followUpId,
-          ...(language !== "en" && { language }),
+          ...(language !== 'en' && { language }),
         },
       }),
     [signalId, followUpId, language],
@@ -195,15 +217,16 @@ export function FollowUpChat({
     if (stuckRef.current) {
       scrollRef.current?.scrollTo({
         top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- scroll again as messages stream in
   }, [messages, status]);
 
   const scrollToBottom = useCallback(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
     stuckRef.current = true;
     setIsAtBottom(true);
@@ -223,7 +246,7 @@ export function FollowUpChat({
             </div>
             <div className="space-y-1">
               <h3 className="text-sm font-medium">Ask a follow-up</h3>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Ask anything about this analysis
               </p>
             </div>
@@ -232,30 +255,27 @@ export function FollowUpChat({
           <div className="flex flex-col gap-8 p-4">
             {messages.map((message) => {
               const text = getMessageText(message);
-              const isAssistant = message.role === "assistant";
+              const isAssistant = message.role === 'assistant';
               const sources = isAssistant ? getMessageSources(message) : [];
-              const isLoading = isAssistant && !text && status !== "ready";
+              const isLoading = isAssistant && !text && status !== 'ready';
 
               return (
                 <Message key={message.id} from={message.role}>
                   <MessageContent>
-                    {message.role === "user" ? (
+                    {message.role === 'user' ? (
                       <p>{text}</p>
-                    ) : isLoading ? (
-                      <Shimmer as="span" duration={1.5} className="text-sm">
-                        Thinking...
-                      </Shimmer>
                     ) : (
-                      <>
-                        <MessageResponse>{text}</MessageResponse>
-                        <MessageSources sources={sources} />
-                      </>
+                      <AssistantContent
+                        text={text}
+                        sources={sources}
+                        isLoading={isLoading}
+                      />
                     )}
                   </MessageContent>
                 </Message>
               );
             })}
-            {status === "submitted" && (
+            {status === 'submitted' && (
               <Message from="assistant">
                 <MessageContent>
                   <Shimmer as="span" duration={1.5} className="text-sm">
@@ -291,10 +311,7 @@ export function FollowUpChat({
           <PromptInputTextarea placeholder="Ask a follow-up question..." />
           <PromptInputFooter>
             <div />
-            <PromptInputSubmit
-              status={status}
-              onStop={() => void stop()}
-            />
+            <PromptInputSubmit status={status} onStop={() => void stop()} />
           </PromptInputFooter>
         </PromptInput>
       </div>

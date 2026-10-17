@@ -1,9 +1,9 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
-import { feedPreferencesInputSchema } from "@/lib/schemas/feed";
-import { generateFeed } from "@/server/feed/generate";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { feedPreferencesInputSchema } from '@/lib/schemas/feed';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { generateFeed } from '@/server/feed/generate';
 
 export const feedRouter = createTRPCRouter({
   /** Get the current user's feed preferences, or null if not configured. */
@@ -18,7 +18,7 @@ export const feedRouter = createTRPCRouter({
     .input(feedPreferencesInputSchema)
     .mutation(async ({ ctx, input }) => {
       // Strip @ prefix from handles for consistency
-      const xAccounts = input.xAccounts.map((a) => a.replace(/^@/, ""));
+      const xAccounts = input.xAccounts.map((a) => a.replace(/^@/, ''));
 
       return ctx.db.feedPreferences.upsert({
         where: { userId: ctx.session.user.id },
@@ -50,7 +50,7 @@ export const feedRouter = createTRPCRouter({
 
       const items = await ctx.db.feedItem.findMany({
         where: { userId: ctx.session.user.id },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         skip: cursor ? 1 : 0,
@@ -58,8 +58,7 @@ export const feedRouter = createTRPCRouter({
 
       let nextCursor: string | undefined;
       if (items.length > limit) {
-        const next = items.pop()!;
-        nextCursor = next.id;
+        nextCursor = items.pop()?.id;
       }
 
       return { items, nextCursor };
@@ -73,15 +72,15 @@ export const feedRouter = createTRPCRouter({
 
     if (!prefs) {
       throw new TRPCError({
-        code: "PRECONDITION_FAILED",
-        message: "Configure your feed preferences first.",
+        code: 'PRECONDITION_FAILED',
+        message: 'Configure your feed preferences first.',
       });
     }
 
     if (prefs.generatingBatchId) {
       throw new TRPCError({
-        code: "CONFLICT",
-        message: "A feed generation is already in progress.",
+        code: 'CONFLICT',
+        message: 'A feed generation is already in progress.',
       });
     }
 
@@ -94,7 +93,7 @@ export const feedRouter = createTRPCRouter({
       additionalInstructions: prefs.additionalInstructions,
     });
 
-    return { status: "generating" as const };
+    return { status: 'generating' as const };
   }),
 
   /** Check if a feed generation is currently in progress. */

@@ -1,28 +1,26 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  const url = req.nextUrl.searchParams.get("url");
+  const url = req.nextUrl.searchParams.get('url');
   if (!url) {
     return NextResponse.json({ title: null }, { status: 400 });
   }
 
-  try {
-    new URL(url); // validate
-  } catch {
+  if (!URL.canParse(url)) {
     return NextResponse.json({ title: null }, { status: 400 });
   }
 
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "bot",
-        Accept: "text/html",
+        'User-Agent': 'bot',
+        Accept: 'text/html',
       },
       signal: AbortSignal.timeout(4000),
-      redirect: "follow",
+      redirect: 'follow',
     });
 
-    if (!res.ok || !res.headers.get("content-type")?.includes("text/html")) {
+    if (!res.ok || !res.headers.get('content-type')?.includes('text/html')) {
       return NextResponse.json({ title: null });
     }
 
@@ -31,16 +29,18 @@ export async function GET(req: NextRequest) {
     if (!reader) return NextResponse.json({ title: null });
 
     const decoder = new TextDecoder();
-    let html = "";
+    let html = '';
     const maxBytes = 16_384; // 16 KB is plenty for <head>
 
     while (html.length < maxBytes) {
+      // Chunks arrive in order: each read depends on the previous one.
+      // oxlint-disable-next-line eslint/no-await-in-loop
       const { done, value } = await reader.read();
       if (done) break;
       html += decoder.decode(value, { stream: true });
 
       // Stop early once we've passed </head>
-      if (html.includes("</head>")) break;
+      if (html.includes('</head>')) break;
     }
     void reader.cancel();
 
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     if (ogMatch?.[1]) {
       return NextResponse.json(
         { title: decodeEntities(ogMatch[1]) },
-        { headers: { "Cache-Control": "public, max-age=86400" } },
+        { headers: { 'Cache-Control': 'public, max-age=86400' } },
       );
     }
 
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
     if (titleMatch?.[1]) {
       return NextResponse.json(
         { title: decodeEntities(titleMatch[1].trim()) },
-        { headers: { "Cache-Control": "public, max-age=86400" } },
+        { headers: { 'Cache-Control': 'public, max-age=86400' } },
       );
     }
 
@@ -74,16 +74,14 @@ export async function GET(req: NextRequest) {
 
 function decodeEntities(str: string): string {
   return str
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
-      String.fromCharCode(parseInt(hex, 16)),
+    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&#x27;', "'")
+    .replaceAll(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+      String.fromCharCode(Number.parseInt(hex, 16)),
     )
-    .replace(/&#(\d+);/g, (_, n: string) =>
-      String.fromCharCode(Number(n)),
-    );
+    .replaceAll(/&#(\d+);/g, (_, n: string) => String.fromCharCode(Number(n)));
 }

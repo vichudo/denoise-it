@@ -1,16 +1,16 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { parseSignalData } from "@/lib/utils";
+import { parseSignalData } from '@/lib/utils';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
-const privacySchema = z.enum(["PUBLIC", "UNLISTED", "PRIVATE"]);
+const privacySchema = z.enum(['PUBLIC', 'UNLISTED', 'PRIVATE']);
 
 export const userRouter = createTRPCRouter({
   /** Get all signals for the logged-in user, newest first. */
   signals: protectedProcedure.query(async ({ ctx }) => {
     const signals = await ctx.db.signal.findMany({
       where: { userId: ctx.session.user.id },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       include: {
         _count: { select: { followUps: true } },
       },

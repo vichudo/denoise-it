@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function ResultsSkeleton() {
   return (
@@ -9,7 +9,7 @@ export function ResultsSkeleton() {
       <Skeleton className="h-[62px] w-full rounded-2xl" />
 
       {/* Abstract */}
-      <div className="bg-secondary/30 space-y-3 rounded-xl border px-6 py-5">
+      <div className="space-y-3 rounded-xl border bg-secondary/30 px-6 py-5">
         <div className="flex items-baseline justify-between">
           <Skeleton className="h-3 w-16" />
           <Skeleton className="h-3 w-36" />
@@ -65,7 +65,10 @@ export function ResultsSkeleton() {
         </div>
         <div className="space-y-2">
           {[1, 2].map((i) => (
-            <div key={i} className="rounded-lg border border-border/20 px-4 py-3">
+            <div
+              key={i}
+              className="rounded-lg border border-border/20 px-4 py-3"
+            >
               <div className="space-y-2">
                 <div className="flex items-start gap-2.5">
                   <Skeleton className="h-5 w-20 rounded-full" />

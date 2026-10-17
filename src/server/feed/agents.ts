@@ -1,10 +1,10 @@
-import { ToolLoopAgent, Output, stepCountIs } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { ToolLoopAgent, Output, stepCountIs } from 'ai';
 
-import { feedGenerationResultSchema } from "@/lib/schemas/feed";
-import { getLanguageName } from "@/lib/constants";
-import { env } from "@/env";
+import { env } from '@/env';
+import { getLanguageName } from '@/lib/constants';
+import { feedGenerationResultSchema } from '@/lib/schemas/feed';
 
 /* ── Providers ────────────────────────────────────────────── */
 
@@ -27,23 +27,32 @@ interface FeedPrefs {
   additionalInstructions?: string | null;
 }
 
-function buildInstructions(prefs: FeedPrefs, mode: "social" | "topics"): string {
+function describeAffectiveLevel(level: number): string {
+  if (level <= 20) {
+    return 'ZERO emotional content. Strictly objective, clinical tone. Remove ALL affective language.';
+  }
+  if (level <= 50) {
+    return "Minimal emotional content. Keep tone neutral and informative. Remove sensationalism but allow factual emotional context (e.g. 'protests erupted').";
+  }
+  if (level <= 80) {
+    return 'Moderate emotional content allowed. Preserve genuine human sentiment but strip sensationalism and manipulation.';
+  }
+  return 'Raw content is acceptable. Preserve original emotional tone but still flag manipulative framing.';
+}
+
+function buildInstructions(
+  prefs: FeedPrefs,
+  mode: 'social' | 'topics',
+): string {
   const langName = getLanguageName(prefs.language);
 
-  const topicsList = prefs.topics.map((t) => `• ${t}`).join("\n");
+  const topicsList = prefs.topics.map((t) => `• ${t}`).join('\n');
   const accountsList =
     prefs.xAccounts.length > 0
-      ? prefs.xAccounts.map((a) => `• @${a.replace(/^@/, "")}`).join("\n")
-      : "(none specified)";
+      ? prefs.xAccounts.map((a) => `• @${a.replace(/^@/, '')}`).join('\n')
+      : '(none specified)';
 
-  const affectiveGuidance =
-    prefs.affectiveLevel <= 20
-      ? "ZERO emotional content. Strictly objective, clinical tone. Remove ALL affective language."
-      : prefs.affectiveLevel <= 50
-        ? "Minimal emotional content. Keep tone neutral and informative. Remove sensationalism but allow factual emotional context (e.g. 'protests erupted')."
-        : prefs.affectiveLevel <= 80
-          ? "Moderate emotional content allowed. Preserve genuine human sentiment but strip sensationalism and manipulation."
-          : "Raw content is acceptable. Preserve original emotional tone but still flag manipulative framing.";
+  const affectiveGuidance = describeAffectiveLevel(prefs.affectiveLevel);
 
   return `You are a personalized feed curator for a content denoising platform. Your job: find RECENT, HIGH-SIGNAL content and present it stripped of noise, tailored to this specific user.
 
@@ -63,10 +72,11 @@ ${affectiveGuidance}
 
 ## YOUR TASK
 
-${mode === "social"
-      ? `Search X (Twitter) for recent posts (last 24-48 hours) from the specified accounts AND about the specified topics. Prioritize posts from the listed accounts, then add relevant posts from other accounts that match the topics.`
-      : `Search the web for recent news and content (last 24-48 hours) about the specified topics. Prioritize high-credibility sources (.gov, .edu, major wire services, established outlets).`
-    }
+${
+  mode === 'social'
+    ? `Search X (Twitter) for recent posts (last 24-48 hours) from the specified accounts AND about the specified topics. Prioritize posts from the listed accounts, then add relevant posts from other accounts that match the topics.`
+    : `Search the web for recent news and content (last 24-48 hours) about the specified topics. Prioritize high-credibility sources (.gov, .edu, major wire services, established outlets).`
+}
 
 For EACH piece of content worth surfacing:
 
@@ -79,30 +89,27 @@ For EACH piece of content worth surfacing:
 7. **Tag the topic** — use the EXACT topic string from the user's preferences list.
 8. **Classify the source type** — tweet, article, paper, report, post, video, or podcast.
 9. **Include an image URL** if the source has an Open Graph image, article thumbnail, or relevant visual. Only include REAL image URLs from the source — never fabricate them.
-10. **Extract the content date** — when the content was originally published or posted. Use ISO 8601 (YYYY-MM-DD) format. If only a relative date is available (e.g. "2 hours ago"), convert it to an absolute date based on today (${new Date().toISOString().split("T")[0]}).
+10. **Extract the content date** — when the content was originally published or posted. Use ISO 8601 (YYYY-MM-DD) format. If only a relative date is available (e.g. "2 hours ago"), convert it to an absolute date based on today (${new Date().toISOString().split('T')[0]}).
 
 Return 10-15 items, prioritized by signal-to-noise ratio and relevance to the user's interests.
 
 ALL output MUST be in ${langName}.
 Do NOT include content that is purely opinion, speculation, or noise with no underlying signal.
-Do NOT include duplicate stories — if multiple sources cover the same event, pick the highest-signal version.${prefs.additionalInstructions ? `\n\n## ADDITIONAL USER INSTRUCTIONS\n\n${prefs.additionalInstructions}` : ""}`;
+Do NOT include duplicate stories — if multiple sources cover the same event, pick the highest-signal version.${prefs.additionalInstructions ? `\n\n## ADDITIONAL USER INSTRUCTIONS\n\n${prefs.additionalInstructions}` : ''}`;
 }
 
 /* ── Agent factory ────────────────────────────────────────── */
 
-function createFeedAgent(
-  provider: "anthropic" | "grok",
-  prefs: FeedPrefs,
-) {
-  const mode = provider === "grok" ? "social" : "topics";
+function createFeedAgent(provider: 'anthropic' | 'grok', prefs: FeedPrefs) {
+  const mode = provider === 'grok' ? 'social' : 'topics';
 
   return new ToolLoopAgent({
     model:
-      provider === "anthropic"
-        ? anthropic("claude-sonnet-5-5")
-        : openrouter.chat("x-ai/grok-4.7:online"),
+      provider === 'anthropic'
+        ? anthropic('claude-sonnet-5-5')
+        : openrouter.chat('x-ai/grok-4.7:online'),
     instructions: buildInstructions(prefs, mode),
-    ...(provider === "anthropic" && { tools: anthropicTools }),
+    ...(provider === 'anthropic' && { tools: anthropicTools }),
     output: feedOutput,
     stopWhen: stepCountIs(3),
   });
@@ -114,7 +121,8 @@ export type FeedAgent = ReturnType<typeof createFeedAgent>;
 
 export function createFeedAgents(prefs: FeedPrefs) {
   return {
-    social: prefs.xAccounts.length > 0 ? createFeedAgent("grok", prefs) : null,
-    topics: prefs.topics.length > 0 ? createFeedAgent("anthropic", prefs) : null,
+    social: prefs.xAccounts.length > 0 ? createFeedAgent('grok', prefs) : null,
+    topics:
+      prefs.topics.length > 0 ? createFeedAgent('anthropic', prefs) : null,
   };
 }

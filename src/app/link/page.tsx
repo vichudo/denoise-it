@@ -1,11 +1,11 @@
-import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { api, HydrateClient } from "@/trpc/server";
-import { SignalView } from "@/app/_components/signal-view";
-import { buildSignalMetadata } from "@/lib/metadata";
-import { getDomain } from "@/lib/utils";
-import { waitForAnalysis } from "@/server/wait-for-analysis";
+import { SignalView } from '@/app/_components/signal-view';
+import { buildSignalMetadata } from '@/lib/metadata';
+import { getDomain } from '@/lib/utils';
+import { waitForAnalysis } from '@/server/wait-for-analysis';
+import { api, HydrateClient } from '@/trpc/server';
 
 interface LinkPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -15,20 +15,16 @@ export async function generateMetadata({
   searchParams,
 }: LinkPageProps): Promise<Metadata> {
   const { url } = await searchParams;
-  if (typeof url !== "string") return { title: "Denoise It" };
+  if (typeof url !== 'string') return { title: 'Denoise It' };
 
-  try {
-    new URL(url);
-  } catch {
-    return { title: "Invalid URL — Denoise It" };
-  }
+  if (!URL.canParse(url)) return { title: 'Invalid URL — Denoise It' };
 
   const domain = getDomain(url);
   const { id } = await api.analysis.findOrCreateByUrl({ url });
-  const { data } = await waitForAnalysis(String(id));
+  const { data } = await waitForAnalysis(id);
 
   return buildSignalMetadata(
-    String(id),
+    id,
     data,
     `Denoising ${domain}...`,
     `Analysis of ${domain} in progress.`,
@@ -38,13 +34,9 @@ export async function generateMetadata({
 export default async function LinkPage({ searchParams }: LinkPageProps) {
   const { url } = await searchParams;
 
-  if (typeof url !== "string") notFound();
+  if (typeof url !== 'string') notFound();
 
-  try {
-    new URL(url);
-  } catch {
-    notFound();
-  }
+  if (!URL.canParse(url)) notFound();
 
   const { id } = await api.analysis.findOrCreateByUrl({ url });
   await api.analysis.get.prefetch({ id });

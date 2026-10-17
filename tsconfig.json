@@ -14,11 +14,7 @@
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
     /* Bundled projects */
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "ES2022"
-    ],
+    "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -29,12 +25,10 @@
       }
     ],
     "incremental": true,
-    /* Path Aliases */
-    "baseUrl": ".",
+    /* Path aliases resolve relative to this file (`baseUrl` is gone in typescript-go, which type-aware Oxlint runs on) */
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "generated/*": ["./generated/*"]
     }
   },
   "include": [
@@ -46,8 +40,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "generated"
-  ]
+  "exclude": ["node_modules", "generated"]
 }

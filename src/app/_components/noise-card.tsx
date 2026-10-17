@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from 'lucide-react';
 
-import type { NoiseElement } from "@/lib/schemas/analysis";
-import { noiseTypeLabel } from "@/lib/schemas/analysis";
-import { getDomain } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
+import type { NoiseElement } from '@/lib/schemas/analysis';
+import { noiseTypeLabel } from '@/lib/schemas/analysis';
+import { getDomain } from '@/lib/utils';
 
-import { ShareButton } from "./share-button";
+import { ShareButton } from './share-button';
 
 export function NoiseCard({
   noise,
@@ -22,8 +22,8 @@ export function NoiseCard({
 }) {
   return (
     <div
-      className="animate-in fade-in-0 slide-in-from-bottom-2 group relative rounded-lg border border-destructive/15 bg-destructive/5 px-4 py-3 fill-mode-both dark:bg-destructive/10"
-      style={{ animationDelay: `${index * 60}ms`, animationDuration: "300ms" }}
+      className="group relative animate-in rounded-lg border border-destructive/15 bg-destructive/5 px-4 py-3 fade-in-0 fill-mode-both slide-in-from-bottom-2 dark:bg-destructive/10"
+      style={{ animationDelay: `${index * 60}ms`, animationDuration: '300ms' }}
     >
       <div className="space-y-2">
         {/* Type + original quote */}
@@ -35,11 +35,16 @@ export function NoiseCard({
             {noiseTypeLabel[noise.type]}
           </Badge>
           <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
-            <span className="italic text-foreground/70">
+            <span className="text-foreground/70 italic">
               &ldquo;{noise.original}&rdquo;
             </span>
           </p>
-          <ShareButton type="noise" id={signalId} index={index} prompt={prompt} />
+          <ShareButton
+            type="noise"
+            id={signalId}
+            index={index}
+            prompt={prompt}
+          />
         </div>
 
         {/* Reason */}

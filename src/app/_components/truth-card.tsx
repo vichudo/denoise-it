@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from 'lucide-react';
 
-import type { SignalElement } from "@/lib/schemas/analysis";
-import { signalCategoryLabel } from "@/lib/schemas/analysis";
-import { getDomain } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
+import type { SignalElement } from '@/lib/schemas/analysis';
+import { signalCategoryLabel } from '@/lib/schemas/analysis';
+import { getDomain } from '@/lib/utils';
 
-import { ShareButton } from "./share-button";
+import { ShareButton } from './share-button';
 
 function confidenceColor(c: number): string {
-  if (c >= 80) return "text-emerald-600 dark:text-emerald-400";
-  if (c >= 50) return "text-amber-600 dark:text-amber-400";
-  return "text-orange-600 dark:text-orange-400";
+  if (c >= 80) return 'text-emerald-600 dark:text-emerald-400';
+  if (c >= 50) return 'text-amber-600 dark:text-amber-400';
+  return 'text-orange-600 dark:text-orange-400';
 }
 
 function confidenceBg(c: number): string {
-  if (c >= 80) return "bg-emerald-500/10";
-  if (c >= 50) return "bg-amber-500/10";
-  return "bg-orange-500/10";
+  if (c >= 80) return 'bg-emerald-500/10';
+  if (c >= 50) return 'bg-amber-500/10';
+  return 'bg-orange-500/10';
 }
 
 export function SignalCard({
@@ -34,8 +34,8 @@ export function SignalCard({
 }) {
   return (
     <div
-      className="animate-in fade-in-0 slide-in-from-bottom-4 group relative rounded-xl border border-border/50 bg-card px-5 py-4 fill-mode-both"
-      style={{ animationDelay: `${index * 80}ms`, animationDuration: "400ms" }}
+      className="group relative animate-in rounded-xl border border-border/50 bg-card px-5 py-4 fade-in-0 fill-mode-both slide-in-from-bottom-4"
+      style={{ animationDelay: `${index * 80}ms`, animationDuration: '400ms' }}
     >
       {/* Confidence accent bar */}
       <div
@@ -49,7 +49,12 @@ export function SignalCard({
             {signal.content}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
-            <ShareButton type="signal" id={signalId} index={index} prompt={prompt} />
+            <ShareButton
+              type="signal"
+              id={signalId}
+              index={index}
+              prompt={prompt}
+            />
             <span
               className={`font-mono text-[11px] font-bold tabular-nums ${confidenceColor(signal.confidence)}`}
             >

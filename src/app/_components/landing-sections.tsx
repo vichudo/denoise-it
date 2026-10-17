@@ -1,7 +1,5 @@
-"use client";
+'use client';
 
-import { Fragment } from "react";
-import Image from "next/image";
 import {
   Activity,
   ArrowDown,
@@ -22,7 +20,9 @@ import {
   TrendingUp,
   Users,
   Zap,
-} from "lucide-react";
+} from 'lucide-react';
+import Image from 'next/image';
+import { Fragment } from 'react';
 
 /* ------------------------------------------------------------------ */
 /*  Section 1 — How it works                                          */
@@ -31,29 +31,29 @@ import {
 const STEPS = [
   {
     icon: Megaphone,
-    title: "Paste anything",
+    title: 'Paste anything',
     description:
-      "A tweet, headline, article, claim, link, question, or rumor — any piece of content you want verified.",
+      'A tweet, headline, article, claim, link, question, or rumor — any piece of content you want verified.',
   },
   {
     icon: BrainCircuit,
-    title: "AI analyzes",
+    title: 'AI analyzes',
     description:
-      "Our agent cross-references primary sources, government data, and peer-reviewed research in real time.",
+      'Our agent cross-references primary sources, government data, and peer-reviewed research in real time.',
   },
   {
     icon: Sparkles,
-    title: "See the signal",
+    title: 'See the signal',
     description:
-      "Get a clear verdict with confidence scores, sourced facts, and every piece of noise identified and explained.",
+      'Get a clear verdict with confidence scores, sourced facts, and every piece of noise identified and explained.',
   },
 ] as const;
 
 export function HowItWorks() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
+        <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
           How it works
         </p>
         <h2 className="mb-16 text-center text-3xl font-bold tracking-tight sm:text-4xl">
@@ -63,24 +63,22 @@ export function HowItWorks() {
         <div className="grid gap-10 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-start md:gap-0">
           {STEPS.map((step, i) => (
             <Fragment key={step.title}>
-              <div
-                className="flex flex-col items-center text-center"
-              >
+              <div className="flex flex-col items-center text-center">
                 {/* Step number pill */}
-                <span className="text-muted-foreground bg-muted mb-4 inline-flex size-7 items-center justify-center rounded-full text-xs font-semibold">
+                <span className="mb-4 inline-flex size-7 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
                   {i + 1}
                 </span>
 
                 {/* Icon */}
-                <div className="bg-primary/5 border-border mb-5 flex size-14 items-center justify-center rounded-2xl border">
+                <div className="mb-5 flex size-14 items-center justify-center rounded-2xl border border-border bg-primary/5">
                   <step.icon
-                    className="text-foreground size-6"
+                    className="size-6 text-foreground"
                     strokeWidth={1.5}
                   />
                 </div>
 
                 <h3 className="mb-2 text-lg font-semibold">{step.title}</h3>
-                <p className="text-muted-foreground max-w-[280px] text-sm leading-relaxed">
+                <p className="max-w-[280px] text-sm leading-relaxed text-muted-foreground">
                   {step.description}
                 </p>
               </div>
@@ -88,9 +86,9 @@ export function HowItWorks() {
               {/* Connector arrow between steps */}
               {i < STEPS.length - 1 && (
                 <div className="hidden items-center pt-14 md:flex">
-                  <div className="bg-border h-px w-8" />
-                  <ArrowRight className="text-muted-foreground/40 size-4" />
-                  <div className="bg-border h-px w-8" />
+                  <div className="h-px w-8 bg-border" />
+                  <ArrowRight className="size-4 text-muted-foreground/40" />
+                  <div className="h-px w-8 bg-border" />
                 </div>
               )}
             </Fragment>
@@ -108,81 +106,81 @@ export function HowItWorks() {
 const IMPACT_AREAS = [
   {
     icon: Landmark,
-    title: "Politics & Policy",
+    title: 'Politics & Policy',
     description:
-      "Cut through partisan framing, verify political claims, and see what legislation actually says.",
-    accent: "from-blue-500/20 to-blue-500/0",
-    iconColor: "text-blue-500",
-    examples: ["Campaign promises", "Voting records", "Policy impact"],
+      'Cut through partisan framing, verify political claims, and see what legislation actually says.',
+    accent: 'from-blue-500/20 to-blue-500/0',
+    iconColor: 'text-blue-500',
+    examples: ['Campaign promises', 'Voting records', 'Policy impact'],
   },
   {
     icon: HeartPulse,
-    title: "Health & Science",
+    title: 'Health & Science',
     description:
-      "Separate evidence-based medicine from viral misinformation that puts lives at risk.",
-    accent: "from-emerald-500/20 to-emerald-500/0",
-    iconColor: "text-emerald-500",
-    examples: ["Clinical studies", "Drug claims", "Wellness trends"],
+      'Separate evidence-based medicine from viral misinformation that puts lives at risk.',
+    accent: 'from-emerald-500/20 to-emerald-500/0',
+    iconColor: 'text-emerald-500',
+    examples: ['Clinical studies', 'Drug claims', 'Wellness trends'],
   },
   {
     icon: TrendingUp,
-    title: "Finance & Markets",
+    title: 'Finance & Markets',
     description:
-      "Verify market claims, earnings reports, and financial advice against actual data.",
-    accent: "from-amber-500/20 to-amber-500/0",
-    iconColor: "text-amber-500",
-    examples: ["Stock tips", "Crypto claims", "Economic data"],
+      'Verify market claims, earnings reports, and financial advice against actual data.',
+    accent: 'from-amber-500/20 to-amber-500/0',
+    iconColor: 'text-amber-500',
+    examples: ['Stock tips', 'Crypto claims', 'Economic data'],
   },
   {
     icon: Globe,
-    title: "World Events",
+    title: 'World Events',
     description:
-      "Get the facts on breaking news and global events without sensationalism or spin.",
-    accent: "from-violet-500/20 to-violet-500/0",
-    iconColor: "text-violet-500",
-    examples: ["Conflicts", "Diplomacy", "Disasters"],
+      'Get the facts on breaking news and global events without sensationalism or spin.',
+    accent: 'from-violet-500/20 to-violet-500/0',
+    iconColor: 'text-violet-500',
+    examples: ['Conflicts', 'Diplomacy', 'Disasters'],
   },
   {
     icon: Users,
-    title: "Social Media",
+    title: 'Social Media',
     description:
-      "Fact-check viral posts, threads, and screenshots before sharing them further.",
-    accent: "from-pink-500/20 to-pink-500/0",
-    iconColor: "text-pink-500",
-    examples: ["Viral claims", "Screenshots", "Influencer takes"],
+      'Fact-check viral posts, threads, and screenshots before sharing them further.',
+    accent: 'from-pink-500/20 to-pink-500/0',
+    iconColor: 'text-pink-500',
+    examples: ['Viral claims', 'Screenshots', 'Influencer takes'],
   },
   {
     icon: BookOpen,
-    title: "Education & Research",
+    title: 'Education & Research',
     description:
-      "Verify academic claims, citations, and research findings against primary sources.",
-    accent: "from-cyan-500/20 to-cyan-500/0",
-    iconColor: "text-cyan-500",
-    examples: ["Study results", "Statistics", "Historical claims"],
+      'Verify academic claims, citations, and research findings against primary sources.',
+    accent: 'from-cyan-500/20 to-cyan-500/0',
+    iconColor: 'text-cyan-500',
+    examples: ['Study results', 'Statistics', 'Historical claims'],
   },
 ] as const;
 
 export function ImpactAreas() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
+        <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
           Impact
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
           Truth matters everywhere
         </h2>
-        <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
+        <p className="mx-auto mb-16 max-w-2xl text-center text-base text-muted-foreground">
           Misinformation doesn&apos;t stay in one lane. denoise
-          <span className="font-light">it</span> works across every domain
-          where facts matter.
+          <span className="font-light">it</span> works across every domain where
+          facts matter.
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {IMPACT_AREAS.map((area) => (
             <div
               key={area.title}
-              className="border-border group relative overflow-hidden rounded-xl border p-6 transition-colors hover:border-foreground/20"
+              className="group relative overflow-hidden rounded-xl border border-border p-6 transition-colors hover:border-foreground/20"
             >
               {/* Gradient background accent */}
               <div
@@ -195,14 +193,14 @@ export function ImpactAreas() {
                   strokeWidth={1.5}
                 />
                 <h3 className="mb-2 text-base font-semibold">{area.title}</h3>
-                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                   {area.description}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {area.examples.map((ex) => (
                     <span
                       key={ex}
-                      className="bg-muted text-muted-foreground rounded-md px-2 py-0.5 text-xs"
+                      className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                     >
                       {ex}
                     </span>
@@ -222,40 +220,52 @@ export function ImpactAreas() {
 /* ------------------------------------------------------------------ */
 
 const NOISE_ITEMS = [
-  { text: '"SHOCKING development that changes EVERYTHING"', type: "Sensational" },
-  { text: '"Experts agree this is unprecedented"', type: "Vague attribution" },
-  { text: '"Could this mean the end of...?"', type: "Speculation" },
-  { text: '"People are furious about..."', type: "Emotional framing" },
+  {
+    text: '"SHOCKING development that changes EVERYTHING"',
+    type: 'Sensational',
+  },
+  { text: '"Experts agree this is unprecedented"', type: 'Vague attribution' },
+  { text: '"Could this mean the end of...?"', type: 'Speculation' },
+  { text: '"People are furious about..."', type: 'Emotional framing' },
 ];
 
 const SIGNAL_ITEMS = [
-  { text: "FDA approved drug X on Jan 15, 2026 for condition Y", confidence: 94 },
-  { text: "Study sample size: 2,340 participants across 12 centers", confidence: 91 },
-  { text: "Treatment showed 23% improvement vs placebo (p<0.01)", confidence: 88 },
-  { text: "3 of 5 independent reviews confirmed efficacy", confidence: 85 },
+  {
+    text: 'FDA approved drug X on Jan 15, 2026 for condition Y',
+    confidence: 94,
+  },
+  {
+    text: 'Study sample size: 2,340 participants across 12 centers',
+    confidence: 91,
+  },
+  {
+    text: 'Treatment showed 23% improvement vs placebo (p<0.01)',
+    confidence: 88,
+  },
+  { text: '3 of 5 independent reviews confirmed efficacy', confidence: 85 },
 ];
 
 export function SignalVsNoise() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
+        <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
           The difference
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
           See what others miss
         </h2>
-        <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
+        <p className="mx-auto mb-16 max-w-2xl text-center text-base text-muted-foreground">
           Every piece of content is a mix of verifiable facts and narrative
           framing. We separate them so you can think clearly.
         </p>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Noise column */}
-          <div className="border-border rounded-xl border p-6">
+          <div className="rounded-xl border border-border p-6">
             <div className="mb-5 flex items-center gap-2">
               <Activity className="size-5 text-red-400" strokeWidth={1.5} />
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-red-400">
+              <h3 className="text-sm font-semibold tracking-wider text-red-400 uppercase">
                 Noise
               </h3>
             </div>
@@ -267,7 +277,7 @@ export function SignalVsNoise() {
                 >
                   <div className="mt-0.5 size-1.5 shrink-0 rounded-full bg-red-400" />
                   <div>
-                    <p className="text-muted-foreground text-sm italic">
+                    <p className="text-sm text-muted-foreground italic">
                       {item.text}
                     </p>
                     <p className="mt-1 text-xs font-medium text-red-400/80">
@@ -280,13 +290,13 @@ export function SignalVsNoise() {
           </div>
 
           {/* Signal column */}
-          <div className="border-border rounded-xl border p-6">
+          <div className="rounded-xl border border-border p-6">
             <div className="mb-5 flex items-center gap-2">
               <BarChart3
                 className="size-5 text-emerald-400"
                 strokeWidth={1.5}
               />
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
+              <h3 className="text-sm font-semibold tracking-wider text-emerald-400 uppercase">
                 Signal
               </h3>
             </div>
@@ -300,13 +310,13 @@ export function SignalVsNoise() {
                   <div className="flex-1">
                     <p className="text-sm">{item.text}</p>
                     <div className="mt-1.5 flex items-center gap-2">
-                      <div className="bg-muted h-1 flex-1 overflow-hidden rounded-full">
+                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
                         <div
                           className="h-full rounded-full bg-emerald-400"
                           style={{ width: `${item.confidence}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium tabular-nums text-emerald-400">
+                      <span className="text-xs font-medium text-emerald-400 tabular-nums">
                         {item.confidence}%
                       </span>
                     </div>
@@ -328,47 +338,47 @@ export function SignalVsNoise() {
 const USE_CASES = [
   {
     icon: Newspaper,
-    label: "Verify a headline",
-    prompt: "Is it true that...",
+    label: 'Verify a headline',
+    prompt: 'Is it true that...',
   },
   {
     icon: Search,
-    label: "Fact-check a claim",
-    prompt: "Someone told me that...",
+    label: 'Fact-check a claim',
+    prompt: 'Someone told me that...',
   },
   {
     icon: Shield,
-    label: "Check health advice",
-    prompt: "Is this supplement safe...",
+    label: 'Check health advice',
+    prompt: 'Is this supplement safe...',
   },
   {
     icon: Scale,
-    label: "Analyze a policy",
-    prompt: "What does this bill actually do...",
+    label: 'Analyze a policy',
+    prompt: 'What does this bill actually do...',
   },
   {
     icon: Zap,
-    label: "Decode viral content",
-    prompt: "This post went viral claiming...",
+    label: 'Decode viral content',
+    prompt: 'This post went viral claiming...',
   },
   {
     icon: Globe,
-    label: "Understand world news",
+    label: 'Understand world news',
     prompt: "What's actually happening in...",
   },
 ];
 
 export function UseCases() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
+        <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
           Use cases
         </p>
         <h2 className="mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
           Start with a question
         </h2>
-        <p className="text-muted-foreground mx-auto mb-16 max-w-2xl text-center text-base">
+        <p className="mx-auto mb-16 max-w-2xl text-center text-base text-muted-foreground">
           Whether you&apos;re a journalist, researcher, student, or just a
           curious citizen — denoise
           <span className="font-light">it</span> helps you think for yourself.
@@ -378,20 +388,18 @@ export function UseCases() {
           {USE_CASES.map((uc) => (
             <button
               key={uc.label}
+              type="button"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="border-border hover:border-foreground/20 hover:bg-muted/50 group flex items-start gap-4 rounded-xl border p-5 text-left transition-all"
+              className="group flex items-start gap-4 rounded-xl border border-border p-5 text-left transition-all hover:border-foreground/20 hover:bg-muted/50"
             >
-              <div className="bg-primary/5 flex size-10 shrink-0 items-center justify-center rounded-lg">
-                <uc.icon
-                  className="text-foreground size-5"
-                  strokeWidth={1.5}
-                />
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/5">
+                <uc.icon className="size-5 text-foreground" strokeWidth={1.5} />
               </div>
               <div>
                 <p className="text-sm font-semibold">{uc.label}</p>
-                <p className="text-muted-foreground mt-0.5 text-sm italic">
+                <p className="mt-0.5 text-sm text-muted-foreground italic">
                   &ldquo;{uc.prompt}&rdquo;
                 </p>
               </div>
@@ -410,29 +418,29 @@ export function UseCases() {
 const PRINCIPLES = [
   {
     icon: Search,
-    title: "Source-first",
+    title: 'Source-first',
     description:
-      "Every claim is traced back to primary sources — .gov, .edu, peer-reviewed journals, and official records.",
+      'Every claim is traced back to primary sources — .gov, .edu, peer-reviewed journals, and official records.',
   },
   {
     icon: Shield,
-    title: "No bias, no agenda",
+    title: 'No bias, no agenda',
     description:
       "We don't tell you what to think. We separate facts from framing so you can decide for yourself.",
   },
   {
     icon: Zap,
-    title: "Real-time verification",
+    title: 'Real-time verification',
     description:
-      "Live web search cross-references claims against the latest available data, not stale databases.",
+      'Live web search cross-references claims against the latest available data, not stale databases.',
   },
 ];
 
 export function TrustBar() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        <p className="text-muted-foreground mb-3 text-center text-xs font-medium uppercase tracking-widest">
+        <p className="mb-3 text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
           Our principles
         </p>
         <h2 className="mb-16 text-center text-3xl font-bold tracking-tight sm:text-4xl">
@@ -441,15 +449,15 @@ export function TrustBar() {
 
         <div className="grid gap-8 md:grid-cols-3">
           {PRINCIPLES.map((p) => (
-            <div key={p.title} className="flex flex-col items-center text-center">
-              <div className="bg-primary/5 border-border mb-5 flex size-14 items-center justify-center rounded-xl border">
-                <p.icon
-                  className="text-foreground size-6"
-                  strokeWidth={1.5}
-                />
+            <div
+              key={p.title}
+              className="flex flex-col items-center text-center"
+            >
+              <div className="mb-5 flex size-14 items-center justify-center rounded-xl border border-border bg-primary/5">
+                <p.icon className="size-6 text-foreground" strokeWidth={1.5} />
               </div>
               <h3 className="mb-2 text-base font-semibold">{p.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {p.description}
               </p>
             </div>
@@ -466,7 +474,7 @@ export function TrustBar() {
 
 export function FinalCTA() {
   return (
-    <section className="border-border/40 border-t px-4 py-24">
+    <section className="border-t border-border/40 px-4 py-24">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
         <Image
           src="/denoiseit_logo_rounded.png"
@@ -478,13 +486,14 @@ export function FinalCTA() {
         <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
           Stop scrolling. Start knowing.
         </h2>
-        <p className="text-muted-foreground mb-8 max-w-md text-base">
+        <p className="mb-8 max-w-md text-base text-muted-foreground">
           Paste any claim, headline, or link and get a clear, sourced analysis
           in seconds. No account required.
         </p>
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-medium transition-colors"
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Try it now
           <ArrowDown className="size-4 rotate-180" />

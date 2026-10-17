@@ -1,7 +1,6 @@
-import { ImageResponse } from "next/og";
-import { type NextRequest } from "next/server";
+import { ImageResponse } from 'next/og';
+import type { NextRequest } from 'next/server';
 
-import { db } from "@/server/db";
 import {
   verdictHexColor,
   verdictLabel,
@@ -10,25 +9,26 @@ import {
   type AnalysisResult,
   type SignalElement,
   type NoiseElement,
-} from "@/lib/schemas/analysis";
-import { getDomain, parseSignalData } from "@/lib/utils";
+} from '@/lib/schemas/analysis';
+import { getDomain, parseSignalData } from '@/lib/utils';
+import { db } from '@/server/db';
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
 /* ── Font loader ──────────────────────────────────────────── */
 
 async function loadFonts() {
   const [regular, bold] = await Promise.all([
     fetch(
-      "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf",
+      'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf',
     ).then((r) => r.arrayBuffer()),
     fetch(
-      "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf",
+      'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf',
     ).then((r) => r.arrayBuffer()),
   ]);
   return [
-    { name: "Inter", data: regular, weight: 400 as const },
-    { name: "Inter", data: bold, weight: 700 as const },
+    { name: 'Inter', data: regular, weight: 400 as const },
+    { name: 'Inter', data: bold, weight: 700 as const },
   ];
 }
 
@@ -38,18 +38,18 @@ function BrandFooter() {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
       }}
     >
       <span
         style={{
           fontSize: 30,
           fontWeight: 700,
-          letterSpacing: "-0.02em",
-          color: "#3f3f46",
+          letterSpacing: '-0.02em',
+          color: '#3f3f46',
         }}
       >
         denoise it
@@ -62,14 +62,14 @@ function StoryWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "#09090b",
-        color: "#fafafa",
-        fontFamily: "Inter",
-        padding: "100px 80px 80px",
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#09090b',
+        color: '#fafafa',
+        fontFamily: 'Inter',
+        padding: '100px 80px 80px',
       }}
     >
       {children}
@@ -82,10 +82,10 @@ function SourcesList({ sources }: { sources: string[] }) {
   return (
     <div
       style={{
-        display: "flex",
-        flexWrap: "wrap",
+        display: 'flex',
+        flexWrap: 'wrap',
         gap: 20,
-        justifyContent: "center",
+        justifyContent: 'center',
       }}
     >
       {sources.slice(0, 4).map((url) => (
@@ -93,9 +93,9 @@ function SourcesList({ sources }: { sources: string[] }) {
           key={url}
           style={{
             fontSize: 22,
-            color: "#52525b",
-            backgroundColor: "#18181b",
-            padding: "8px 20px",
+            color: '#52525b',
+            backgroundColor: '#18181b',
+            padding: '8px 20px',
             borderRadius: 9999,
           }}
         >
@@ -111,18 +111,17 @@ const URL_REGEX = /https?:\/\/[^\s<>)"',]+/gi;
 function PromptBlock({ prompt }: { prompt: string }) {
   const urls = [...new Set(prompt.match(URL_REGEX) ?? [])];
   const text = urls
-    .reduce((t, url) => t.replace(url, ""), prompt)
-    .replace(/\s{2,}/g, " ")
+    .reduce((t, url) => t.replace(url, ''), prompt)
+    .replaceAll(/\s{2,}/g, ' ')
     .trim();
-  const displayText =
-    text.length > 120 ? text.slice(0, 117) + "..." : text;
+  const displayText = text.length > 120 ? `${text.slice(0, 117)}...` : text;
 
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         gap: 20,
         marginBottom: 20,
       }}
@@ -130,13 +129,13 @@ function PromptBlock({ prompt }: { prompt: string }) {
       {displayText && (
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 30,
-            color: "#a1a1aa",
+            color: '#a1a1aa',
             lineHeight: 1.5,
-            textAlign: "center",
-            justifyContent: "center",
-            fontStyle: "italic",
+            textAlign: 'center',
+            justifyContent: 'center',
+            fontStyle: 'italic',
           }}
         >
           &ldquo;{displayText}&rdquo;
@@ -145,28 +144,28 @@ function PromptBlock({ prompt }: { prompt: string }) {
       {urls.length > 0 && (
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
+            display: 'flex',
+            flexWrap: 'wrap',
             gap: 12,
-            justifyContent: "center",
+            justifyContent: 'center',
           }}
         >
           {urls.map((url) => (
             <span
               key={url}
               style={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: 8,
                 fontSize: 20,
-                color: "#71717a",
-                backgroundColor: "#18181b",
-                padding: "6px 16px",
+                color: '#71717a',
+                backgroundColor: '#18181b',
+                padding: '6px 16px',
                 borderRadius: 8,
-                border: "1px solid #27272a",
+                border: '1px solid #27272a',
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* oxlint-disable-next-line nextjs/no-img-element */}
               <img
                 src={`https://www.google.com/s2/favicons?domain=${getDomain(url)}&sz=32`}
                 alt=""
@@ -180,10 +179,10 @@ function PromptBlock({ prompt }: { prompt: string }) {
       )}
       <div
         style={{
-          display: "flex",
+          display: 'flex',
           width: 40,
           height: 1,
-          backgroundColor: "#27272a",
+          backgroundColor: '#27272a',
           borderRadius: 9999,
           marginTop: 8,
         }}
@@ -194,16 +193,22 @@ function PromptBlock({ prompt }: { prompt: string }) {
 
 /* ── Story templates ──────────────────────────────────────── */
 
-function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string }) {
+function VerdictStory({
+  data,
+  prompt,
+}: {
+  data: AnalysisResult;
+  prompt?: string;
+}) {
   const color = verdictHexColor[data.verdict];
   const summary =
     data.summary.length > 180
-      ? data.summary.slice(0, 177) + "..."
+      ? `${data.summary.slice(0, 177)}...`
       : data.summary;
   return (
     <StoryWrapper>
       {/* Top spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Prompt */}
       {prompt && <PromptBlock prompt={prompt} />}
@@ -211,25 +216,25 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
       {/* Centered content */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
           gap: 40,
         }}
       >
         {/* Verdict pill */}
         <div
           style={{
-            display: "flex",
-            padding: "14px 36px",
+            display: 'flex',
+            padding: '14px 36px',
             borderRadius: 9999,
-            backgroundColor: color + "18",
+            backgroundColor: `${color}18`,
             border: `2px solid ${color}40`,
-            color: color,
+            color,
             fontSize: 24,
             fontWeight: 700,
-            letterSpacing: "0.12em",
+            letterSpacing: '0.12em',
           }}
         >
           {verdictLabel[data.verdict]}
@@ -238,14 +243,14 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
         {/* Headline */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 68,
             fontWeight: 700,
             lineHeight: 1.15,
-            letterSpacing: "-0.03em",
-            color: "#fafafa",
-            textAlign: "center",
-            justifyContent: "center",
+            letterSpacing: '-0.03em',
+            color: '#fafafa',
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           {data.verdictHeadline}
@@ -254,10 +259,10 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
         {/* Divider */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             width: 80,
             height: 3,
-            backgroundColor: color + "60",
+            backgroundColor: `${color}60`,
             borderRadius: 9999,
           }}
         />
@@ -265,12 +270,12 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
         {/* Summary */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 34,
-            color: "#a1a1aa",
+            color: '#a1a1aa',
             lineHeight: 1.55,
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           {summary}
@@ -278,43 +283,43 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
       </div>
 
       {/* Bottom spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Score bar */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           gap: 24,
           marginBottom: 48,
         }}
       >
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{ fontSize: 52, fontWeight: 700, color }}>
             {data.signalScore}
           </span>
-          <span style={{ fontSize: 22, color: "#52525b" }}>/100</span>
+          <span style={{ fontSize: 22, color: '#52525b' }}>/100</span>
         </div>
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             flex: 1,
             height: 10,
-            backgroundColor: "#18181b",
+            backgroundColor: '#18181b',
             borderRadius: 9999,
-            overflow: "hidden",
+            overflow: 'hidden',
           }}
         >
           <div
             style={{
               width: `${data.signalScore}%`,
-              height: "100%",
+              height: '100%',
               backgroundColor: color,
               borderRadius: 9999,
             }}
           />
         </div>
-        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoise score</span>
+        <span style={{ fontSize: 20, color: '#3f3f46' }}>denoise score</span>
       </div>
 
       <BrandFooter />
@@ -322,12 +327,18 @@ function VerdictStory({ data, prompt }: { data: AnalysisResult; prompt?: string 
   );
 }
 
-function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string }) {
+function AnalysisStory({
+  data,
+  prompt,
+}: {
+  data: AnalysisResult;
+  prompt?: string;
+}) {
   const color = verdictHexColor[data.verdict];
   return (
     <StoryWrapper>
       {/* Top spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Prompt */}
       {prompt && <PromptBlock prompt={prompt} />}
@@ -335,19 +346,19 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
       {/* Centered content */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
           gap: 48,
         }}
       >
         {/* Label */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             gap: 12,
           }}
         >
@@ -355,13 +366,13 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
             style={{
               fontSize: 22,
               fontWeight: 700,
-              letterSpacing: "0.15em",
-              color: "#52525b",
+              letterSpacing: '0.15em',
+              color: '#52525b',
             }}
           >
             ANALYSIS
           </span>
-          <span style={{ fontSize: 24, color: "#71717a" }}>
+          <span style={{ fontSize: 24, color: '#71717a' }}>
             {data.contentType}
           </span>
         </div>
@@ -369,10 +380,10 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
         {/* Divider */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             width: 60,
             height: 2,
-            backgroundColor: "#27272a",
+            backgroundColor: '#27272a',
             borderRadius: 9999,
           }}
         />
@@ -380,12 +391,12 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
         {/* Summary */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 38,
-            color: "#d4d4d8",
+            color: '#d4d4d8',
             lineHeight: 1.6,
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           {data.summary}
@@ -393,43 +404,43 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
       </div>
 
       {/* Bottom spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Score bar */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           gap: 24,
           marginBottom: 48,
         }}
       >
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{ fontSize: 52, fontWeight: 700, color }}>
             {data.signalScore}
           </span>
-          <span style={{ fontSize: 22, color: "#52525b" }}>/100</span>
+          <span style={{ fontSize: 22, color: '#52525b' }}>/100</span>
         </div>
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             flex: 1,
             height: 10,
-            backgroundColor: "#18181b",
+            backgroundColor: '#18181b',
             borderRadius: 9999,
-            overflow: "hidden",
+            overflow: 'hidden',
           }}
         >
           <div
             style={{
               width: `${data.signalScore}%`,
-              height: "100%",
+              height: '100%',
               backgroundColor: color,
               borderRadius: 9999,
             }}
           />
         </div>
-        <span style={{ fontSize: 20, color: "#3f3f46" }}>denoise score</span>
+        <span style={{ fontSize: 20, color: '#3f3f46' }}>denoise score</span>
       </div>
 
       <BrandFooter />
@@ -438,9 +449,9 @@ function AnalysisStory({ data, prompt }: { data: AnalysisResult; prompt?: string
 }
 
 function confidenceHex(c: number): string {
-  if (c >= 80) return "#34d399";
-  if (c >= 50) return "#fbbf24";
-  return "#fb923c";
+  if (c >= 80) return '#34d399';
+  if (c >= 50) return '#fbbf24';
+  return '#fb923c';
 }
 
 function SignalStory({
@@ -456,7 +467,7 @@ function SignalStory({
   return (
     <StoryWrapper>
       {/* Top spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Prompt */}
       {prompt && <PromptBlock prompt={prompt} />}
@@ -464,39 +475,40 @@ function SignalStory({
       {/* Centered content */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
           gap: 48,
         }}
       >
         {/* Category badge */}
         <div
           style={{
-            display: "flex",
-            padding: "10px 28px",
+            display: 'flex',
+            padding: '10px 28px',
             borderRadius: 9999,
-            backgroundColor: "#18181b",
-            border: "1.5px solid #27272a",
-            color: "#a1a1aa",
+            backgroundColor: '#18181b',
+            border: '1.5px solid #27272a',
+            color: '#a1a1aa',
             fontSize: 20,
             fontWeight: 700,
-            letterSpacing: "0.1em",
+            letterSpacing: '0.1em',
           }}
         >
-          SIGNAL #{index + 1} · {signalCategoryLabel[signal.category].toUpperCase()}
+          SIGNAL #{index + 1} ·{' '}
+          {signalCategoryLabel[signal.category].toUpperCase()}
         </div>
 
         {/* Content */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 42,
-            color: "#e4e4e7",
+            color: '#e4e4e7',
             lineHeight: 1.55,
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           {signal.content}
@@ -505,32 +517,32 @@ function SignalStory({
         {/* Confidence */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             gap: 6,
           }}
         >
           <div
             style={{
-              display: "flex",
-              alignItems: "baseline",
-              justifyContent: "center",
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'center',
               gap: 10,
             }}
           >
             <span style={{ fontSize: 80, fontWeight: 700, color }}>
               {signal.confidence}
             </span>
-            <span style={{ fontSize: 28, color: "#52525b", fontWeight: 400 }}>
+            <span style={{ fontSize: 28, color: '#52525b', fontWeight: 400 }}>
               / 100
             </span>
           </div>
           <span
             style={{
               fontSize: 18,
-              color: "#52525b",
-              letterSpacing: "0.08em",
+              color: '#52525b',
+              letterSpacing: '0.08em',
               fontWeight: 400,
             }}
           >
@@ -543,7 +555,7 @@ function SignalStory({
       </div>
 
       {/* Bottom spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       <BrandFooter />
     </StoryWrapper>
@@ -562,7 +574,7 @@ function NoiseStory({
   return (
     <StoryWrapper>
       {/* Top spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       {/* Prompt */}
       {prompt && <PromptBlock prompt={prompt} />}
@@ -570,25 +582,25 @@ function NoiseStory({
       {/* Centered content */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
           gap: 48,
         }}
       >
         {/* Type badge */}
         <div
           style={{
-            display: "flex",
-            padding: "10px 28px",
+            display: 'flex',
+            padding: '10px 28px',
             borderRadius: 9999,
-            backgroundColor: "#f8717118",
-            border: "1.5px solid #f8717140",
-            color: "#f87171",
+            backgroundColor: '#f8717118',
+            border: '1.5px solid #f8717140',
+            color: '#f87171',
             fontSize: 20,
             fontWeight: 700,
-            letterSpacing: "0.1em",
+            letterSpacing: '0.1em',
           }}
         >
           NOISE #{index + 1} · {noiseTypeLabel[noise.type].toUpperCase()}
@@ -597,13 +609,13 @@ function NoiseStory({
         {/* Original quote */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 44,
-            color: "#e4e4e7",
+            color: '#e4e4e7',
             lineHeight: 1.5,
-            fontStyle: "italic",
-            textAlign: "center",
-            justifyContent: "center",
+            fontStyle: 'italic',
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           &ldquo;{noise.original}&rdquo;
@@ -612,10 +624,10 @@ function NoiseStory({
         {/* Divider */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             width: 60,
             height: 2,
-            backgroundColor: "#f8717130",
+            backgroundColor: '#f8717130',
             borderRadius: 9999,
           }}
         />
@@ -623,12 +635,12 @@ function NoiseStory({
         {/* Reason */}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 32,
-            color: "#a1a1aa",
+            color: '#a1a1aa',
             lineHeight: 1.6,
-            textAlign: "center",
-            justifyContent: "center",
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
           {noise.reason}
@@ -639,7 +651,7 @@ function NoiseStory({
       </div>
 
       {/* Bottom spacer */}
-      <div style={{ display: "flex", flex: 1 }} />
+      <div style={{ display: 'flex', flex: 1 }} />
 
       <BrandFooter />
     </StoryWrapper>
@@ -650,26 +662,26 @@ function NoiseStory({
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const type = searchParams.get("type");
-  const id = searchParams.get("id");
-  const indexStr = searchParams.get("index");
-  const includePrompt = searchParams.get("prompt") === "1";
+  const type = searchParams.get('type');
+  const id = searchParams.get('id');
+  const indexStr = searchParams.get('index');
+  const includePrompt = searchParams.get('prompt') === '1';
 
   if (!id || !type) {
-    return new Response("Missing id or type", { status: 400 });
+    return new Response('Missing id or type', { status: 400 });
   }
 
   const signal = await db.signal.findUnique({ where: { id } });
   if (!signal) {
-    return new Response("Not found", { status: 404 });
+    return new Response('Not found', { status: 404 });
   }
 
   const { data } = parseSignalData(signal.data);
   if (!data) {
-    return new Response("Analysis not ready", { status: 404 });
+    return new Response('Analysis not ready', { status: 404 });
   }
 
-  const index = indexStr ? parseInt(indexStr, 10) : 0;
+  const index = indexStr ? Number.parseInt(indexStr, 10) : 0;
   const fonts = await loadFonts();
 
   let element: React.ReactElement;
@@ -677,32 +689,32 @@ export async function GET(req: NextRequest) {
   const prompt = includePrompt ? signal.prompt : undefined;
 
   switch (type) {
-    case "verdict":
+    case 'verdict':
       element = <VerdictStory data={data} prompt={prompt} />;
       break;
-    case "analysis":
+    case 'analysis':
       element = <AnalysisStory data={data} prompt={prompt} />;
       break;
-    case "signal": {
+    case 'signal': {
       const s = data.signals[index];
-      if (!s) return new Response("Signal index out of range", { status: 400 });
+      if (!s) return new Response('Signal index out of range', { status: 400 });
       element = <SignalStory signal={s} index={index} prompt={prompt} />;
       break;
     }
-    case "noise": {
+    case 'noise': {
       const n = data.noise[index];
-      if (!n) return new Response("Noise index out of range", { status: 400 });
+      if (!n) return new Response('Noise index out of range', { status: 400 });
       element = <NoiseStory noise={n} index={index} prompt={prompt} />;
       break;
     }
     default:
-      return new Response("Invalid type", { status: 400 });
+      return new Response('Invalid type', { status: 400 });
   }
 
   return new ImageResponse(element, {
     width: 1080,
     height: 1920,
     fonts,
-    headers: { "Cache-Control": "public, max-age=3600" },
+    headers: { 'Cache-Control': 'public, max-age=3600' },
   });
 }
