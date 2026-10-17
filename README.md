@@ -34,16 +34,16 @@ Denoise It is an AI-powered fact-checking platform that separates **signal** (ve
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router, RSC, Turbopack) |
-| Language | TypeScript 5.8 |
-| UI | React 19, Tailwind CSS 4, shadcn/ui, Framer Motion |
-| API | tRPC 11 (end-to-end type safety) |
-| Database | PostgreSQL + Prisma 6 |
-| Auth | NextAuth 5 (Google OAuth) |
-| AI | Anthropic Claude (via Vercel AI SDK), OpenRouter |
-| Tooling | pnpm, ESLint (flat config), Prettier |
+| Layer     | Technology                                            |
+| --------- | ----------------------------------------------------- |
+| Framework | Next.js 16 (App Router, RSC, Turbopack)               |
+| Language  | TypeScript 5.8                                        |
+| UI        | React 19, Tailwind CSS 4, shadcn/ui, Framer Motion    |
+| API       | tRPC 11 (end-to-end type safety)                      |
+| Database  | PostgreSQL + Prisma 6                                 |
+| Auth      | NextAuth 5 (Google OAuth)                             |
+| AI        | Anthropic Claude (via Vercel AI SDK), OpenRouter      |
+| Tooling   | pnpm, Oxlint (type-aware), Oxfmt, husky + lint-staged |
 
 ## Getting Started
 
@@ -108,21 +108,21 @@ Denoise It is an AI-powered fact-checking platform that separates **signal** (ve
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start dev server (Turbopack) |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm check` | Lint + typecheck |
-| `pnpm lint` | ESLint only |
-| `pnpm lint:fix` | ESLint with auto-fix |
-| `pnpm typecheck` | TypeScript type checking |
-| `pnpm format:check` | Prettier check |
-| `pnpm format:write` | Prettier auto-format |
-| `pnpm db:push` | Push Prisma schema to database |
-| `pnpm db:generate` | Create Prisma migration |
-| `pnpm db:migrate` | Deploy Prisma migrations |
-| `pnpm db:studio` | Open Prisma Studio |
+| Command             | Description                     |
+| ------------------- | ------------------------------- |
+| `pnpm dev`          | Start dev server (Turbopack)    |
+| `pnpm build`        | Production build                |
+| `pnpm start`        | Start production server         |
+| `pnpm check`        | Format check + lint + typecheck |
+| `pnpm lint`         | Oxlint (type-aware)             |
+| `pnpm lint:fix`     | Oxlint with auto-fix            |
+| `pnpm typecheck`    | TypeScript type checking        |
+| `pnpm format`       | Oxfmt auto-format               |
+| `pnpm format:check` | Oxfmt check                     |
+| `pnpm db:push`      | Push Prisma schema to database  |
+| `pnpm db:generate`  | Create Prisma migration         |
+| `pnpm db:migrate`   | Deploy Prisma migrations        |
+| `pnpm db:studio`    | Open Prisma Studio              |
 
 ## Project Structure
 

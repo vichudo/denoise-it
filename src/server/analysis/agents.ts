@@ -1,9 +1,9 @@
-import { ToolLoopAgent, Output, stepCountIs } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { ToolLoopAgent, Output, stepCountIs } from 'ai';
 
-import { analysisResultSchema } from "@/lib/schemas/analysis";
-import { env } from "@/env";
+import { env } from '@/env';
+import { analysisResultSchema } from '@/lib/schemas/analysis';
 
 /* ── Instructions ──────────────────────────────────────────── */
 
@@ -74,15 +74,15 @@ const anthropicTools = {
 
 /* ── Agent factory ─────────────────────────────────────────── */
 
-type Provider = "anthropic" | "grok";
+type Provider = 'anthropic' | 'grok';
 
 function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
-  const isAnthropic = provider === "anthropic";
+  const isAnthropic = provider === 'anthropic';
 
   return new ToolLoopAgent({
     model: isAnthropic
-      ? anthropic("claude-opus-5-5")
-      : openrouter.chat("x-ai/grok-4.7:online"),
+      ? anthropic('claude-opus-5-5')
+      : openrouter.chat('x-ai/grok-4.7:online'),
     instructions: ANALYSIS_INSTRUCTIONS,
     ...(isAnthropic && { tools: anthropicTools }),
     output: analysisOutput,
@@ -96,18 +96,18 @@ function createAgent(provider: Provider, maxSteps: number, fast: boolean) {
       stepNumber >= maxSteps - 1 ? { activeTools: [] } : {},
     providerOptions: {
       // Opus 5.5 and Grok 4.7 can't disable reasoning; effort is the speed/depth control
-      anthropic: { effort: fast ? "low" : "high" },
-      ...(fast && { openrouter: { reasoning: { effort: "minimal" } } }),
+      anthropic: { effort: fast ? 'low' : 'high' },
+      ...(fast && { openrouter: { reasoning: { effort: 'minimal' } } }),
     },
   });
 }
 
 /* ── Agent instances ───────────────────────────────────────── */
 
-const anthropicAgent = createAgent("anthropic", 6, false);
-const anthropicFastAgent = createAgent("anthropic", 4, true);
-const grokAgent = createAgent("grok", 6, false);
-const grokFastAgent = createAgent("grok", 4, true);
+const anthropicAgent = createAgent('anthropic', 6, false);
+const anthropicFastAgent = createAgent('anthropic', 4, true);
+const grokAgent = createAgent('grok', 6, false);
+const grokFastAgent = createAgent('grok', 4, true);
 
 /* ── Social media detection ────────────────────────────────── */
 
@@ -138,11 +138,11 @@ export interface AnalysisAttempt {
  */
 export function pickAttempts(content: string, fast = false): AnalysisAttempt[] {
   const anthropicAttempt: AnalysisAttempt = {
-    label: "anthropic",
+    label: 'anthropic',
     agent: fast ? anthropicFastAgent : anthropicAgent,
   };
   const grokAttempt: AnalysisAttempt = {
-    label: "grok",
+    label: 'grok',
     agent: fast ? grokFastAgent : grokAgent,
   };
 

@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { auth } from "@/server/auth";
-import { GoogleSignInButton } from "@/app/_components/google-sign-in-button";
+import { GoogleSignInButton } from '@/app/_components/google-sign-in-button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
+import { auth } from '@/server/auth';
 
 export default async function LoginPage({
   searchParams,
@@ -17,7 +17,8 @@ export default async function LoginPage({
 }) {
   const session = await auth();
   const params = await searchParams;
-  const callbackUrl = typeof params.callbackUrl === "string" ? params.callbackUrl : "/";
+  const callbackUrl =
+    typeof params.callbackUrl === 'string' ? params.callbackUrl : '/';
 
   if (session) {
     redirect(callbackUrl);

@@ -1,39 +1,39 @@
-"use client";
+'use client';
 
-import { useState, type KeyboardEvent } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState, type KeyboardEvent } from 'react';
 
-import { OUTPUT_LANGUAGES } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { api } from "@/trpc/react";
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+import { OUTPUT_LANGUAGES } from '@/lib/constants';
+import { api } from '@/trpc/react';
 
 const STYLE_OPTIONS = [
-  { value: "casual", label: "Casual" },
-  { value: "professional", label: "Professional" },
-  { value: "academic", label: "Academic" },
-  { value: "concise", label: "Concise" },
-  { value: "direct", label: "Direct" },
+  { value: 'casual', label: 'Casual' },
+  { value: 'professional', label: 'Professional' },
+  { value: 'academic', label: 'Academic' },
+  { value: 'concise', label: 'Concise' },
+  { value: 'direct', label: 'Direct' },
 ] as const;
 
 function getAffectiveLabel(value: number): string {
-  if (value <= 12) return "Pure signal";
-  if (value <= 37) return "Mostly neutral";
-  if (value <= 62) return "Balanced";
-  if (value <= 87) return "Some emotion ok";
-  return "Raw content";
+  if (value <= 12) return 'Pure signal';
+  if (value <= 37) return 'Mostly neutral';
+  if (value <= 62) return 'Balanced';
+  if (value <= 87) return 'Some emotion ok';
+  return 'Raw content';
 }
 
 export function FeedSettingsForm() {
@@ -42,50 +42,48 @@ export function FeedSettingsForm() {
 
   // Form state
   const [topics, setTopics] = useState<string[]>(prefs?.topics ?? []);
-  const [topicInput, setTopicInput] = useState("");
-  const [xAccounts, setXAccounts] = useState<string[]>(
-    prefs?.xAccounts ?? [],
-  );
-  const [accountInput, setAccountInput] = useState("");
+  const [topicInput, setTopicInput] = useState('');
+  const [xAccounts, setXAccounts] = useState<string[]>(prefs?.xAccounts ?? []);
+  const [accountInput, setAccountInput] = useState('');
   const [communicationStyle, setCommunicationStyle] = useState(
-    prefs?.communicationStyle ?? "balanced",
+    prefs?.communicationStyle ?? 'balanced',
   );
   const [affectiveLevel, setAffectiveLevel] = useState(
     prefs?.affectiveLevel ?? 30,
   );
-  const [language, setLanguage] = useState(prefs?.language ?? "en");
+  const [language, setLanguage] = useState(prefs?.language ?? 'en');
   const [additionalInstructions, setAdditionalInstructions] = useState(
-    prefs?.additionalInstructions ?? "",
+    prefs?.additionalInstructions ?? '',
   );
 
   const save = api.feed.savePreferences.useMutation({
-    onSuccess: () => router.push("/feed"),
+    onSuccess: () => router.push('/feed'),
   });
 
   function handleTopicKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const value = topicInput.trim();
       if (value && !topics.includes(value) && topics.length < 20) {
         setTopics([...topics, value]);
-        setTopicInput("");
+        setTopicInput('');
       }
     }
-    if (e.key === "Backspace" && !topicInput && topics.length > 0) {
+    if (e.key === 'Backspace' && !topicInput && topics.length > 0) {
       setTopics(topics.slice(0, -1));
     }
   }
 
   function handleAccountKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      const value = accountInput.trim().replace(/^@/, "");
+      const value = accountInput.trim().replace(/^@/, '');
       if (value && !xAccounts.includes(value) && xAccounts.length < 30) {
         setXAccounts([...xAccounts, value]);
-        setAccountInput("");
+        setAccountInput('');
       }
     }
-    if (e.key === "Backspace" && !accountInput && xAccounts.length > 0) {
+    if (e.key === 'Backspace' && !accountInput && xAccounts.length > 0) {
       setXAccounts(xAccounts.slice(0, -1));
     }
   }
@@ -102,17 +100,19 @@ export function FeedSettingsForm() {
     });
   }
 
+  const submitLabel = prefs ? 'Update & go to feed' : 'Save & go to feed';
+
   return (
     <div className="space-y-8">
       {/* Topics */}
       <div className="space-y-2">
         <Label>
-          Topics of interest{" "}
-          <span className="text-muted-foreground font-normal">
+          Topics of interest{' '}
+          <span className="font-normal text-muted-foreground">
             ({topics.length}/20)
           </span>
         </Label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           What do you want to stay informed about? Press Enter to add.
         </p>
         <div className="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-md border px-3 py-2">
@@ -122,7 +122,7 @@ export function FeedSettingsForm() {
               <button
                 type="button"
                 onClick={() => setTopics(topics.filter((t) => t !== topic))}
-                className="hover:text-foreground rounded-sm p-0.5"
+                className="rounded-sm p-0.5 hover:text-foreground"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -132,7 +132,9 @@ export function FeedSettingsForm() {
             value={topicInput}
             onChange={(e) => setTopicInput(e.target.value)}
             onKeyDown={handleTopicKeyDown}
-            placeholder={topics.length === 0 ? "e.g. AI, climate, space..." : ""}
+            placeholder={
+              topics.length === 0 ? 'e.g. AI, climate, space...' : ''
+            }
             className="h-7 min-w-[120px] flex-1 border-0 p-0 shadow-none focus-visible:ring-0"
           />
         </div>
@@ -141,10 +143,10 @@ export function FeedSettingsForm() {
       {/* X Accounts */}
       <div className="space-y-2">
         <Label>
-          X accounts to follow{" "}
-          <span className="text-muted-foreground font-normal">(optional)</span>
+          X accounts to follow{' '}
+          <span className="font-normal text-muted-foreground">(optional)</span>
         </Label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Specific accounts whose posts you want in your feed. Press Enter to
           add.
         </p>
@@ -157,7 +159,7 @@ export function FeedSettingsForm() {
                 onClick={() =>
                   setXAccounts(xAccounts.filter((a) => a !== account))
                 }
-                className="hover:text-foreground rounded-sm p-0.5"
+                className="rounded-sm p-0.5 hover:text-foreground"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -168,7 +170,7 @@ export function FeedSettingsForm() {
             onChange={(e) => setAccountInput(e.target.value)}
             onKeyDown={handleAccountKeyDown}
             placeholder={
-              xAccounts.length === 0 ? "e.g. elonmusk, NASA, WHO..." : ""
+              xAccounts.length === 0 ? 'e.g. elonmusk, NASA, WHO...' : ''
             }
             className="h-7 min-w-[120px] flex-1 border-0 p-0 shadow-none focus-visible:ring-0"
           />
@@ -178,10 +180,13 @@ export function FeedSettingsForm() {
       {/* Communication Style */}
       <div className="space-y-2">
         <Label>Communication style</Label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           How should your feed content be written?
         </p>
-        <Select value={communicationStyle} onValueChange={setCommunicationStyle}>
+        <Select
+          value={communicationStyle}
+          onValueChange={setCommunicationStyle}
+        >
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -198,7 +203,7 @@ export function FeedSettingsForm() {
       {/* Affective Level */}
       <div className="space-y-3">
         <Label>Affective content level</Label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           How much emotional content is acceptable in your feed?
         </p>
         <div className="space-y-2">
@@ -210,11 +215,11 @@ export function FeedSettingsForm() {
             onValueChange={([v]) => v !== undefined && setAffectiveLevel(v)}
           />
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-xs">Pure signal</span>
-            <span className="text-foreground text-sm font-medium">
+            <span className="text-xs text-muted-foreground">Pure signal</span>
+            <span className="text-sm font-medium text-foreground">
               {getAffectiveLabel(affectiveLevel)} ({affectiveLevel})
             </span>
-            <span className="text-muted-foreground text-xs">Raw content</span>
+            <span className="text-xs text-muted-foreground">Raw content</span>
           </div>
         </div>
       </div>
@@ -239,10 +244,10 @@ export function FeedSettingsForm() {
       {/* Additional Instructions */}
       <div className="space-y-2">
         <Label>
-          Additional instructions{" "}
-          <span className="text-muted-foreground font-normal">(optional)</span>
+          Additional instructions{' '}
+          <span className="font-normal text-muted-foreground">(optional)</span>
         </Label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Tell the agent anything else about how to curate your feed.
         </p>
         <Textarea
@@ -253,7 +258,7 @@ export function FeedSettingsForm() {
           maxLength={1000}
         />
         {additionalInstructions.length > 0 && (
-          <p className="text-muted-foreground text-right text-xs">
+          <p className="text-right text-xs text-muted-foreground">
             {additionalInstructions.length}/1000
           </p>
         )}
@@ -271,15 +276,13 @@ export function FeedSettingsForm() {
             <Loader2 className="animate-spin" />
             Saving...
           </>
-        ) : prefs ? (
-          "Update & go to feed"
         ) : (
-          "Save & go to feed"
+          submitLabel
         )}
       </Button>
 
       {save.isError && (
-        <p className="text-destructive text-center text-sm">
+        <p className="text-center text-sm text-destructive">
           Something went wrong. Please try again.
         </p>
       )}

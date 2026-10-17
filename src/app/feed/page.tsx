@@ -1,25 +1,25 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
-import { PersonalFeed } from "@/app/_components/personal-feed";
+import { PersonalFeed } from '@/app/_components/personal-feed';
+import { auth } from '@/server/auth';
+import { api, HydrateClient } from '@/trpc/server';
 
 export const metadata = {
-  title: "Your Feed — Denoise It",
-  description: "Your personalized, denoised content feed.",
+  title: 'Your Feed — Denoise It',
+  description: 'Your personalized, denoised content feed.',
 };
 
 export default async function FeedPage() {
   const session = await auth();
 
   if (!session) {
-    redirect("/login?callbackUrl=/feed");
+    redirect('/login?callbackUrl=/feed');
   }
 
   const prefs = await api.feed.getPreferences();
 
   if (!prefs) {
-    redirect("/settings");
+    redirect('/settings');
   }
 
   await api.feed.items.prefetchInfinite({ limit: 20 });

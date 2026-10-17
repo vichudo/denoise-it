@@ -8,12 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm run dev            # Start dev server (Turbopack, default in Next.js 16)
 pnpm run build          # Production build
 pnpm run start          # Start production server
-pnpm run check          # Lint + typecheck
-pnpm run lint           # ESLint only
-pnpm run lint:fix       # ESLint with auto-fix
+pnpm run check          # Format check + lint + typecheck (what CI runs)
+pnpm run lint           # Oxlint (type-aware)
+pnpm run lint:fix       # Oxlint with auto-fix
 pnpm run typecheck      # TypeScript type checking (tsc --noEmit)
-pnpm run format:check   # Prettier check
-pnpm run format:write   # Prettier auto-format
+pnpm run format         # Oxfmt: format everything
+pnpm run format:check   # Oxfmt check
 pnpm run db:push        # Push Prisma schema to database
 pnpm run db:generate    # Create Prisma migration
 pnpm run db:migrate     # Deploy Prisma migrations
@@ -52,6 +52,7 @@ This is a **T3 Stack** app (create-t3-app v7.40.0) using Next.js 16 App Router w
 **Client-side:** `src/trpc/react.tsx` provides `TRPCReactProvider` using `httpBatchStreamLink` to `/api/trpc`. Client components use `api.router.query.useSuspenseQuery()` for reads and `api.router.action.useMutation()` for writes.
 
 **Adding a new router:**
+
 1. Create router in `src/server/api/routers/`
 2. Add to `appRouter` in `src/server/api/root.ts`
 3. Use `publicProcedure` or `protectedProcedure` (requires auth)
@@ -68,8 +69,17 @@ Validated in `src/env.js` with Zod. Server vars: `AUTH_SECRET`, `DATABASE_URL`, 
 
 ### Styling
 
-Tailwind CSS 4 via `@tailwindcss/postcss`. Theme uses OKLch CSS variables defined in `src/styles/globals.css` with light/dark mode support. Use `cn()` from `src/lib/utils.ts` (clsx + tailwind-merge) for conditional classes. Prettier auto-sorts Tailwind classes.
+Tailwind CSS 4 via `@tailwindcss/postcss`. Theme uses OKLch CSS variables defined in `src/styles/globals.css` with light/dark mode support. Use `cn()` from `src/lib/utils.ts` (clsx + tailwind-merge) for conditional classes. Oxfmt auto-sorts Tailwind classes (in `className` and `cn`/`cva`/`clsx` calls) and imports.
 
-### ESLint
+### Linting and Formatting
 
-Flat config in `eslint.config.js`. Extends `next/core-web-vitals` + `typescript-eslint` (recommended + type-checked + stylistic). Enforces consistent type imports with `type` keyword inline.
+[Oxlint](https://oxc.rs/docs/guide/usage/linter) and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter) replace ESLint and Prettier. `.oxlintrc.json` documents each rule choice inline: errors for correctness, type safety and generated-code smells (`any`, non-null assertions, floating promises, unnecessary conditions, stray `console.log`), warnings for size and nesting heuristics. Type-aware rules run through `oxlint-tsgolint` (typescript-go), which rejects `baseUrl`, so path aliases live in `tsconfig.json` `paths` only.
+
+- Read env vars through `env` from `@/env`, never `process.env` (`node/no-process-env`).
+- Import across directories with `@/`, never `../` (`import/no-relative-parent-imports`).
+- UI code (`src/components`, `src/hooks`, `src/app/_components`) never imports `@/server`; it goes through tRPC.
+- Type-only imports are top-level `import type { X }`.
+- Suppress a rule only with a reason: `// oxlint-disable-next-line <rule> -- why`.
+- `src/components/ui/**` (shadcn/ui) and `src/components/ai-elements/**` are vendored: formatted, not linted.
+
+Oxfmt prints 80 columns with single quotes, sorts imports and Tailwind classes. A husky pre-commit hook runs `oxlint --fix` and `oxfmt` on staged files via lint-staged. VS Code formats and fixes on save with the recommended `oxc.oxc-vscode` extension (`.vscode/settings.json`).

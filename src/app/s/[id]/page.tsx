@@ -1,8 +1,8 @@
-import { type Metadata } from "next";
+import type { Metadata } from 'next';
 
-import { api, HydrateClient } from "@/trpc/server";
-import { SignalView } from "@/app/_components/signal-view";
-import { buildSignalMetadata } from "@/lib/metadata";
+import { SignalView } from '@/app/_components/signal-view';
+import { buildSignalMetadata } from '@/lib/metadata';
+import { api, HydrateClient } from '@/trpc/server';
 
 export async function generateMetadata({
   params,
@@ -12,9 +12,14 @@ export async function generateMetadata({
   const { id } = await params;
   try {
     const signal = await api.analysis.get({ id });
-    return buildSignalMetadata(id, signal.data, "Analyzing...", "Analysis in progress.");
+    return buildSignalMetadata(
+      id,
+      signal.data,
+      'Analyzing...',
+      'Analysis in progress.',
+    );
   } catch {
-    return { title: "Not Found — Denoise It" };
+    return { title: 'Not Found — Denoise It' };
   }
 }
 

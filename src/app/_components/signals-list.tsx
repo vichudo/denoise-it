@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from 'date-fns';
 import {
   XCircle,
   MessageCircle,
@@ -12,11 +11,9 @@ import {
   Link2,
   Lock,
   Trash2,
-} from "lucide-react";
+} from 'lucide-react';
+import Link from 'next/link';
 
-import { verdictLabel } from "@/lib/schemas/analysis";
-import { getDomain } from "@/lib/utils";
-import { verdictIcon, verdictColor } from "@/lib/verdict";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,27 +24,45 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/trpc/react";
+} from '@/components/ui/select';
+import { verdictLabel } from '@/lib/schemas/analysis';
+import { getDomain } from '@/lib/utils';
+import { verdictIcon, verdictColor } from '@/lib/verdict';
+import { api, type RouterOutputs } from '@/trpc/react';
 
 /* ── Privacy config ──────────────────────────────────────── */
 
 const privacyOptions = [
-  { value: "PUBLIC", label: "Public", icon: Globe },
-  { value: "UNLISTED", label: "Unlisted", icon: Link2 },
-  { value: "PRIVATE", label: "Private", icon: Lock },
+  { value: 'PUBLIC', label: 'Public', icon: Globe },
+  { value: 'UNLISTED', label: 'Unlisted', icon: Link2 },
+  { value: 'PRIVATE', label: 'Private', icon: Lock },
 ] as const;
 
-type Privacy = (typeof privacyOptions)[number]["value"];
+type Privacy = (typeof privacyOptions)[number]['value'];
+
+type SignalRow = RouterOutputs['user']['signals'][number];
+
+/** Spinner while pending, an error mark, or the verdict's icon. */
+function SignalStatusIcon({ signal }: { signal: SignalRow }) {
+  if (signal.pending) {
+    return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+  }
+  if (signal.error) {
+    return <XCircle className="h-4 w-4 text-red-500" />;
+  }
+  if (!signal.verdict) return null;
+  const Icon = verdictIcon[signal.verdict];
+  return <Icon className={`h-4 w-4 ${verdictColor[signal.verdict]}`} />;
+}
 
 /* ── Component ───────────────────────────────────────────── */
 
@@ -87,7 +102,7 @@ export function SignalsList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -95,10 +110,13 @@ export function SignalsList() {
   if (!signals?.length) {
     return (
       <div className="flex flex-col items-center gap-3 py-24 text-center">
-        <Signal className="text-muted-foreground/50 h-10 w-10" />
-        <p className="text-muted-foreground text-sm">
-          No signals yet. Start by analyzing something on the{" "}
-          <Link href="/" className="text-foreground underline underline-offset-4">
+        <Signal className="h-10 w-10 text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground">
+          No signals yet. Start by analyzing something on the{' '}
+          <Link
+            href="/"
+            className="text-foreground underline underline-offset-4"
+          >
             homepage
           </Link>
           .
@@ -108,10 +126,8 @@ export function SignalsList() {
   }
 
   return (
-    <div className="divide-border divide-y">
+    <div className="divide-y divide-border">
       {signals.map((signal) => {
-        const Icon = signal.verdict ? verdictIcon[signal.verdict] : null;
-        const color = signal.verdict ? verdictColor[signal.verdict] : "";
         return (
           <div
             key={signal.id}
@@ -122,24 +138,18 @@ export function SignalsList() {
               href={`/s/${signal.id}`}
               className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center"
             >
-              {signal.pending ? (
-                <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-              ) : signal.error ? (
-                <XCircle className="h-4 w-4 text-red-500" />
-              ) : Icon ? (
-                <Icon className={`h-4 w-4 ${color}`} />
-              ) : null}
+              <SignalStatusIcon signal={signal} />
             </Link>
 
             {/* Content */}
             <Link
               href={`/s/${signal.id}`}
-              className="hover:bg-muted/50 min-w-0 flex-1 rounded-md transition-colors"
+              className="min-w-0 flex-1 rounded-md transition-colors hover:bg-muted/50"
             >
               <div className="flex items-baseline gap-2">
                 <p className="truncate text-sm font-medium">{signal.title}</p>
                 {signal.sourceUrl && (
-                  <span className="text-muted-foreground hidden shrink-0 text-xs sm:inline">
+                  <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
                     <ExternalLink className="mr-0.5 inline h-3 w-3" />
                     {getDomain(signal.sourceUrl)}
                   </span>
@@ -147,7 +157,7 @@ export function SignalsList() {
               </div>
 
               {signal.verdictHeadline && (
-                <p className="text-muted-foreground mt-0.5 truncate text-sm">
+                <p className="mt-0.5 truncate text-sm text-muted-foreground">
                   {signal.verdictHeadline}
                 </p>
               )}
@@ -157,7 +167,7 @@ export function SignalsList() {
                   <Badge variant="secondary" className="text-xs font-normal">
                     {verdictLabel[signal.verdict]}
                     {signal.signalScore !== null && (
-                      <span className="text-muted-foreground ml-1">
+                      <span className="ml-1 text-muted-foreground">
                         {signal.signalScore}%
                       </span>
                     )}
@@ -169,12 +179,12 @@ export function SignalsList() {
                   </Badge>
                 )}
                 {signal.followUpCount > 0 && (
-                  <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <MessageCircle className="h-3 w-3" />
                     {signal.followUpCount}
                   </span>
                 )}
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(signal.createdAt), {
                     addSuffix: true,
                   })}
@@ -209,7 +219,7 @@ export function SignalsList() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground hover:text-destructive h-8 w-8"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span className="sr-only">Delete signal</span>
@@ -226,9 +236,7 @@ export function SignalsList() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() =>
-                        deleteSignal.mutate({ id: signal.id })
-                      }
+                      onClick={() => deleteSignal.mutate({ id: signal.id })}
                     >
                       Delete
                     </AlertDialogAction>

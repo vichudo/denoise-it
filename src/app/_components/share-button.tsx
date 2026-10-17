@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Download, Share, Loader2, Check } from "lucide-react";
-import { toast } from "sonner";
+import { Download, Share, Loader2, Check } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,17 +12,32 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { shareStoryImage, storyImageUrl, type StoryType } from "@/lib/share";
+} from '@/components/ui/tooltip';
+import { shareStoryImage, storyImageUrl, type StoryType } from '@/lib/share';
 
-type ShareState = "idle" | "loading" | "done";
+type ShareState = 'idle' | 'loading' | 'done';
+
+function ShareStateIcon({ state }: { state: ShareState }) {
+  if (state === 'loading') {
+    return <Loader2 className="size-3.5 animate-spin" />;
+  }
+  if (state === 'done') {
+    return <Check className="size-3.5 text-emerald-600" />;
+  }
+  return (
+    <>
+      <Download className="size-3.5 [@media(hover:none)]:hidden" />
+      <Share className="hidden size-3.5 [@media(hover:none)]:block" />
+    </>
+  );
+}
 
 export function ShareButton({
   type,
@@ -37,22 +52,22 @@ export function ShareButton({
   alwaysVisible?: boolean;
   prompt?: string;
 }) {
-  const [state, setState] = useState<ShareState>("idle");
+  const [state, setState] = useState<ShareState>('idle');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [includePrompt, setIncludePrompt] = useState(false);
 
   const showDialog = !!prompt;
 
   async function doShare(withPrompt?: boolean) {
-    if (state !== "idle") return;
-    setState("loading");
+    if (state !== 'idle') return;
+    setState('loading');
     try {
       await shareStoryImage({ type, id, index, includePrompt: withPrompt });
-      setState("done");
-      setTimeout(() => setState("idle"), 2000);
+      setState('done');
+      setTimeout(() => setState('idle'), 2000);
     } catch {
-      toast.error("Failed to generate story image");
-      setState("idle");
+      toast.error('Failed to generate story image');
+      setState('idle');
     }
   }
 
@@ -69,9 +84,7 @@ export function ShareButton({
     await doShare(includePrompt);
   }
 
-  const previewUrl = showDialog
-    ? storyImageUrl({ type, id, index, includePrompt })
-    : null;
+  const previewUrl = storyImageUrl({ type, id, index, includePrompt });
 
   return (
     <>
@@ -81,20 +94,11 @@ export function ShareButton({
             <Button
               variant="ghost"
               size="icon"
-              className={`size-7 shrink-0 transition-opacity ${alwaysVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"}`}
+              className={`size-7 shrink-0 transition-opacity ${alwaysVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100'}`}
               onClick={handleClick}
-              disabled={state === "loading"}
+              disabled={state === 'loading'}
             >
-              {state === "loading" ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : state === "done" ? (
-                <Check className="size-3.5 text-emerald-600" />
-              ) : (
-                <>
-                  <Download className="size-3.5 [@media(hover:none)]:hidden" />
-                  <Share className="hidden size-3.5 [@media(hover:none)]:block" />
-                </>
-              )}
+              <ShareStateIcon state={state} />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">Share as story</TooltipContent>
@@ -114,11 +118,11 @@ export function ShareButton({
             </DialogHeader>
 
             {/* Preview */}
-            <div className="bg-secondary/30 overflow-hidden rounded-lg border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            <div className="overflow-hidden rounded-lg border bg-secondary/30">
+              {/* oxlint-disable-next-line nextjs/no-img-element */}
               <img
                 key={String(includePrompt)}
-                src={previewUrl!}
+                src={previewUrl}
                 alt="Story preview"
                 className="aspect-9/16 w-full object-cover"
               />
@@ -126,7 +130,7 @@ export function ShareButton({
 
             {/* Toggle */}
             <label className="flex cursor-pointer items-center justify-between py-1">
-              <span className="text-muted-foreground text-sm">
+              <span className="text-sm text-muted-foreground">
                 Include prompt
               </span>
               <Switch

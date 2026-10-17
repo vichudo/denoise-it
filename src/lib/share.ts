@@ -1,4 +1,4 @@
-export type StoryType = "verdict" | "analysis" | "signal" | "noise";
+export type StoryType = 'verdict' | 'analysis' | 'signal' | 'noise';
 
 interface ShareStoryParams {
   type: StoryType;
@@ -13,26 +13,37 @@ interface ShareStoryParams {
  */
 export async function shareStoryImage(params: ShareStoryParams) {
   const res = await fetch(storyImageUrl(params), {
-    cache: "no-cache",
+    cache: 'no-cache',
   });
-  if (!res.ok) throw new Error("Failed to generate story image");
+  if (!res.ok) throw new Error('Failed to generate story image');
 
   const blob = await res.blob();
-  const file = new File([blob], `denoise-${params.type}-${params.index ?? 0}.png`, {
-    type: "image/png",
-  });
+  const file = new File(
+    [blob],
+    `denoise-${params.type}-${params.index ?? 0}.png`,
+    {
+      type: 'image/png',
+    },
+  );
 
   // Mobile: use Web Share API with file (touch device only)
   const isTouchDevice =
-    "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  if (isTouchDevice && navigator.share && navigator.canShare?.({ files: [file] })) {
+    'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  // DOM types declare the Web Share API as always present; desktop browsers
+  // mostly lack it.
+  if (
+    isTouchDevice &&
+    'share' in navigator &&
+    'canShare' in navigator &&
+    navigator.canShare({ files: [file] })
+  ) {
     await navigator.share({ files: [file] });
     return;
   }
 
   // Desktop: download PNG directly
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = file.name;
   document.body.appendChild(a);
@@ -44,10 +55,15 @@ export async function shareStoryImage(params: ShareStoryParams) {
 /**
  * Returns the story image API URL for preview purposes.
  */
-export function storyImageUrl({ type, id, index, includePrompt }: ShareStoryParams) {
+export function storyImageUrl({
+  type,
+  id,
+  index,
+  includePrompt,
+}: ShareStoryParams) {
   const params = new URLSearchParams({ type, id });
-  if (index !== undefined) params.set("index", String(index));
-  if (includePrompt) params.set("prompt", "1");
+  if (index !== undefined) params.set('index', String(index));
+  if (includePrompt) params.set('prompt', '1');
   return `/api/story-image?${params.toString()}`;
 }
 
@@ -56,7 +72,7 @@ export function storyImageUrl({ type, id, index, includePrompt }: ShareStoryPara
  */
 export async function copySignalUrl(id: string) {
   const url =
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? `${window.location.origin}/s/${id}`
       : `/s/${id}`;
   await navigator.clipboard.writeText(url);

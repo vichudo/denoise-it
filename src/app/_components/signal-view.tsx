@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Signal,
   Volume2,
@@ -14,28 +13,32 @@ import {
   Link2,
   Loader2,
   RotateCw,
-} from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { toast } from "sonner";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-import { getDomain } from "@/lib/utils";
+import { useOutputLanguage } from '@/components/language-provider';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { POLL_INTERVAL, ANALYZING_PHRASES } from '@/lib/constants';
+import type { Verdict, AnalysisResult } from '@/lib/schemas/analysis';
+import { copySignalUrl } from '@/lib/share';
+import { getDomain } from '@/lib/utils';
+import {
+  verdictIcon,
+  verdictColor,
+  verdictBg,
+  verdictBorder,
+} from '@/lib/verdict';
+import { api } from '@/trpc/react';
 
-import type { Verdict, AnalysisResult } from "@/lib/schemas/analysis";
-import { verdictIcon, verdictColor, verdictBg, verdictBorder } from "@/lib/verdict";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { api } from "@/trpc/react";
-import { useOutputLanguage } from "@/components/language-provider";
-import { POLL_INTERVAL, ANALYZING_PHRASES } from "@/lib/constants";
-
-import { copySignalUrl } from "@/lib/share";
-
-import { FollowUpPanel } from "./follow-up-panel";
-import { NoiseCard } from "./noise-card";
-import { ResultsSkeleton } from "./results-skeleton";
-import { ShareButton } from "./share-button";
-import { SignalCard } from "./truth-card";
-import { WaveformAnimation } from "./waveform-animation";
+import { FollowUpPanel } from './follow-up-panel';
+import { NoiseCard } from './noise-card';
+import { ResultsSkeleton } from './results-skeleton';
+import { ShareButton } from './share-button';
+import { SignalCard } from './truth-card';
+import { WaveformAnimation } from './waveform-animation';
 
 /* ── Retry ────────────────────────────────────────────────── */
 
@@ -54,7 +57,7 @@ function useRetryAnalysis(id: string) {
 
   return {
     isPending: retry.isPending,
-    run: () => retry.mutate({ id, ...(language !== "en" && { language }) }),
+    run: () => retry.mutate({ id, ...(language !== 'en' && { language }) }),
   };
 }
 
@@ -71,7 +74,7 @@ function FailedState({ id, message }: { id: string; message: string }) {
       exit={{ opacity: 0 }}
       className="flex flex-col items-center gap-4 py-32 text-center"
     >
-      <p className="text-destructive max-w-sm text-sm">{message}</p>
+      <p className="max-w-sm text-sm text-destructive">{message}</p>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
@@ -112,7 +115,7 @@ function AnalyzingState({ id }: { id: string }) {
   }, []);
 
   const signalUrl =
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? `${window.location.origin}/s/${id}`
       : `/s/${id}`;
 
@@ -149,7 +152,7 @@ function AnalyzingState({ id }: { id: string }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2 }}
-              className="text-muted-foreground text-sm"
+              className="text-sm text-muted-foreground"
             >
               {ANALYZING_PHRASES[phraseIndex]}
             </motion.p>
@@ -159,7 +162,7 @@ function AnalyzingState({ id }: { id: string }) {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-muted-foreground/70 max-w-xs text-xs"
+            className="max-w-xs text-xs text-muted-foreground/70"
           >
             Still working — dense sources take longer. This page updates itself,
             so you can leave and come back.
@@ -168,8 +171,8 @@ function AnalyzingState({ id }: { id: string }) {
       </div>
 
       {/* Shareable URL */}
-      <div className="bg-secondary/50 flex w-full items-center gap-2 rounded-lg border px-3 py-2">
-        <span className="text-muted-foreground min-w-0 flex-1 truncate font-mono text-xs">
+      <div className="flex w-full items-center gap-2 rounded-lg border bg-secondary/50 px-3 py-2">
+        <span className="min-w-0 flex-1 truncate font-mono text-xs text-muted-foreground">
           {signalUrl}
         </span>
         <Button
@@ -186,7 +189,7 @@ function AnalyzingState({ id }: { id: string }) {
         </Button>
       </div>
 
-      <p className="text-muted-foreground/60 flex items-center gap-1.5 text-xs">
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
         <Bookmark className="size-3" />
         Bookmark this page to check back later
       </p>
@@ -197,18 +200,18 @@ function AnalyzingState({ id }: { id: string }) {
 /* ── Verdict Banner ───────────────────────────────────────── */
 
 const verdictLabels: Record<Verdict, string> = {
-  true: "Verified",
-  mostly_true: "Mostly True",
-  mixed: "Mixed",
-  mostly_false: "Mostly False",
-  false: "False",
-  misleading: "Misleading",
-  satire: "Satire",
-  unverifiable: "Unverifiable",
+  true: 'Verified',
+  mostly_true: 'Mostly True',
+  mixed: 'Mixed',
+  mostly_false: 'Mostly False',
+  false: 'False',
+  misleading: 'Misleading',
+  satire: 'Satire',
+  unverifiable: 'Unverifiable',
 };
 
 function VerdictBanner({ result }: { result: AnalysisResult }) {
-  if (result.verdict === "unverifiable") return null;
+  if (result.verdict === 'unverifiable') return null;
 
   const Icon = verdictIcon[result.verdict];
   const color = verdictColor[result.verdict];
@@ -217,7 +220,7 @@ function VerdictBanner({ result }: { result: AnalysisResult }) {
 
   return (
     <div
-      className={`animate-in fade-in-0 slide-in-from-bottom-2 flex items-start gap-4 rounded-2xl border px-6 py-5 ${bg} ${border}`}
+      className={`flex animate-in items-start gap-4 rounded-2xl border px-6 py-5 fade-in-0 slide-in-from-bottom-2 ${bg} ${border}`}
     >
       <Icon className={`mt-0.5 size-6 shrink-0 ${color}`} strokeWidth={2.5} />
       <div className="min-w-0 space-y-1">
@@ -226,7 +229,7 @@ function VerdictBanner({ result }: { result: AnalysisResult }) {
         >
           {verdictLabels[result.verdict]}
         </span>
-        <p className="text-foreground text-base font-semibold leading-snug tracking-tight">
+        <p className="text-base leading-snug font-semibold tracking-tight text-foreground">
           {result.verdictHeadline}
         </p>
       </div>
@@ -250,15 +253,15 @@ function SectionHeader({
   return (
     <div className="flex items-center gap-2">
       <Icon
-        className={`size-3.5 ${muted ? "text-muted-foreground/60" : "text-muted-foreground/60"}`}
+        className={`size-3.5 ${muted ? 'text-muted-foreground/60' : 'text-muted-foreground/60'}`}
       />
       <span
-        className={`text-xs font-medium tracking-widest uppercase ${muted ? "text-muted-foreground/60" : "text-muted-foreground"}`}
+        className={`text-xs font-medium tracking-widest uppercase ${muted ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}
       >
         {label}
       </span>
       {count !== undefined && (
-        <span className="text-muted-foreground/40 font-mono text-[10px]">
+        <span className="font-mono text-[10px] text-muted-foreground/40">
           {count}
         </span>
       )}
@@ -280,8 +283,8 @@ function PromptDisplay({ prompt }: { prompt: string }) {
   const { text, urls } = useMemo(() => {
     const matches = [...new Set(prompt.match(URL_REGEX) ?? [])];
     const cleaned = matches
-      .reduce((t, url) => t.replace(url, ""), prompt)
-      .replace(/\s{2,}/g, " ")
+      .reduce((t, url) => t.replace(url, ''), prompt)
+      .replaceAll(/\s{2,}/g, ' ')
       .trim();
     return { text: cleaned, urls: matches };
   }, [prompt]);
@@ -289,6 +292,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
   useEffect(() => {
     const el = textRef.current;
     if (el) setClamped(el.scrollHeight > PROMPT_CLAMP_PX);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- re-measure once the rendered text changes
   }, [text]);
 
   function handleCopy() {
@@ -303,18 +307,19 @@ function PromptDisplay({ prompt }: { prompt: string }) {
         <div>
           <p
             ref={textRef}
-            className={`text-foreground/80 text-base leading-relaxed font-medium ${
-              !expanded && clamped ? "line-clamp-3" : ""
+            className={`text-base leading-relaxed font-medium text-foreground/80 ${
+              !expanded && clamped ? 'line-clamp-3' : ''
             }`}
           >
             &ldquo;{text}&rdquo;
           </p>
           {clamped && (
             <button
+              type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="text-muted-foreground/50 hover:text-muted-foreground mt-1.5 text-xs transition-colors"
+              className="mt-1.5 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground"
             >
-              {expanded ? "show less" : "see all"}
+              {expanded ? 'show less' : 'see all'}
             </button>
           )}
         </div>
@@ -333,7 +338,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
                 title={url}
                 className="group inline-flex max-w-[280px] items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors hover:bg-secondary hover:text-foreground"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* oxlint-disable-next-line nextjs/no-img-element */}
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
                   alt=""
@@ -350,8 +355,9 @@ function PromptDisplay({ prompt }: { prompt: string }) {
       )}
 
       <button
+        type="button"
         onClick={handleCopy}
-        className="text-muted-foreground/40 hover:text-muted-foreground inline-flex items-center gap-1 text-xs transition-colors"
+        className="inline-flex items-center gap-1 text-xs text-muted-foreground/40 transition-colors hover:text-muted-foreground"
       >
         {copied ? (
           <>
@@ -387,12 +393,10 @@ function CopyLinkButton({ id }: { id: string }) {
       className="gap-1.5 text-xs"
       onClick={handleCopy}
     >
-      {copied ? (
-        <Check className="size-3" />
-      ) : (
-        <Link2 className="size-3" />
-      )}
-      <span className="hidden sm:inline">{copied ? "Copied" : "Copy link"}</span>
+      {copied ? <Check className="size-3" /> : <Link2 className="size-3" />}
+      <span className="hidden sm:inline">
+        {copied ? 'Copied' : 'Copy link'}
+      </span>
     </Button>
   );
 }
@@ -417,19 +421,19 @@ function Results({
       <VerdictBanner result={result} />
 
       {/* 2. Abstract */}
-      <div className="bg-secondary/30 group space-y-3 rounded-xl border px-6 py-5">
+      <div className="group space-y-3 rounded-xl border bg-secondary/30 px-6 py-5">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          <span className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Analysis
           </span>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground/60 font-mono text-[11px] tabular-nums">
+            <span className="font-mono text-[11px] text-muted-foreground/60 tabular-nums">
               {result.signalScore}/100 signal &middot; {result.contentType}
             </span>
             <ShareButton type="analysis" id={id} prompt={prompt} />
           </div>
         </div>
-        <p className="text-foreground/80 text-justify text-[13px] leading-relaxed">
+        <p className="text-justify text-[13px] leading-relaxed text-foreground/80">
           {result.summary}
         </p>
       </div>
@@ -446,7 +450,16 @@ function Results({
           />
           <div className="space-y-2">
             {result.signals.map((signal, index) => (
-              <SignalCard key={index} signal={signal} index={index} signalId={id} prompt={prompt} />
+              <SignalCard
+                // The result is immutable and the index is the item's identity: share
+                // links address signals by it.
+                // oxlint-disable-next-line react/no-array-index-key
+                key={index}
+                signal={signal}
+                index={index}
+                signalId={id}
+                prompt={prompt}
+              />
             ))}
           </div>
         </div>
@@ -465,7 +478,14 @@ function Results({
             />
             <div className="space-y-2">
               {result.noise.map((item, index) => (
-                <NoiseCard key={index} noise={item} index={index} signalId={id} prompt={prompt} />
+                <NoiseCard
+                  // oxlint-disable-next-line react/no-array-index-key -- immutable result, see signals above
+                  key={index}
+                  noise={item}
+                  index={index}
+                  signalId={id}
+                  prompt={prompt}
+                />
               ))}
             </div>
           </div>
@@ -475,11 +495,7 @@ function Results({
       {/* 5. Follow Up */}
       <Separator className="opacity-30" />
       <div className="flex justify-center">
-        <Button
-          variant="outline"
-          className="gap-2"
-          onClick={onFollowUp}
-        >
+        <Button variant="outline" className="gap-2" onClick={onFollowUp}>
           <MessageCircle className="size-4" />
           Follow Up
         </Button>
@@ -509,11 +525,70 @@ export function SignalView({
       },
       retry: (failureCount, err) => {
         // Don't retry NOT_FOUND (private/deleted signals)
-        if (err.data?.code === "NOT_FOUND") return false;
+        if (err.data?.code === 'NOT_FOUND') return false;
         return failureCount < 3;
       },
     },
   );
+
+  // Returns the keyed state directly, so AnimatePresence sees each switch.
+  function renderContent() {
+    if (error) {
+      return (
+        <motion.div
+          key="error"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-col items-center gap-4 py-32 text-center"
+        >
+          <p className="text-sm text-muted-foreground">
+            This signal doesn&apos;t exist or is private.
+          </p>
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              Back to home
+            </Button>
+          </Link>
+        </motion.div>
+      );
+    }
+    if (!data) {
+      return (
+        <motion.div
+          key="skeleton"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <ResultsSkeleton />
+        </motion.div>
+      );
+    }
+    if (data.error) {
+      return <FailedState key="data-error" id={id} message={data.error} />;
+    }
+    if (data.data) {
+      return (
+        <motion.div
+          key="results"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex w-full flex-col items-center"
+        >
+          <Results
+            result={data.data}
+            id={id}
+            prompt={data.prompt}
+            onFollowUp={() => setFollowUpOpen(true)}
+          />
+        </motion.div>
+      );
+    }
+    return <AnalyzingState key="analyzing" id={id} />;
+  }
 
   return (
     <div className="flex flex-col items-center px-4 py-12">
@@ -524,7 +599,7 @@ export function SignalView({
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted-foreground gap-1.5"
+              className="gap-1.5 text-muted-foreground"
             >
               <ArrowLeft className="size-3.5" />
               New analysis
@@ -533,7 +608,12 @@ export function SignalView({
           {data?.data && (
             <div className="flex items-center gap-2">
               <CopyLinkButton id={id} />
-              <ShareButton type="verdict" id={id} alwaysVisible prompt={data.prompt} />
+              <ShareButton
+                type="verdict"
+                id={id}
+                alwaysVisible
+                prompt={data.prompt}
+              />
             </div>
           )}
         </div>
@@ -542,9 +622,9 @@ export function SignalView({
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-secondary/30 text-muted-foreground hover:text-foreground flex items-center gap-2.5 rounded-lg border px-3.5 py-2 text-sm transition-colors"
+            className="flex items-center gap-2.5 rounded-lg border bg-secondary/30 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* oxlint-disable-next-line nextjs/no-img-element */}
             <img
               src={`https://www.google.com/s2/favicons?domain=${getDomain(sourceUrl)}&sz=32`}
               alt=""
@@ -559,55 +639,7 @@ export function SignalView({
       </div>
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        {error ? (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-4 py-32 text-center"
-          >
-            <p className="text-muted-foreground text-sm">
-              This signal doesn&apos;t exist or is private.
-            </p>
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Back to home
-              </Button>
-            </Link>
-          </motion.div>
-        ) : !data ? (
-          <motion.div
-            key="skeleton"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <ResultsSkeleton />
-          </motion.div>
-        ) : data.error ? (
-          <FailedState key="data-error" id={id} message={data.error} />
-        ) : data.data ? (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex w-full flex-col items-center"
-          >
-            <Results
-              result={data.data}
-              id={id}
-              prompt={data.prompt}
-              onFollowUp={() => setFollowUpOpen(true)}
-            />
-          </motion.div>
-        ) : (
-          <AnalyzingState key="analyzing" id={id} />
-        )}
-      </AnimatePresence>
+      <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
 
       <FollowUpPanel
         signalId={id}

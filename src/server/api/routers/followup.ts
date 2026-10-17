@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 
 export const followupRouter = createTRPCRouter({
   /** List all follow-ups for a signal (metadata only, no messages blob). */
@@ -15,7 +15,7 @@ export const followupRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { updatedAt: 'desc' },
       });
     }),
 
@@ -53,7 +53,7 @@ export const followupRouter = createTRPCRouter({
         data: {
           messages: input.messages as Parameters<
             typeof ctx.db.followUps.update
-          >[0]["data"]["messages"],
+          >[0]['data']['messages'],
           ...(input.title !== undefined ? { title: input.title } : {}),
         },
       });

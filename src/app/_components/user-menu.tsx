@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { CircleUserRound } from "lucide-react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import Link from "next/link";
+import { CircleUserRound } from 'lucide-react';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 export function UserMenu() {
   const { data: session } = useSession();
@@ -23,7 +23,7 @@ export function UserMenu() {
       <Button
         variant="outline"
         size="icon"
-        onClick={() => void signIn("google", { callbackUrl: "/" })}
+        onClick={() => void signIn('google', { redirectTo: '/' })}
       >
         <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Sign in</span>
@@ -32,9 +32,9 @@ export function UserMenu() {
   }
 
   const initials = session.user.name
-    ?.split(" ")
+    ?.split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .slice(0, 2)
     .toUpperCase();
 
@@ -45,19 +45,19 @@ export function UserMenu() {
           <Avatar className="h-8 w-8">
             <AvatarImage
               src={session.user.image ?? undefined}
-              alt={session.user.name ?? "User"}
+              alt={session.user.name ?? 'User'}
             />
-            <AvatarFallback>{initials ?? "U"}</AvatarFallback>
+            <AvatarFallback>{initials ?? 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium leading-none">
+            <p className="text-sm leading-none font-medium">
               {session.user.name}
             </p>
-            <p className="text-muted-foreground text-xs leading-none">
+            <p className="text-xs leading-none text-muted-foreground">
               {session.user.email}
             </p>
           </div>
@@ -66,7 +66,7 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/dashboard">My Signals</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void signOut({ callbackUrl: "/" })}>
+        <DropdownMenuItem onClick={() => void signOut({ redirectTo: '/' })}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

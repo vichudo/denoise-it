@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /* ── Preferences input (settings form + tRPC) ────────────── */
 
 export const feedPreferencesInputSchema = z.object({
   topics: z
     .array(z.string().min(1).max(100))
-    .min(1, "Add at least one topic")
+    .min(1, 'Add at least one topic')
     .max(20),
   xAccounts: z.array(z.string().max(50)).max(30),
   communicationStyle: z.string().min(1).max(100),
@@ -27,23 +27,23 @@ export const feedItemSchema = z.object({
   content: z
     .string()
     .describe(
-      "1-2 sentence summary of the core signal. Pure information, zero emotional language.",
+      '1-2 sentence summary of the core signal. Pure information, zero emotional language.',
     ),
   expandedContent: z
     .string()
     .describe(
-      "3-5 sentence expanded detail with key facts, numbers, and context. Still denoised.",
+      '3-5 sentence expanded detail with key facts, numbers, and context. Still denoised.',
     ),
   source: z
     .string()
     .describe(
-      "The source name — X account handle (with @), news outlet, or organization.",
+      'The source name — X account handle (with @), news outlet, or organization.',
     ),
   sourceUrl: z
     .string()
-    .describe("Direct URL to the original post, article, or source."),
+    .describe('Direct URL to the original post, article, or source.'),
   sourceType: z
-    .enum(["tweet", "article", "paper", "report", "post", "video", "podcast"])
+    .enum(['tweet', 'article', 'paper', 'report', 'post', 'video', 'podcast'])
     .describe(
       "Type of source content: 'tweet' for X/social posts, 'article' for news, 'paper' for academic, 'report' for official reports, 'post' for blog posts, 'video' for video content, 'podcast' for audio.",
     ),
@@ -51,7 +51,7 @@ export const feedItemSchema = z.object({
     .string()
     .optional()
     .describe(
-      "URL to a preview image — article thumbnail, Open Graph image, or relevant visual. Only include if a real image URL is available from the source. Do NOT fabricate URLs.",
+      'URL to a preview image — article thumbnail, Open Graph image, or relevant visual. Only include if a real image URL is available from the source. Do NOT fabricate URLs.',
     ),
   contentDate: z
     .string()

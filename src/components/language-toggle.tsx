@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Check, Globe } from "lucide-react";
+import { Check, Globe } from 'lucide-react';
 
-import { OUTPUT_LANGUAGES } from "@/lib/constants";
-import { useOutputLanguage } from "@/components/language-provider";
-import { Button } from "@/components/ui/button";
+import { useOutputLanguage } from '@/components/language-provider';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
+import { OUTPUT_LANGUAGES } from '@/lib/constants';
 
 export function LanguageToggle() {
   const { language, setLanguage } = useOutputLanguage();
@@ -20,7 +20,7 @@ export function LanguageToggle() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           <Globe
-            className={`h-[1.2rem] w-[1.2rem] transition-opacity ${language === "en" ? "opacity-40" : "opacity-100"}`}
+            className={`h-[1.2rem] w-[1.2rem] transition-opacity ${language === 'en' ? 'opacity-40' : 'opacity-100'}`}
           />
           <span className="sr-only">Output language</span>
         </Button>
