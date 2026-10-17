@@ -101,7 +101,7 @@ export function DenoiseHero() {
               setInput((prev) =>
                 prev
                   .replace(url, '')
-                  .replace(/\s{2,}/g, ' ')
+                  .replaceAll(/\s{2,}/g, ' ')
                   .trim(),
               )
             }

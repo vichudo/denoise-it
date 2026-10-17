@@ -74,14 +74,14 @@ export async function GET(req: NextRequest) {
 
 function decodeEntities(str: string): string {
   return str
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
-      String.fromCharCode(parseInt(hex, 16)),
+    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&#x27;', "'")
+    .replaceAll(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+      String.fromCharCode(Number.parseInt(hex, 16)),
     )
-    .replace(/&#(\d+);/g, (_, n: string) => String.fromCharCode(Number(n)));
+    .replaceAll(/&#(\d+);/g, (_, n: string) => String.fromCharCode(Number(n)));
 }

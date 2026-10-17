@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { type NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { verdictHexColor, verdictLabel } from '@/lib/schemas/analysis';
 import { getDomain } from '@/lib/utils';
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
   const verdict = verdictLabel[data.verdict];
   const summary =
     data.summary.length > 200
-      ? data.summary.slice(0, 197) + '...'
+      ? `${data.summary.slice(0, 197)}...`
       : data.summary;
   const scorePercent = data.signalScore;
 
@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
             display: 'flex',
             padding: '5px 16px',
             borderRadius: 9999,
-            backgroundColor: verdictColor + '18',
+            backgroundColor: `${verdictColor}18`,
             border: `1.5px solid ${verdictColor}40`,
             color: verdictColor,
             fontSize: 13,

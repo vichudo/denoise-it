@@ -284,7 +284,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
     const matches = [...new Set(prompt.match(URL_REGEX) ?? [])];
     const cleaned = matches
       .reduce((t, url) => t.replace(url, ''), prompt)
-      .replace(/\s{2,}/g, ' ')
+      .replaceAll(/\s{2,}/g, ' ')
       .trim();
     return { text: cleaned, urls: matches };
   }, [prompt]);

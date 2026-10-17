@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { type NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import {
   verdictHexColor,
@@ -112,9 +112,9 @@ function PromptBlock({ prompt }: { prompt: string }) {
   const urls = [...new Set(prompt.match(URL_REGEX) ?? [])];
   const text = urls
     .reduce((t, url) => t.replace(url, ''), prompt)
-    .replace(/\s{2,}/g, ' ')
+    .replaceAll(/\s{2,}/g, ' ')
     .trim();
-  const displayText = text.length > 120 ? text.slice(0, 117) + '...' : text;
+  const displayText = text.length > 120 ? `${text.slice(0, 117)}...` : text;
 
   return (
     <div
@@ -203,7 +203,7 @@ function VerdictStory({
   const color = verdictHexColor[data.verdict];
   const summary =
     data.summary.length > 180
-      ? data.summary.slice(0, 177) + '...'
+      ? `${data.summary.slice(0, 177)}...`
       : data.summary;
   return (
     <StoryWrapper>
@@ -229,9 +229,9 @@ function VerdictStory({
             display: 'flex',
             padding: '14px 36px',
             borderRadius: 9999,
-            backgroundColor: color + '18',
+            backgroundColor: `${color}18`,
             border: `2px solid ${color}40`,
-            color: color,
+            color,
             fontSize: 24,
             fontWeight: 700,
             letterSpacing: '0.12em',
@@ -262,7 +262,7 @@ function VerdictStory({
             display: 'flex',
             width: 80,
             height: 3,
-            backgroundColor: color + '60',
+            backgroundColor: `${color}60`,
             borderRadius: 9999,
           }}
         />
@@ -681,7 +681,7 @@ export async function GET(req: NextRequest) {
     return new Response('Analysis not ready', { status: 404 });
   }
 
-  const index = indexStr ? parseInt(indexStr, 10) : 0;
+  const index = indexStr ? Number.parseInt(indexStr, 10) : 0;
   const fonts = await loadFonts();
 
   let element: React.ReactElement;

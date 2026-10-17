@@ -1,4 +1,4 @@
-import { type Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import { SignalView } from '@/app/_components/signal-view';
 import { buildSignalMetadata } from '@/lib/metadata';

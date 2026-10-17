@@ -90,7 +90,7 @@ export function PersonalFeed() {
   const lastRetrieved = useMemo(() => {
     const first = allItems[0];
     if (!first) return null;
-    return formatDistanceToNow(new Date(first.createdAt as unknown as string), {
+    return formatDistanceToNow(new Date(first.createdAt), {
       addSuffix: true,
     });
   }, [allItems]);

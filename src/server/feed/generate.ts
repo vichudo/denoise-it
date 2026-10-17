@@ -29,10 +29,11 @@ export async function generateFeed(userId: string, preferences: FeedPrefs) {
     // Build prompt for each agent
     const prompt =
       `Find the latest content for my feed. Today is ${new Date().toISOString().split('T')[0]}.` +
-      `\n\nTopics: ${preferences.topics.join(', ')}` +
-      (preferences.xAccounts.length > 0
-        ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, '')}`).join(', ')}`
-        : '');
+      `\n\nTopics: ${preferences.topics.join(', ')}${
+        preferences.xAccounts.length > 0
+          ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, '')}`).join(', ')}`
+          : ''
+      }`;
 
     // Run agents in parallel
     const results = await Promise.allSettled([
