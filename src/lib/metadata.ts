@@ -14,6 +14,10 @@ export interface SignalPreview {
   pageTitle?: string | null;
 }
 
+// `URL.canParse` alone accepts claims like "Leaked: GTA VI…", since `leaked:`
+// reads as a scheme.
+const BARE_LINK = /^https?:\/\/\S+$/i;
+
 /** The URL being checked when the content is nothing but a link. */
 export function linkTarget({
   prompt,
@@ -21,7 +25,7 @@ export function linkTarget({
 }: Pick<SignalPreview, 'prompt' | 'sourceUrl'>) {
   if (sourceUrl) return sourceUrl;
   const trimmed = prompt.trim();
-  return URL.canParse(trimmed) ? trimmed : null;
+  return BARE_LINK.test(trimmed) && URL.canParse(trimmed) ? trimmed : null;
 }
 
 /** Collapses whitespace and clips to `max` characters on a word boundary. */
