@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import {
   ChevronDown,
+  createLucideIcon,
   ExternalLink,
   FileText,
   GraduationCap,
@@ -10,7 +11,7 @@ import {
   Newspaper,
   PenLine,
   Play,
-  Twitter,
+  type LucideIcon,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -25,12 +26,32 @@ import { getDomain } from '@/lib/utils';
 
 /* ── Source type config ───────────────────────────────────── */
 
-const SOURCE_TYPE_CONFIG: Record<
-  string,
-  { icon: typeof Twitter; label: string; color: string }
-> = {
-  tweet: { icon: Twitter, label: 'Post', color: 'text-sky-500' },
-  article: { icon: Newspaper, label: 'Article', color: 'text-amber-500' },
+// Lucide deprecated its brand icons; this is the same glyph, kept locally.
+const TwitterIcon = createLucideIcon('twitter', [
+  [
+    'path',
+    {
+      d: 'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z',
+      key: 'pff0z6',
+    },
+  ],
+]);
+
+interface SourceTypeConfig {
+  icon: LucideIcon;
+  label: string;
+  color: string;
+}
+
+const ARTICLE_CONFIG: SourceTypeConfig = {
+  icon: Newspaper,
+  label: 'Article',
+  color: 'text-amber-500',
+};
+
+const SOURCE_TYPE_CONFIG: Record<string, SourceTypeConfig> = {
+  tweet: { icon: TwitterIcon, label: 'Post', color: 'text-sky-500' },
+  article: ARTICLE_CONFIG,
   paper: { icon: GraduationCap, label: 'Paper', color: 'text-violet-500' },
   report: { icon: FileText, label: 'Report', color: 'text-emerald-500' },
   post: { icon: PenLine, label: 'Blog', color: 'text-rose-500' },
@@ -62,11 +83,10 @@ export function FeedCard({
   index: number;
 }) {
   const [imgError, setImgError] = useState(false);
-  const typeConfig =
-    SOURCE_TYPE_CONFIG[item.sourceType] ?? SOURCE_TYPE_CONFIG.article!;
+  const typeConfig = SOURCE_TYPE_CONFIG[item.sourceType] ?? ARTICLE_CONFIG;
   const TypeIcon = typeConfig.icon;
   const domain = getDomain(item.sourceUrl);
-  const hasImage = item.imageUrl && !imgError;
+  const imageUrl = imgError ? null : item.imageUrl;
 
   return (
     <Collapsible>
@@ -77,10 +97,10 @@ export function FeedCard({
           style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
         >
           {/* Image banner */}
-          {hasImage && (
+          {imageUrl && (
             <div className="relative h-36 w-full overflow-hidden bg-muted">
               <Image
-                src={item.imageUrl!}
+                src={imageUrl}
                 alt=""
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"

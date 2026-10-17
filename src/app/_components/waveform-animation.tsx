@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 const BAR_COUNT = 24;
 
 const bars = Array.from({ length: BAR_COUNT }, (_, i) => ({
+  id: i,
   delay: i * 0.08,
   duration: 0.6 + Math.random() * 0.8,
 }));
@@ -12,9 +13,9 @@ const bars = Array.from({ length: BAR_COUNT }, (_, i) => ({
 export function WaveformAnimation() {
   return (
     <div className="flex items-center justify-center gap-[3px]">
-      {bars.map((bar, i) => (
+      {bars.map((bar) => (
         <motion.div
-          key={i}
+          key={bar.id}
           className="w-[3px] rounded-full bg-foreground/20"
           animate={{
             scaleY: [0.3, 1, 0.3],

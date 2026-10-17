@@ -37,7 +37,7 @@ import {
 import { verdictLabel } from '@/lib/schemas/analysis';
 import { getDomain } from '@/lib/utils';
 import { verdictIcon, verdictColor } from '@/lib/verdict';
-import { api } from '@/trpc/react';
+import { api, type RouterOutputs } from '@/trpc/react';
 
 /* ── Privacy config ──────────────────────────────────────── */
 
@@ -48,6 +48,21 @@ const privacyOptions = [
 ] as const;
 
 type Privacy = (typeof privacyOptions)[number]['value'];
+
+type SignalRow = RouterOutputs['user']['signals'][number];
+
+/** Spinner while pending, an error mark, or the verdict's icon. */
+function SignalStatusIcon({ signal }: { signal: SignalRow }) {
+  if (signal.pending) {
+    return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
+  }
+  if (signal.error) {
+    return <XCircle className="h-4 w-4 text-red-500" />;
+  }
+  if (!signal.verdict) return null;
+  const Icon = verdictIcon[signal.verdict];
+  return <Icon className={`h-4 w-4 ${verdictColor[signal.verdict]}`} />;
+}
 
 /* ── Component ───────────────────────────────────────────── */
 
@@ -113,8 +128,6 @@ export function SignalsList() {
   return (
     <div className="divide-y divide-border">
       {signals.map((signal) => {
-        const Icon = signal.verdict ? verdictIcon[signal.verdict] : null;
-        const color = signal.verdict ? verdictColor[signal.verdict] : '';
         return (
           <div
             key={signal.id}
@@ -125,13 +138,7 @@ export function SignalsList() {
               href={`/s/${signal.id}`}
               className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center"
             >
-              {signal.pending ? (
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              ) : signal.error ? (
-                <XCircle className="h-4 w-4 text-red-500" />
-              ) : Icon ? (
-                <Icon className={`h-4 w-4 ${color}`} />
-              ) : null}
+              <SignalStatusIcon signal={signal} />
             </Link>
 
             {/* Content */}

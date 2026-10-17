@@ -1,5 +1,11 @@
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { convertToModelMessages, streamText, type UIMessage } from 'ai';
+import {
+  convertToModelMessages,
+  createUIMessageStreamResponse,
+  streamText,
+  toUIMessageStream,
+  type UIMessage,
+} from 'ai';
 
 import { env } from '@/env';
 import { getLanguageName } from '@/lib/constants';
@@ -70,9 +76,9 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
     model: openrouter.chat('x-ai/grok-4.7:online', {
       reasoning: { effort: 'minimal' },
     }),
-    system: systemPrompt,
+    instructions: systemPrompt,
     messages: await convertToModelMessages(messages),
-    onFinish: async ({ text }) => {
+    onEnd: async ({ text }) => {
       // Auto-generate title from first user message
       const firstUserMsg = messages.find((m) => m.role === 'user');
       const title = firstUserMsg
@@ -97,12 +103,17 @@ ${analysisResult.noise.map((n, i) => `${i + 1}. [${n.type}] "${n.original}" — 
       await db.followUps.update({
         where: { id: followUpId },
         data: {
-          messages: JSON.parse(JSON.stringify(allMessages)),
+          // A JSON round-trip, not a clone: it drops `undefined` and anything
+          // else a Json column cannot store.
+          // oxlint-disable-next-line unicorn/prefer-structured-clone
+          messages: JSON.parse(JSON.stringify(allMessages)) as object,
           ...(title ? { title } : {}),
         },
       });
     },
   });
 
-  return result.toUIMessageStreamResponse();
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({ stream: result.stream }),
+  });
 }

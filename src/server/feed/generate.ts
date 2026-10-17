@@ -27,13 +27,11 @@ export async function generateFeed(userId: string, preferences: FeedPrefs) {
     const agents = createFeedAgents(preferences);
 
     // Build prompt for each agent
-    const prompt =
-      `Find the latest content for my feed. Today is ${new Date().toISOString().split('T')[0]}.` +
-      `\n\nTopics: ${preferences.topics.join(', ')}${
-        preferences.xAccounts.length > 0
-          ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, '')}`).join(', ')}`
-          : ''
-      }`;
+    const accounts =
+      preferences.xAccounts.length > 0
+        ? `\nX accounts: ${preferences.xAccounts.map((a) => `@${a.replace(/^@/, '')}`).join(', ')}`
+        : '';
+    const prompt = `Find the latest content for my feed. Today is ${new Date().toISOString().split('T')[0]}.\n\nTopics: ${preferences.topics.join(', ')}${accounts}`;
 
     // Run agents in parallel
     const results = await Promise.allSettled([
@@ -44,7 +42,7 @@ export async function generateFeed(userId: string, preferences: FeedPrefs) {
     // Collect items from all successful results
     const allItems: FeedItem[] = [];
     for (const result of results) {
-      if (result.status === 'fulfilled' && result.value?.output?.items) {
+      if (result.status === 'fulfilled' && result.value?.output.items) {
         allItems.push(...result.value.output.items);
       }
     }

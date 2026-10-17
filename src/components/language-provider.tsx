@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useState,
   type ReactNode,
 } from 'react';
@@ -24,7 +25,7 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     if (typeof window === 'undefined') return 'en';
-    return (localStorage.getItem(STORAGE_KEY) as LanguageCode) ?? 'en';
+    return (localStorage.getItem(STORAGE_KEY) ?? 'en') as LanguageCode;
   });
 
   const setLanguage = useCallback((code: LanguageCode) => {
@@ -32,11 +33,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, code);
   }, []);
 
-  return (
-    <LanguageContext value={{ language, setLanguage }}>
-      {children}
-    </LanguageContext>
+  const value = useMemo(
+    () => ({ language, setLanguage }),
+    [language, setLanguage],
   );
+
+  return <LanguageContext value={value}>{children}</LanguageContext>;
 }
 
 export function useOutputLanguage() {

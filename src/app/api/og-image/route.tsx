@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { data } = await waitForAnalysis(id);
-  const domain = signal.sourceUrl ? getDomain(String(signal.sourceUrl)) : null;
+  const domain = signal.sourceUrl ? getDomain(signal.sourceUrl) : null;
 
   const [interRegular, interBold] = await Promise.all([
     fetch(

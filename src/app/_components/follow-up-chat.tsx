@@ -59,18 +59,16 @@ function getMessageSources(message: UIMessage): Source[] {
   // 2. Extract markdown links [title](url) from text
   const text = getMessageText(message);
   const mdLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
-  let match;
-  while ((match = mdLinkRegex.exec(text)) !== null) {
-    const url = match[2]!;
-    if (!seen.has(url)) {
+  for (const [, title, url] of text.matchAll(mdLinkRegex)) {
+    if (url && !seen.has(url)) {
       seen.add(url);
-      sources.push({ url, title: match[1] ?? getDomain(url) });
+      sources.push({ url, title: title ?? getDomain(url) });
     }
   }
 
   // 3. Extract bare URLs not already captured
   const bareUrlRegex = /(?<!\()(https?:\/\/[^\s)<>]+)/g;
-  while ((match = bareUrlRegex.exec(text)) !== null) {
+  for (const match of text.matchAll(bareUrlRegex)) {
     const url = match[1] ?? match[0];
     if (!seen.has(url)) {
       seen.add(url);
@@ -79,6 +77,30 @@ function getMessageSources(message: UIMessage): Source[] {
   }
 
   return sources;
+}
+
+function AssistantContent({
+  text,
+  sources,
+  isLoading,
+}: {
+  text: string;
+  sources: Source[];
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <Shimmer as="span" duration={1.5} className="text-sm">
+        Thinking...
+      </Shimmer>
+    );
+  }
+  return (
+    <>
+      <MessageResponse>{text}</MessageResponse>
+      <MessageSources sources={sources} />
+    </>
+  );
 }
 
 function MessageSources({ sources }: { sources: Source[] }) {
@@ -198,6 +220,7 @@ export function FollowUpChat({
         behavior: 'smooth',
       });
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- scroll again as messages stream in
   }, [messages, status]);
 
   const scrollToBottom = useCallback(() => {
@@ -241,15 +264,12 @@ export function FollowUpChat({
                   <MessageContent>
                     {message.role === 'user' ? (
                       <p>{text}</p>
-                    ) : isLoading ? (
-                      <Shimmer as="span" duration={1.5} className="text-sm">
-                        Thinking...
-                      </Shimmer>
                     ) : (
-                      <>
-                        <MessageResponse>{text}</MessageResponse>
-                        <MessageSources sources={sources} />
-                      </>
+                      <AssistantContent
+                        text={text}
+                        sources={sources}
+                        isLoading={isLoading}
+                      />
                     )}
                   </MessageContent>
                 </Message>

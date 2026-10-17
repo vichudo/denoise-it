@@ -24,6 +24,21 @@ import { shareStoryImage, storyImageUrl, type StoryType } from '@/lib/share';
 
 type ShareState = 'idle' | 'loading' | 'done';
 
+function ShareStateIcon({ state }: { state: ShareState }) {
+  if (state === 'loading') {
+    return <Loader2 className="size-3.5 animate-spin" />;
+  }
+  if (state === 'done') {
+    return <Check className="size-3.5 text-emerald-600" />;
+  }
+  return (
+    <>
+      <Download className="size-3.5 [@media(hover:none)]:hidden" />
+      <Share className="hidden size-3.5 [@media(hover:none)]:block" />
+    </>
+  );
+}
+
 export function ShareButton({
   type,
   id,
@@ -69,9 +84,7 @@ export function ShareButton({
     await doShare(includePrompt);
   }
 
-  const previewUrl = showDialog
-    ? storyImageUrl({ type, id, index, includePrompt })
-    : null;
+  const previewUrl = storyImageUrl({ type, id, index, includePrompt });
 
   return (
     <>
@@ -85,16 +98,7 @@ export function ShareButton({
               onClick={handleClick}
               disabled={state === 'loading'}
             >
-              {state === 'loading' ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : state === 'done' ? (
-                <Check className="size-3.5 text-emerald-600" />
-              ) : (
-                <>
-                  <Download className="size-3.5 [@media(hover:none)]:hidden" />
-                  <Share className="hidden size-3.5 [@media(hover:none)]:block" />
-                </>
-              )}
+              <ShareStateIcon state={state} />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">Share as story</TooltipContent>
@@ -115,10 +119,10 @@ export function ShareButton({
 
             {/* Preview */}
             <div className="overflow-hidden rounded-lg border bg-secondary/30">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* oxlint-disable-next-line nextjs/no-img-element */}
               <img
                 key={String(includePrompt)}
-                src={previewUrl!}
+                src={previewUrl}
                 alt="Story preview"
                 className="aspect-9/16 w-full object-cover"
               />

@@ -292,6 +292,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
   useEffect(() => {
     const el = textRef.current;
     if (el) setClamped(el.scrollHeight > PROMPT_CLAMP_PX);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- re-measure once the rendered text changes
   }, [text]);
 
   function handleCopy() {
@@ -314,6 +315,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
           </p>
           {clamped && (
             <button
+              type="button"
               onClick={() => setExpanded((v) => !v)}
               className="mt-1.5 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground"
             >
@@ -336,7 +338,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
                 title={url}
                 className="group inline-flex max-w-[280px] items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors hover:bg-secondary hover:text-foreground"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* oxlint-disable-next-line nextjs/no-img-element */}
                 <img
                   src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
                   alt=""
@@ -353,6 +355,7 @@ function PromptDisplay({ prompt }: { prompt: string }) {
       )}
 
       <button
+        type="button"
         onClick={handleCopy}
         className="inline-flex items-center gap-1 text-xs text-muted-foreground/40 transition-colors hover:text-muted-foreground"
       >
@@ -448,6 +451,9 @@ function Results({
           <div className="space-y-2">
             {result.signals.map((signal, index) => (
               <SignalCard
+                // The result is immutable and the index is the item's identity: share
+                // links address signals by it.
+                // oxlint-disable-next-line react/no-array-index-key
                 key={index}
                 signal={signal}
                 index={index}
@@ -473,6 +479,7 @@ function Results({
             <div className="space-y-2">
               {result.noise.map((item, index) => (
                 <NoiseCard
+                  // oxlint-disable-next-line react/no-array-index-key -- immutable result, see signals above
                   key={index}
                   noise={item}
                   index={index}
@@ -524,6 +531,65 @@ export function SignalView({
     },
   );
 
+  // Returns the keyed state directly, so AnimatePresence sees each switch.
+  function renderContent() {
+    if (error) {
+      return (
+        <motion.div
+          key="error"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="flex flex-col items-center gap-4 py-32 text-center"
+        >
+          <p className="text-sm text-muted-foreground">
+            This signal doesn&apos;t exist or is private.
+          </p>
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              Back to home
+            </Button>
+          </Link>
+        </motion.div>
+      );
+    }
+    if (!data) {
+      return (
+        <motion.div
+          key="skeleton"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <ResultsSkeleton />
+        </motion.div>
+      );
+    }
+    if (data.error) {
+      return <FailedState key="data-error" id={id} message={data.error} />;
+    }
+    if (data.data) {
+      return (
+        <motion.div
+          key="results"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex w-full flex-col items-center"
+        >
+          <Results
+            result={data.data}
+            id={id}
+            prompt={data.prompt}
+            onFollowUp={() => setFollowUpOpen(true)}
+          />
+        </motion.div>
+      );
+    }
+    return <AnalyzingState key="analyzing" id={id} />;
+  }
+
   return (
     <div className="flex flex-col items-center px-4 py-12">
       {/* Header */}
@@ -558,7 +624,7 @@ export function SignalView({
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 rounded-lg border bg-secondary/30 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* oxlint-disable-next-line nextjs/no-img-element */}
             <img
               src={`https://www.google.com/s2/favicons?domain=${getDomain(sourceUrl)}&sz=32`}
               alt=""
@@ -573,55 +639,7 @@ export function SignalView({
       </div>
 
       {/* Content */}
-      <AnimatePresence mode="wait">
-        {error ? (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-4 py-32 text-center"
-          >
-            <p className="text-sm text-muted-foreground">
-              This signal doesn&apos;t exist or is private.
-            </p>
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Back to home
-              </Button>
-            </Link>
-          </motion.div>
-        ) : !data ? (
-          <motion.div
-            key="skeleton"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <ResultsSkeleton />
-          </motion.div>
-        ) : data.error ? (
-          <FailedState key="data-error" id={id} message={data.error} />
-        ) : data.data ? (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex w-full flex-col items-center"
-          >
-            <Results
-              result={data.data}
-              id={id}
-              prompt={data.prompt}
-              onFollowUp={() => setFollowUpOpen(true)}
-            />
-          </motion.div>
-        ) : (
-          <AnalyzingState key="analyzing" id={id} />
-        )}
-      </AnimatePresence>
+      <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
 
       <FollowUpPanel
         signalId={id}

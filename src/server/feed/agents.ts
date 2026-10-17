@@ -27,6 +27,19 @@ interface FeedPrefs {
   additionalInstructions?: string | null;
 }
 
+function describeAffectiveLevel(level: number): string {
+  if (level <= 20) {
+    return 'ZERO emotional content. Strictly objective, clinical tone. Remove ALL affective language.';
+  }
+  if (level <= 50) {
+    return "Minimal emotional content. Keep tone neutral and informative. Remove sensationalism but allow factual emotional context (e.g. 'protests erupted').";
+  }
+  if (level <= 80) {
+    return 'Moderate emotional content allowed. Preserve genuine human sentiment but strip sensationalism and manipulation.';
+  }
+  return 'Raw content is acceptable. Preserve original emotional tone but still flag manipulative framing.';
+}
+
 function buildInstructions(
   prefs: FeedPrefs,
   mode: 'social' | 'topics',
@@ -39,14 +52,7 @@ function buildInstructions(
       ? prefs.xAccounts.map((a) => `• @${a.replace(/^@/, '')}`).join('\n')
       : '(none specified)';
 
-  const affectiveGuidance =
-    prefs.affectiveLevel <= 20
-      ? 'ZERO emotional content. Strictly objective, clinical tone. Remove ALL affective language.'
-      : prefs.affectiveLevel <= 50
-        ? "Minimal emotional content. Keep tone neutral and informative. Remove sensationalism but allow factual emotional context (e.g. 'protests erupted')."
-        : prefs.affectiveLevel <= 80
-          ? 'Moderate emotional content allowed. Preserve genuine human sentiment but strip sensationalism and manipulation.'
-          : 'Raw content is acceptable. Preserve original emotional tone but still flag manipulative framing.';
+  const affectiveGuidance = describeAffectiveLevel(prefs.affectiveLevel);
 
   return `You are a personalized feed curator for a content denoising platform. Your job: find RECENT, HIGH-SIGNAL content and present it stripped of noise, tailored to this specific user.
 

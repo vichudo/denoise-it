@@ -29,10 +29,13 @@ export async function shareStoryImage(params: ShareStoryParams) {
   // Mobile: use Web Share API with file (touch device only)
   const isTouchDevice =
     'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  // DOM types declare the Web Share API as always present; desktop browsers
+  // mostly lack it.
   if (
     isTouchDevice &&
-    navigator.share &&
-    navigator.canShare?.({ files: [file] })
+    'share' in navigator &&
+    'canShare' in navigator &&
+    navigator.canShare({ files: [file] })
   ) {
     await navigator.share({ files: [file] });
     return;

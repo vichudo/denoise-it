@@ -18,20 +18,22 @@ function useUrlTitles(urls: string[]) {
   const cacheRef = useRef<Record<string, string | null>>({});
 
   useEffect(() => {
+    async function loadTitle(url: string) {
+      try {
+        const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
+        const { title } = (await res.json()) as { title: string | null };
+        cacheRef.current[url] = title;
+        setTitles((prev) => ({ ...prev, [url]: title }));
+      } catch {
+        cacheRef.current[url] = null;
+      }
+    }
+
     for (const url of urls) {
       if (url in cacheRef.current) continue;
       // Mark as in-flight
       cacheRef.current[url] = null;
-
-      fetch(`/api/og?url=${encodeURIComponent(url)}`)
-        .then((res) => res.json() as Promise<{ title: string | null }>)
-        .then(({ title }) => {
-          cacheRef.current[url] = title;
-          setTitles((prev) => ({ ...prev, [url]: title }));
-        })
-        .catch(() => {
-          cacheRef.current[url] = null;
-        });
+      void loadTitle(url);
     }
   }, [urls]);
 
@@ -65,7 +67,7 @@ export function UrlPreviews({
             className="group inline-flex max-w-[300px] animate-in cursor-pointer items-center gap-1.5 rounded-md border bg-secondary/50 px-2 py-1 text-xs text-muted-foreground no-underline transition-colors fade-in-0 zoom-in-95 hover:bg-secondary hover:text-foreground"
             style={{ animationDuration: '150ms' }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* oxlint-disable-next-line nextjs/no-img-element */}
             <img
               src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
               alt=""

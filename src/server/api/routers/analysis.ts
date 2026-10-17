@@ -52,11 +52,11 @@ export const analysisRouter = createTRPCRouter({
         data: {
           title: input.content.slice(0, 120).trim(),
           prompt: input.content,
-          userId: ctx.session?.user?.id,
+          userId: ctx.session?.user.id,
         },
       });
 
-      startGeneration(String(signal.id), prompt, {
+      startGeneration(signal.id, prompt, {
         language: input.language,
       });
 
@@ -79,11 +79,11 @@ export const analysisRouter = createTRPCRouter({
             title: input.url,
             prompt: input.url,
             sourceUrl: input.url,
-            userId: ctx.session?.user?.id,
+            userId: ctx.session?.user.id,
           },
         });
 
-        startGeneration(String(signal.id), input.url, { fast: true });
+        startGeneration(signal.id, input.url, { fast: true });
 
         return { id: signal.id };
       } catch (e) {
@@ -134,8 +134,7 @@ export const analysisRouter = createTRPCRouter({
 
       let nextCursor: string | undefined;
       if (signals.length > limit) {
-        const next = signals.pop()!;
-        nextCursor = next.id;
+        nextCursor = signals.pop()?.id;
       }
 
       const items = [];
@@ -175,7 +174,7 @@ export const analysisRouter = createTRPCRouter({
       // Private signals are only visible to their owner
       if (
         signal.privacy === 'PRIVATE' &&
-        signal.userId !== ctx.session?.user?.id
+        signal.userId !== ctx.session?.user.id
       ) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
@@ -218,7 +217,7 @@ export const analysisRouter = createTRPCRouter({
 
       if (
         signal.privacy === 'PRIVATE' &&
-        signal.userId !== ctx.session?.user?.id
+        signal.userId !== ctx.session?.user.id
       ) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }

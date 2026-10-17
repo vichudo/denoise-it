@@ -165,7 +165,7 @@ function PromptBlock({ prompt }: { prompt: string }) {
                 border: '1px solid #27272a',
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* oxlint-disable-next-line nextjs/no-img-element */}
               <img
                 src={`https://www.google.com/s2/favicons?domain=${getDomain(url)}&sz=32`}
                 alt=""

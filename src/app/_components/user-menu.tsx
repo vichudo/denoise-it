@@ -23,7 +23,7 @@ export function UserMenu() {
       <Button
         variant="outline"
         size="icon"
-        onClick={() => void signIn('google', { callbackUrl: '/' })}
+        onClick={() => void signIn('google', { redirectTo: '/' })}
       >
         <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Sign in</span>
@@ -66,7 +66,7 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/dashboard">My Signals</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void signOut({ callbackUrl: '/' })}>
+        <DropdownMenuItem onClick={() => void signOut({ redirectTo: '/' })}>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

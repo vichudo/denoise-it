@@ -2,7 +2,7 @@
 
 import { Clock, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link'; // eslint-disable-line @typescript-eslint/no-unused-vars -- will uncomment usage
+import Link from 'next/link'; // oxlint-disable-line eslint/no-unused-vars -- will uncomment usage
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -39,7 +39,7 @@ export function DenoiseHero() {
   const [input, setInput] = useState(() => searchParams.get('q') ?? '');
   const [timeSensitive, setTimeSensitive] = useState(false);
   const [stopIndex, setStopIndex] = useState(DEFAULT_STOP);
-  const currentStop = TIME_STOPS[stopIndex]!;
+  const currentStop = TIME_STOPS[stopIndex] ?? TIME_STOPS[DEFAULT_STOP];
 
   const create = api.analysis.create.useMutation({
     onSuccess: (data) => {

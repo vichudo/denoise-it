@@ -15,6 +15,8 @@ export async function waitForAnalysis(
 ): Promise<{ data: AnalysisResult | null; error: string | null }> {
   const deadline = Date.now() + TIMEOUT_MS;
 
+  // Polling: each check waits for the previous one to come back empty.
+  /* oxlint-disable eslint/no-await-in-loop */
   while (Date.now() < deadline) {
     const signal = await db.signal.findUnique({ where: { id } });
     if (!signal) return { data: null, error: 'Not found' };
@@ -22,8 +24,11 @@ export async function waitForAnalysis(
     const result = parseSignalData(signal.data);
     if (result.data || result.error) return result;
 
-    await new Promise((r) => setTimeout(r, POLL_MS));
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, POLL_MS);
+    });
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 
   return { data: null, error: null };
 }

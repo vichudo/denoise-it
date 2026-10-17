@@ -100,6 +100,8 @@ export function FeedSettingsForm() {
     });
   }
 
+  const submitLabel = prefs ? 'Update & go to feed' : 'Save & go to feed';
+
   return (
     <div className="space-y-8">
       {/* Topics */}
@@ -274,10 +276,8 @@ export function FeedSettingsForm() {
             <Loader2 className="animate-spin" />
             Saving...
           </>
-        ) : prefs ? (
-          'Update & go to feed'
         ) : (
-          'Save & go to feed'
+          submitLabel
         )}
       </Button>
 

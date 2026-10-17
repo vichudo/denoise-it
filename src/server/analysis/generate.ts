@@ -46,6 +46,9 @@ export async function generateAnalysis(
   const attempts = pickAttempts(content, options?.fast);
   const deadline = Date.now() + TOTAL_BUDGET_MS;
 
+  // Providers are tried one after another: an attempt only runs once the
+  // previous one has failed.
+  /* oxlint-disable eslint/no-await-in-loop */
   for (const [index, { label, agent }] of attempts.entries()) {
     const isLast = index === attempts.length - 1;
     // Never start an attempt that cannot finish, and never let one run past the
@@ -83,6 +86,9 @@ export async function generateAnalysis(
     try {
       await db.signal.update({
         where: { id },
+        // A JSON round-trip, not a clone: it drops `undefined` and anything
+        // else a Json column cannot store.
+        // oxlint-disable-next-line unicorn/prefer-structured-clone
         data: { data: JSON.parse(JSON.stringify(output)) as object },
       });
     } catch (dbError) {
@@ -90,4 +96,5 @@ export async function generateAnalysis(
     }
     return;
   }
+  /* oxlint-enable eslint/no-await-in-loop */
 }

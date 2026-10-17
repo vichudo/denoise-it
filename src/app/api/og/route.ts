@@ -6,9 +6,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ title: null }, { status: 400 });
   }
 
-  try {
-    new URL(url); // validate
-  } catch {
+  if (!URL.canParse(url)) {
     return NextResponse.json({ title: null }, { status: 400 });
   }
 
@@ -35,6 +33,8 @@ export async function GET(req: NextRequest) {
     const maxBytes = 16_384; // 16 KB is plenty for <head>
 
     while (html.length < maxBytes) {
+      // Chunks arrive in order: each read depends on the previous one.
+      // oxlint-disable-next-line eslint/no-await-in-loop
       const { done, value } = await reader.read();
       if (done) break;
       html += decoder.decode(value, { stream: true });

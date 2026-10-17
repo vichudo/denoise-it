@@ -8,9 +8,7 @@ export function middleware(request: NextRequest) {
     ? pathname.replace('/https:/', 'https://')
     : pathname.replace('/http:/', 'http://');
 
-  try {
-    new URL(targetUrl); // validate
-  } catch {
+  if (!URL.canParse(targetUrl)) {
     return NextResponse.next();
   }
 

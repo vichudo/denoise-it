@@ -388,6 +388,7 @@ export function UseCases() {
           {USE_CASES.map((uc) => (
             <button
               key={uc.label}
+              type="button"
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
@@ -490,6 +491,7 @@ export function FinalCTA() {
           in seconds. No account required.
         </p>
         <button
+          type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >

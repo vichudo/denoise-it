@@ -20,7 +20,7 @@ export function GoogleSignInButton({
       disabled={loading}
       onClick={() => {
         setLoading(true);
-        void signIn('google', { callbackUrl });
+        void signIn('google', { redirectTo: callbackUrl });
       }}
     >
       {loading ? (

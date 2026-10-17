@@ -119,7 +119,7 @@ export function PersonalFeed() {
           <Button
             variant="outline"
             size="sm"
-            disabled={generating ?? refresh.isPending}
+            disabled={generating || refresh.isPending}
             onClick={() => refresh.mutate()}
           >
             <RefreshCw

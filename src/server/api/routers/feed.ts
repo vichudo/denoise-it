@@ -58,8 +58,7 @@ export const feedRouter = createTRPCRouter({
 
       let nextCursor: string | undefined;
       if (items.length > limit) {
-        const next = items.pop()!;
-        nextCursor = next.id;
+        nextCursor = items.pop()?.id;
       }
 
       return { items, nextCursor };

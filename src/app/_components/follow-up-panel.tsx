@@ -50,7 +50,7 @@ export function FollowUpPanel({
 
   async function handleSelectFollowUp(id: number) {
     const followUp = await utils.followup.get.fetch({ id });
-    const messages = (followUp.messages as unknown as UIMessage[]) ?? [];
+    const messages = (followUp.messages ?? []) as unknown as UIMessage[];
     setInitialMessages(messages.length > 0 ? messages : undefined);
     setActiveFollowUpId(id);
   }
@@ -108,11 +108,12 @@ export function FollowUpPanel({
                 New conversation
               </Button>
 
-              {listQuery.isLoading ? (
+              {listQuery.isLoading && (
                 <div className="flex justify-center py-8">
                   <Spinner />
                 </div>
-              ) : listQuery.data?.length === 0 ? (
+              )}
+              {listQuery.data?.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
                   <MessageCircle className="size-8 text-muted-foreground/40" />
                   <p className="text-sm">No conversations yet</p>
@@ -120,11 +121,13 @@ export function FollowUpPanel({
                     Start a new conversation to ask follow-up questions
                   </p>
                 </div>
-              ) : (
+              )}
+              {listQuery.data && listQuery.data.length > 0 && (
                 <div className="space-y-1">
-                  {listQuery.data?.map((followUp) => (
+                  {listQuery.data.map((followUp) => (
                     <button
                       key={followUp.id}
+                      type="button"
                       className="w-full rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-secondary/80"
                       onClick={() => handleSelectFollowUp(followUp.id)}
                     >
