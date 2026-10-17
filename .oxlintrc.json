@@ -333,6 +333,14 @@
       // The env schema is where `process.env` is read.
       "files": ["src/env.js"],
       "rules": { "node/no-process-env": "off" }
+    },
+    {
+      // Satori renders these to PNG: plain `<img>` is all it understands.
+      "files": [
+        "src/app/**/opengraph-image.tsx",
+        "src/app/**/twitter-image.tsx"
+      ],
+      "rules": { "nextjs/no-img-element": "off" }
     }
   ]
 }
